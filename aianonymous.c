@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <aianon/core/tensor.h>
 
 int main(int argc, char *argv[]) {
 
