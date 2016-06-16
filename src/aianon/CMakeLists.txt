@@ -1,14 +1,27 @@
 include_directories (..) # for #include <aianon/[...]>
 include_directories (${CMAKE_CURRENT_BINARY_DIR}/..) # for #include <aianon/aianon_export.h>
 
-# This directory only contains one source i.e. aianon.h which
-# includes everything else
-set (AIANON_SRCS ${AIANON_SRCS} "${AIANON_HDRS}")
-
 set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
+macro(add_curr_directory_name DIR_SRCS _srcs)
+  foreach (file ${_srcs})
+    set(${DIR_SRCS} ${${DIR_SRCS}} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+  endforeach()
+endmacro(add_curr_directory_name)
+
+# Define the files we need to compile
+# Anything not in this list will not be compiled into aianon.
+set(SOURCES
+  aianon.h
+  tensor.h
+  tensor.c
+)
+
+set (AIANON_SRCS)
+add_curr_directory_name (AIANON_SRCS "${SOURCES}")
+
 # Add sub modules to this library
-set (SUBMODULES core)
+set (SUBMODULES core util)
 
 # AIANON_SRCS will be set by the subdirectories
 foreach (module ${SUBMODULES})
@@ -69,7 +82,6 @@ set_target_properties (aianon
 )
 
 file (GLOB_RECURSE INCLUDE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
-message (STATUS "hello ..... ${INCLUDE_FILES}")
 
 # set (INCLUDE_FILES ${INCLUDE_FILES} "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
 

@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include <aianon/core/tensor.h>
+#include <aianon/tensor.h>
 
 int main(int argc, char *argv[]) {
-
-  fprintf(stdout, "Hello Universe ! I am %s\n", "AIAnonymous");
+  double a = 8;
+  int b = 1;
+  fprintf(stdout, "Hello Universe ! I am %s v%d.%f\n", "AIAnonymous", AIAIntget(b), AIADoubleget(a));
   return 0;
 }

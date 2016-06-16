@@ -12,8 +12,7 @@ set (DEPS ${DEPS} aianon)
 add_executable (aianonymous aianonymous.c)
 target_link_libraries (aianonymous ${DEPS})
 
-set(AIANONYMOUS_INSTALL_BIN_SUBDIR "bin" CACHE PATH "AIANONYMOUS install binary subdirectory")
-
-# not installing executables righ now
+# {TODO] not installing executables righ now
+# set(AIANONYMOUS_INSTALL_BIN_SUBDIR "bin" CACHE PATH "AIANONYMOUS install binary subdirectory")
 # install (TARGETS aianonymous
 #     DESTINATION "${AIANONYMOUS_INSTALL_BIN_SUBDIR}")
