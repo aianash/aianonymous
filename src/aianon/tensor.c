@@ -2,8 +2,9 @@
 
 #ifdef ERASED_TYPE_AVAILABLE
 
-T aiatensor_(T_, get)(T p) {
-  return p;
+AIATensor(T_) *aiatensor_(T_, new)(void) {
+  AIATensor(T_) *tnsr;
+  return tnsr;
 }
 
 #endif

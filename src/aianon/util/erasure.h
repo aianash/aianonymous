@@ -12,9 +12,15 @@
 #define AIA_CONCAT_5(v,w,x,y,z) AIA_CONCAT_5_EXPAND(v,w,x,y,z)
 #define AIA_CONCAT_5_EXPAND(v,w,x,y,z) v ## w ## x ## y ## z
 
-#ifndef aiaerase_
-#define aiaeraseexpand_(ns, type, name) AIA_CONCAT_5(aia,ns,_,type,name)
-#define aiaerase_(ns, type, name) aiaeraseexpand_(ns, type, name)
+#define AIA_CONCAT_3(x,y,z) AIA_CONCAT_3_EXPAND(x,y,z)
+#define AIA_CONCAT_3_EXPAND(x,y,z) x ## y ## z
+
+#ifndef AIA_ERASURE_HELPERS_FNS
+#define AIA_ERASURE_HELPERS_FNS
+#define AIA_FN_ERASE_(ns, type, name) AIA_FN_ERASE_EXPAND_(ns, type, name)
+#define AIA_STRUCT_ERASE_(type, name) AIA_STRUCT_ERASE_EXPAND_(type, name)
+#define AIA_FN_ERASE_EXPAND_(ns, type, name) AIA_CONCAT_5(aia,type,ns,_,name)
+#define AIA_STRUCT_ERASE_EXPAND_(type, name) AIA_CONCAT_3(aia,type,name)
 #endif
 
 #if (defined(ERASE_BYTE) || defined(ERASE_ALL))

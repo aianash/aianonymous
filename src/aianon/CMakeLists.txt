@@ -13,6 +13,7 @@ endmacro(add_curr_directory_name)
 # Anything not in this list will not be compiled into aianon.
 set(SOURCES
   aianon.h
+  storage.h
   tensor.h
   tensor.c
 )

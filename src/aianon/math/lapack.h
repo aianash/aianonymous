@@ -43,7 +43,7 @@ void aialapack_(T_, ormqr)(char side, char trans, int m, int n, int k, T *a, int
 #endif
 
 #ifndef aialapack_
-#define aialapack_(type, name) aiaerase_(lapack, type, name)
+#define aialapack_(type, name) AIA_FN_ERASE_(lapack, type, name)
 #endif
 
 #define ERASE_ALL
