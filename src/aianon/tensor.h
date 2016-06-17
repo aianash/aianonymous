@@ -1,17 +1,16 @@
 #ifndef AIA_TENSOR_H
-#ifdef ERASURE_ACTIVE
+#ifdef ERASED_TYPE_AVAILABLE
 
 
-T AIAErase_(get)(T p);
+T aiatensor_(T_, get)(T p);
 
 #endif
-#define ERASE_BYTE
-#define ERASE_CHAR
-#define ERASE_SHORT
-#define ERASE_INT
-#define ERASE_LONG
-#define ERASE_FLOAT
-#define ERASE_DOUBLE
+
+#ifndef aiatensor_
+#define aiatensor_(type, name) aiaerase_(tensor, type, name)
+#endif
+
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor.h"
 #include <aianon/util/erasure.h>
 

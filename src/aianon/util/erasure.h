@@ -1,99 +1,115 @@
-#ifdef ERASURE_ACTIVE
+#ifdef ERASED_TYPE_AVAILABLE
 
 #undef T
-#undef TypeName
-#undef ERASURE_ACTIVE
+#undef T_
+#undef ERASED_TYPE_AVAILABLE
 #line 1 ERASURE_FILE
 #include ERASURE_FILE
 
 #else
 
-#define TH_CONCAT_3(x,y,z) TH_CONCAT_3_EXPAND(x,y,z)
-#define TH_CONCAT_3_EXPAND(x,y,z) x ## y ## z
+// [TODO] move this code...
+#define AIA_CONCAT_5(v,w,x,y,z) AIA_CONCAT_5_EXPAND(v,w,x,y,z)
+#define AIA_CONCAT_5_EXPAND(v,w,x,y,z) v ## w ## x ## y ## z
 
-#define AIAErase_(name) TH_CONCAT_3(AIA,TypeName,name)
+#ifndef aiaerase_
+#define aiaeraseexpand_(ns, type, name) AIA_CONCAT_5(aia,ns,_,type,name)
+#define aiaerase_(ns, type, name) aiaeraseexpand_(ns, type, name)
+#endif
 
-#ifdef ERASE_BYTE
+#if (defined(ERASE_BYTE) || defined(ERASE_ALL))
 # ifndef BYTE_IS_ERASED
 # define BYTE_IS_ERASED
 #   define T unsigned char
-#   define TypeName Byte
-#   define ERASURE_ACTIVE
+#   define T_ uchar
+#   define T_IS_UCHAR
+#   define ERASED_TYPE_AVAILABLE
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
 #endif
 
-#ifdef ERASE_CHAR
+#if (defined(ERASE_CHAR) || defined(ERASE_ALL))
 # ifndef CHAR_IS_ERASED
 # define CHAR_IS_ERASED
 #   define T char
-#   define TypeName Char
-#   define ERASURE_ACTIVE
+#   define T_ char
+#   define T_IS_CHAR
+#   define ERASED_TYPE_AVAILABLE
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
 #endif
 
-#ifdef ERASE_SHORT
+#if (defined(ERASE_SHORT) || defined(ERASE_ALL))
 # ifndef SHORT_IS_ERASED
 # define SHORT_IS_ERASED
 #   define T short
-#   define TypeName Short
-#   define ERASURE_ACTIVE
+#   define T_ short
+#   define T_IS_SHORT
+#   define ERASED_TYPE_AVAILABLE
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
 #endif
 
-#ifdef ERASE_INT
+#if (defined(ERASE_INT) || defined(ERASE_ALL))
 # ifndef INT_IS_ERASED
 # define INT_IS_ERASED
 #   define T int
-#   define TypeName Int
-#   define ERASURE_ACTIVE
+#   define T_ int
+#   define T_IS_INT
+#   define ERASED_TYPE_AVAILABLE
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
 #endif
 
-#ifdef ERASE_LONG
+#if (defined(ERASE_LONG) || defined(ERASE_ALL))
 # ifndef LONG_IS_ERASED
 # define LONG_IS_ERASED
 #   define T long
-#   define TypeName Long
-#   define ERASURE_ACTIVE
+#   define T_ long
+#   define T_IS_LONG
+#   define ERASED_TYPE_AVAILABLE
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
 #endif
 
-#ifdef ERASE_FLOAT
+#if (defined(ERASE_FLOAT) || defined(ERASE_ALL))
 # ifndef FLOAT_IS_ERASED
 # define FLOAT_IS_ERASED
 #   define T float
-#   define TypeName Float
-#   define ERASURE_ACTIVE
+#   define T_ float
+#   define T_IS_FLOAT
+#   define ERASED_TYPE_AVAILABLE
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
 #endif
 
-#ifdef ERASE_DOUBLE
+#if (defined(ERASE_DOUBLE) || defined(ERASE_ALL))
 # ifndef DOUBLE_IS_ERASED
 # define DOUBLE_IS_ERASED
 #   define T double
-#   define TypeName Double
-#   define ERASURE_ACTIVE
+#   define T_ double
+#   define T_IS_DOUBLE
+#   define ERASED_TYPE_AVAILABLE
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
 #endif
 
 #undef T
-#undef TypeName
+#undef T_
 
-#undef AIAErase_
+#undef T_IS_UCHAR
+#undef T_IS_CHAR
+#undef T_IS_SHORT
+#undef T_IS_LONG
+#undef T_IS_FLOAT
+#undef T_IS_DOUBLE
 
 #undef ERASE_BYTE
 #undef ERASE_CHAR
@@ -102,6 +118,7 @@
 #undef ERASE_LONG
 #undef ERASE_FLOAT
 #undef ERASE_DOUBLE
+#undef ERASE_ALL
 
 #undef BYTE_IS_ERASED
 #undef CHAR_IS_ERASED
@@ -112,6 +129,6 @@
 #undef DOUBLE_IS_ERASED
 
 #undef ERASURE_FILE
-#undef ERASURE_ACTIVE
+#undef ERASED_TYPE_AVAILABLE
 
 #endif

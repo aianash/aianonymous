@@ -21,7 +21,7 @@ set (AIANON_SRCS)
 add_curr_directory_name (AIANON_SRCS "${SOURCES}")
 
 # Add sub modules to this library
-set (SUBMODULES core util)
+set (SUBMODULES core util math)
 
 # AIANON_SRCS will be set by the subdirectories
 foreach (module ${SUBMODULES})
