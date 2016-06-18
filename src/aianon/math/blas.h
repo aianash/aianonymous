@@ -8,29 +8,134 @@
 #define USE_BLAS
 #endif
 
-// [TODO] write proper description with parameter details
-/** Swap two tensors */
+/**
+ * Function: aiablas_(T_, swap)
+ * ---------------------------
+ * Swaps two vectors x and y
+ *
+ * n    : number of elements in input vector(s)
+ * x    : vector with n elements
+ * incx : storage spaces between elements of x
+ * y    : vector with n elements
+ * incy : storage spaces between elements of y
+ */
 extern void aiablas_(T_, swap)(long n, T *x, long incx, T *y, long incy);
 
-/** Scale a tensor x <- ax */
+/**
+ * Function: aiablas_(T_, scal)
+ * ----------------------------
+ * Scales a vector by a constant
+ *
+ * n    : number of elements in given vector
+ * a    : scaling constant
+ * x    : vector with n elements
+ * incx : storage spaces between elements of y
+ */
 extern void aiablas_(T_, scal)(long n, T a, T *x, long incx);
 
-/** Copy x into y */
+/**
+ * Function: aiablas_(T_, copy)
+ * ----------------------------
+ * Copies vector x to vector y
+ *
+ * n    : number of elements in given vector
+ * x    : vector with n elements
+ * incx : storage spaces between elements of x
+ * y    : vector with n elements
+ * incy : storage spaces between elements of y
+ */
 extern void aiablas_(T_, copy)(long n, T *x, long incx, T *y, long incy);
 
-/** x <- ax + y */
+/**
+ * Function: aiablas_(T_, axpy)
+ * ----------------------------
+ * Constant times a vector plus vector
+ *   x := a * x + y
+ *
+ * n    : number of elements in given vector
+ * a    : scaling constant
+ * x    : vector with n elements
+ * incx : storage spaces between elements of x
+ * y    : vector with n elements
+ * incy : storage spaces between elements of y
+ */
 extern void aiablas_(T_, axpy)(long n, T a, T *x, long incx, T *y, long incy);
 
-/** Dot product of two tensors */
+/**
+ * Function: aiablas_(T_, dot)
+ * ---------------------------
+ * Dot product of two vectors
+ *
+ * n       : number of elements in given vector
+ * x       : vector with n elements
+ * incx    : storage spaces between elements of x
+ * y       : vector with n elements
+ * incy    : storage spaces between elements of y
+ *
+ * returns : vector of n elements
+ */
 extern T aiablas_(T_, dot)(long n, T *x, long incx, T *y, long incy);
 
-/** Matrix vector multiplication */
+/**
+ * Function: aiablas_(T_, gemv)
+ * ----------------------------
+ * Performs one of the matrix-vector operations
+ *   y := alpha * A * x + beta * y   OR   y := alpha * A ** T * x + beta * y
+ *
+ * trans :
+ * m     : number of rows in matrix a
+ * n     : number of columns in matrix a
+ * alpha : scalar alpha
+ * a     :
+ * lda   :
+ * x     :
+ * incx  :
+ * beta  :
+ * y     :
+ * incy  :
+ */
 extern void aiablas_(T_, gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, long incx, T beta, T *y, long incy);
 
-/** Performs rank 1 operation A := alpha*x*y**T + A */
+/**
+ * Function: aiablas_(T_, ger)
+ * ---------------------------
+ * Performs rank 1 operation
+ *   a := alpha * x * y**T + A
+ *
+ * m     :
+ * n     :
+ * alpha :
+ * x     :
+ * incx  :
+ * y     :
+ * incy  :
+ * a     :
+ * lda   :
+ */
 extern void aiablas_(T_, ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T *a, long lda);
 
-/** Matrix matrix multiplication */
+/**
+ * Function: aiablas_(T_, gemm)
+ * ----------------------------
+ * Performs one of the matrix-matrix operation
+ *   C := alpha * op(A) * op(B) + beta * C
+ * where  op( X ) is one of
+ *   op(X) = X   or   op(X) = X**T
+ *
+ * transa :
+ * transb :
+ * m      :
+ * n      :
+ * k      :
+ * alpha  :
+ * a      :
+ * lda    :
+ * b      :
+ * ldb    :
+ * beta   :
+ * c      :
+ * ldc    :
+ */
 extern void aiablas_(T_, gemm)(char transa, char transb, long m, long n, long k, T alpha, T *a, long lda, T *b, long ldb, T beta, T *c, long ldc);
 
 #endif
