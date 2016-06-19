@@ -12,8 +12,10 @@ endmacro(add_curr_directory_name)
 # Define the files we need to compile
 # Anything not in this list will not be compiled into aianon.
 set(SOURCES
+  util.h
   aianon.h
   storage.h
+  storage.c
   tensor.h
   tensor.c
 )
@@ -57,6 +59,9 @@ endif ()
 
 # TODO
 # synchronization primitives
+# based on compiler
+# currently defaulted to stc=c11
+ADD_DEFINITIONS(-DUSE_C11_ATOMICS=1)
 
 find_package (BLAS)
 if (BLAS_FOUND)
