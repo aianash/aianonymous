@@ -1,7 +1,7 @@
 #ifndef AIA_STORAGE_H
 
 #include <stdatomic.h>
-#include <aianon/util.h>
+#include <aianon/core/util.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -29,8 +29,8 @@ AIA_API void aiastorage__(resize)(AIAStorage_ *this, int size);
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/storage.h"
-#include <aianon/util/erasure.h>
+#define ERASURE_FILE "aianon/tensor/storage.h"
+#include <aianon/core/erasure.h>
 
 #define AIA_STORAGE_H
 #endif

@@ -1,8 +1,8 @@
 #ifndef AIA_TENSOR_H
 
 #include <stdatomic.h>
-#include <aianon/util.h>
-#include <aianon/storage.h>
+#include <aianon/core/util.h>
+#include <aianon/tensor/storage.h>
 
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
@@ -90,8 +90,8 @@ AIA_API void aiatensor__(free)(AIATensor_ *this);
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/tensor.h"
-#include <aianon/util/erasure.h>
+#define ERASURE_FILE "aianon/tensor/tensor.h"
+#include <aianon/core/erasure.h>
 
 #define AIA_TENSOR_H
 #endif

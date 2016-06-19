@@ -1,4 +1,4 @@
-#include <aianon/tensor.h>
+#include <aianon/tensor/tensor.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -258,5 +258,5 @@ static void aiatensor__(resize_)(AIATensor_ *this, int nDimension, long *size, l
 
 #endif
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/tensor.c"
-#include <aianon/util/erasure.h>
+#define ERASURE_FILE "aianon/tensor/tensor.c"
+#include <aianon/core/erasure.h>

@@ -47,8 +47,8 @@ void aialapack_(T_, ormqr)(char side, char trans, int m, int n, int k, T *a, int
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/math/lapack.h"
-#include <aianon/util/erasure.h>
+#define ERASURE_FILE "aianon/core/math/lapack.h"
+#include <aianon/core/erasure.h>
 
 
 #define AIA_LAPACK_H

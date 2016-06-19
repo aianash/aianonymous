@@ -1,12 +1,9 @@
 set (HEADERS
-    erasure.h
-    check.h
-    memory.h
+    lapack.h
 )
 
 set (SOURCES
-    memory.c
-    check.c
+    lapack.c
 )
 
 set (DIR_SRCS)

@@ -1,4 +1,4 @@
-#include <aianon/storage.h>
+#include <aianon/tensor/storage.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -46,5 +46,5 @@ void aiastorage__(free)(AIAStorage_ *this) {
 
 #endif
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/storage.c"
-#include <aianon/util/erasure.h>
+#define ERASURE_FILE "aianon/tensor/storage.c"
+#include <aianon/core/erasure.h>
