@@ -1,14 +1,16 @@
-#ifdef ERASED_TYPE_AVAILABLE
+// #include <aianon/util.h>
+
+#ifdef ERASED_TYPE_PRESENT
 
 #undef T
 #undef T_
-#undef ERASED_TYPE_AVAILABLE
+#undef ERASED_TYPE_PRESENT
 #line 1 ERASURE_FILE
 #include ERASURE_FILE
 
 #else
 
-// [TODO] move this code...
+// // [TODO] move this code...
 #define AIA_CONCAT_5(v,w,x,y,z) AIA_CONCAT_5_EXPAND(v,w,x,y,z)
 #define AIA_CONCAT_5_EXPAND(v,w,x,y,z) v ## w ## x ## y ## z
 
@@ -29,7 +31,7 @@
 #   define T unsigned char
 #   define T_ uchar
 #   define T_IS_UCHAR
-#   define ERASED_TYPE_AVAILABLE
+#   define ERASED_TYPE_PRESENT
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
@@ -41,7 +43,7 @@
 #   define T char
 #   define T_ char
 #   define T_IS_CHAR
-#   define ERASED_TYPE_AVAILABLE
+#   define ERASED_TYPE_PRESENT
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
@@ -53,7 +55,7 @@
 #   define T short
 #   define T_ short
 #   define T_IS_SHORT
-#   define ERASED_TYPE_AVAILABLE
+#   define ERASED_TYPE_PRESENT
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
@@ -65,7 +67,7 @@
 #   define T int
 #   define T_ int
 #   define T_IS_INT
-#   define ERASED_TYPE_AVAILABLE
+#   define ERASED_TYPE_PRESENT
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
@@ -77,7 +79,7 @@
 #   define T long
 #   define T_ long
 #   define T_IS_LONG
-#   define ERASED_TYPE_AVAILABLE
+#   define ERASED_TYPE_PRESENT
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
@@ -89,7 +91,7 @@
 #   define T float
 #   define T_ float
 #   define T_IS_FLOAT
-#   define ERASED_TYPE_AVAILABLE
+#   define ERASED_TYPE_PRESENT
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
@@ -101,7 +103,7 @@
 #   define T double
 #   define T_ double
 #   define T_IS_DOUBLE
-#   define ERASED_TYPE_AVAILABLE
+#   define ERASED_TYPE_PRESENT
 #   line 1 ERASURE_FILE
 #   include ERASURE_FILE
 # endif
@@ -135,6 +137,6 @@
 #undef DOUBLE_IS_ERASED
 
 #undef ERASURE_FILE
-#undef ERASED_TYPE_AVAILABLE
+#undef ERASED_TYPE_PRESENT
 
 #endif

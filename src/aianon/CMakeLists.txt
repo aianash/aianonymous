@@ -13,16 +13,13 @@ endmacro(add_curr_directory_name)
 # Anything not in this list will not be compiled into aianon.
 set(SOURCES
   aianon.h
-  storage.h
-  tensor.h
-  tensor.c
 )
 
 set (AIANON_SRCS)
 add_curr_directory_name (AIANON_SRCS "${SOURCES}")
 
 # Add sub modules to this library
-set (SUBMODULES core util math)
+set (SUBMODULES core tensor)
 
 # AIANON_SRCS will be set by the subdirectories
 foreach (module ${SUBMODULES})
@@ -57,6 +54,9 @@ endif ()
 
 # TODO
 # synchronization primitives
+# based on compiler
+# currently defaulted to stc=c11
+ADD_DEFINITIONS(-DUSE_C11_ATOMICS=1)
 
 find_package (BLAS)
 if (BLAS_FOUND)
