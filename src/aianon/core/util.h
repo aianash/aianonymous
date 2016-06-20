@@ -1,5 +1,5 @@
-#ifndef AIA_UTIL_H
-#define AIA_UTIL_H
+#ifndef AIA_CORE_UTIL_H
+#define AIA_CORE_UTIL_H
 
 #include <stdlib.h>
 #include <stdio.h>

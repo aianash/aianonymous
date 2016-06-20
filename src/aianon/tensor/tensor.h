@@ -17,15 +17,14 @@ typedef struct TensorShape {
 { .nDimension=(nDimension_), .size=(size_), .stride=(stride_) }
 
 #define RAW_TENSOR_INIT(this, refcount_, storage_, offset_, size_, stride_, nDimension_) \
-{                                                                                 \
-  this->refcount = refcount_;                                                     \
-  this->storage = storage_;                                                       \
-  this->storageOffset = offset_;                                                  \
-  this->size = size_;                                                             \
-  this->stride = stride_;                                                         \
-  this->nDimension = nDimension_;                                                 \
+{                                                                                        \
+  this->refcount = refcount_;                                                            \
+  this->storage = storage_;                                                              \
+  this->storageOffset = offset_;                                                         \
+  this->size = size_;                                                                    \
+  this->stride = stride_;                                                                \
+  this->nDimension = nDimension_;                                                        \
 }
-
 
 #endif
 

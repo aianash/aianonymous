@@ -42,12 +42,8 @@ extern void dormqr_(char *side, char *trans, int *m, int *n, int *k, double *a, 
 extern void spstrf_(char *uplo, int *n, float *a, int *lda, int *piv, int *rank, float *tol, float *work, int *info);
 extern void dpstrf_(char *uplo, int *n, double *a, int *lda, int *piv, int *rank, double *tol, double *work, int *info);
 
-// [TODO] move code
-#define AIA_CONCAT_2(x, y) AIA_CONCAT_2_EXPAND(x, y)
-#define AIA_CONCAT_2_EXPAND(x, y) x ## y
-
 /* Compute the solution to a real system of linear equations  A * X = B */
-void aialapack_(T_, gesv)(int n, int nrhs, T *a, int lda, int *ipiv, T *b, int ldb, int* info) {
+void aialapack__(gesv)(int n, int nrhs, T *a, int lda, int *ipiv, T *b, int ldb, int* info) {
 #ifdef USE_LAPACK
   ds_(gesv_)(&n, &nrhs, a, &lda, ipiv, b, &ldb, info);
 #else
@@ -57,7 +53,7 @@ void aialapack_(T_, gesv)(int n, int nrhs, T *a, int lda, int *ipiv, T *b, int l
 }
 
 /* Solve a triangular system of the form A * X = B  or A^T * X = B */
-void aialapack_(T_, trtrs)(char uplo, char trans, char diag, int n, int nrhs, T *a, int lda, T *b, int ldb, int* info) {
+void aialapack__(trtrs)(char uplo, char trans, char diag, int n, int nrhs, T *a, int lda, T *b, int ldb, int* info) {
 #ifdef USE_LAPACK
   ds_(trtrs_)(&uplo, &trans, &diag, &n, &nrhs, a, &lda, b, &ldb, info);
 #else
@@ -68,7 +64,7 @@ void aialapack_(T_, trtrs)(char uplo, char trans, char diag, int n, int nrhs, T 
 
 /* Solve overdetermined or underdetermined real linear systems involving an
 M-by-N matrix A, or its transpose, using a QR or LQ factorization of A */
-void aialapack_(T_, gels)(char trans, int m, int n, int nrhs, T *a, int lda, T *b, int ldb, T *work, int lwork, int *info) {
+void aialapack__(gels)(char trans, int m, int n, int nrhs, T *a, int lda, T *b, int ldb, T *work, int lwork, int *info) {
 #ifdef USE_LAPACK
   ds_(gels_)(&trans, &m, &n, &nrhs, a, &lda, b, &ldb, work, &lwork, info);
 #else
@@ -78,7 +74,7 @@ void aialapack_(T_, gels)(char trans, int m, int n, int nrhs, T *a, int lda, T *
 
 /* Compute all eigenvalues and, optionally, eigenvectors of a real symmetric
 matrix A */
-void aialapack_(T_, syev)(char jobz, char uplo, int n, T *a, int lda, T *w, T *work, int lwork, int *info) {
+void aialapack__(syev)(char jobz, char uplo, int n, T *a, int lda, T *w, T *work, int lwork, int *info) {
 #ifdef USE_LAPACK
   ds_(syev_)(&jobz, &uplo, &n, a, &lda, w, work, &lwork, info);
 #else
@@ -88,7 +84,7 @@ void aialapack_(T_, syev)(char jobz, char uplo, int n, T *a, int lda, T *w, T *w
 
 /* Compute for an N-by-N real nonsymmetric matrix A, the eigenvalues and,
 optionally, the left and/or right eigenvectors */
-void aialapack_(T_, geev)(char jobvl, char jobvr, int n, T *a, int lda, T *wr, T *wi, T *vl, int ldvl, T *vr, int ldvr, T *work, int lwork, int *info) {
+void aialapack__(geev)(char jobvl, char jobvr, int n, T *a, int lda, T *wr, T *wi, T *vl, int ldvl, T *vr, int ldvr, T *work, int lwork, int *info) {
 #ifdef USE_LAPACK
   ds_(geev_)(&jobvl, &jobvr, &n, a, &lda, wr, wi, vl, &ldvl, vr, &ldvr, work, &lwork, info);
 #else
@@ -98,7 +94,7 @@ void aialapack_(T_, geev)(char jobvl, char jobvr, int n, T *a, int lda, T *wr, T
 
 /* Compute the singular value decomposition (SVD) of a real M-by-N matrix A,
 optionally computing the left and/or right singular vectors */
-void aialapack_(T_, gesvd)(char jobu, char jobvt, int m, int n, T *a, int lda, T *s, T *u, int ldu, T *vt, int ldvt, T *work, int lwork, int *info) {
+void aialapack__(gesvd)(char jobu, char jobvt, int m, int n, T *a, int lda, T *s, T *u, int ldu, T *vt, int ldvt, T *work, int lwork, int *info) {
 #ifdef USE_LAPACK
   ds_(gesvd_)( &jobu,  &jobvt,  &m,  &n,  a,  &lda,  s,  u,  &ldu,  vt,  &ldvt,  work,  &lwork,  info);
 #else
@@ -107,7 +103,7 @@ void aialapack_(T_, gesvd)(char jobu, char jobvt, int m, int n, T *a, int lda, T
 }
 
 /* LU decomposition */
-void aialapack_(T_, getrf)(int m, int n, T *a, int lda, int *ipiv, int *info) {
+void aialapack__(getrf)(int m, int n, T *a, int lda, int *ipiv, int *info) {
 #ifdef USE_LAPACK
   ds_(getrf_)(&m, &n, a, &lda, ipiv, info);
 #else
@@ -115,7 +111,7 @@ void aialapack_(T_, getrf)(int m, int n, T *a, int lda, int *ipiv, int *info) {
 #endif
 }
 /* Matrix Inverse */
-void aialapack_(T_, getri)(int n, T *a, int lda, int *ipiv, T *work, int lwork, int* info) {
+void aialapack__(getri)(int n, T *a, int lda, int *ipiv, T *work, int lwork, int* info) {
 #ifdef USE_LAPACK
   ds_(getri_)(&n, a, &lda, ipiv, work, &lwork, info);
 #else
@@ -124,7 +120,7 @@ void aialapack_(T_, getri)(int n, T *a, int lda, int *ipiv, T *work, int lwork, 
 }
 
 /* Cholesky factorization */
-void aialapack_(T_, potrf)(char uplo, int n, T *a, int lda, int *info) {
+void aialapack__(potrf)(char uplo, int n, T *a, int lda, int *info) {
 #ifdef USE_LAPACK
   ds_(potrf_)(&uplo, &n, a, &lda, info);
 #else
@@ -133,7 +129,7 @@ void aialapack_(T_, potrf)(char uplo, int n, T *a, int lda, int *info) {
 }
 
 /* Solve A*X = B with a symmetric positive definite matrix A using the Cholesky factorization */
-void aialapack_(T_, potrs)(char uplo, int n, int nrhs, T *a, int lda, T *b, int ldb, int *info) {
+void aialapack__(potrs)(char uplo, int n, int nrhs, T *a, int lda, T *b, int ldb, int *info) {
 #ifdef USE_LAPACK
   ds_(potrs_)(&uplo, &n, &nrhs, a, &lda, b, &ldb, info);
 #else
@@ -142,7 +138,7 @@ void aialapack_(T_, potrs)(char uplo, int n, int nrhs, T *a, int lda, T *b, int 
 }
 
 /* Cholesky factorization based Matrix Inverse */
-void aialapack_(T_, potri)(char uplo, int n, T *a, int lda, int *info) {
+void aialapack__(potri)(char uplo, int n, T *a, int lda, int *info) {
 #ifdef USE_LAPACK
   ds_(potri_)(&uplo, &n, a, &lda, info);
 #else
@@ -151,7 +147,7 @@ void aialapack_(T_, potri)(char uplo, int n, T *a, int lda, int *info) {
 }
 
 /* Cholesky factorization with complete pivoting */
-void aialapack_(T_, pstrf)(char uplo, int n, T *a, int lda, int *piv, int *rank, T tol, T *work, int *info) {
+void aialapack__(pstrf)(char uplo, int n, T *a, int lda, int *piv, int *rank, T tol, T *work, int *info) {
 #ifdef USE_LAPACK
   ds_(pstrf_)(&uplo, &n, a, &lda, piv, rank, &tol, work, info);
 #else
@@ -160,7 +156,7 @@ void aialapack_(T_, pstrf)(char uplo, int n, T *a, int lda, int *piv, int *rank,
 }
 
 /* QR decomposition */
-void aialapack_(T_, geqrf)(int m, int n, T *a, int lda, T *tau, T *work, int lwork, int *info) {
+void aialapack__(geqrf)(int m, int n, T *a, int lda, T *tau, T *work, int lwork, int *info) {
 #ifdef USE_LAPACK
   ds_(geqrf_)(&m, &n, a, &lda, tau, work, &lwork, info);
 #else
@@ -169,7 +165,7 @@ void aialapack_(T_, geqrf)(int m, int n, T *a, int lda, T *tau, T *work, int lwo
 }
 
 /* Build Q from output of geqrf */
-void aialapack_(T_, orgqr)(int m, int n, int k, T *a, int lda, T *tau, T *work, int lwork, int *info) {
+void aialapack__(orgqr)(int m, int n, int k, T *a, int lda, T *tau, T *work, int lwork, int *info) {
 #ifdef USE_LAPACK
   ds_(orgqr_)(&m, &n, &k, a, &lda, tau, work, &lwork, info);
 #else
@@ -178,7 +174,7 @@ void aialapack_(T_, orgqr)(int m, int n, int k, T *a, int lda, T *tau, T *work, 
 }
 
 /* Multiply Q with a matrix using the output of geqrf */
-void aialapack_(T_, ormqr)(char side, char trans, int m, int n, int k, T *a, int lda, T *tau, T *c, int ldc, T *work, int lwork, int *info) {
+void aialapack__(ormqr)(char side, char trans, int m, int n, int k, T *a, int lda, T *tau, T *c, int ldc, T *work, int lwork, int *info) {
 #ifdef USE_LAPACK
   ds_(ormqr_)(&side, &trans, &m, &n, &k, a, &lda, tau, c, &ldc, work, &lwork, info);
 #else

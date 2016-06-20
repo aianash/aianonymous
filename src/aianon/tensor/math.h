@@ -5,14 +5,6 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
-// [TODO] REMOVE
-void aiablas__(gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, long incx, T beta, T *y, long incy) {}
-void aiablas__(ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T *a, long lda) {}
-/* Level 3 */
-void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T alpha, T *a, long lda, T *b, long ldb, T beta, T *c, long ldc) {}
-
-void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value) {}
-
 // res = (beta * bvec) + (alpha * (mat * vec))
 void aiatensor__(addmv)(AIATensor_ *res, T beta, AIATensor_ *bvec, T alpha, AIATensor_ *mat, AIATensor_ *vec);
 
@@ -21,6 +13,16 @@ void aiatensor__(addmm)(AIATensor_ *res, T beta, AIATensor_ *bmat, T alpha, AIAT
 
 // res = (beta * bmat) + (alpha * vec1 x vec2)
 void aiatensor__(addr)(AIATensor_ *res, T beta, AIATensor_ *bmat, T alpha, AIATensor_ *vec1, AIATensor_ *vec2);
+
+
+
+// [TODO] REMOVE
+void aiablas__(gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, long incx, T beta, T *y, long incy) {}
+void aiablas__(ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T *a, long lda) {}
+/* Level 3 */
+void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T alpha, T *a, long lda, T *b, long ldb, T beta, T *c, long ldc) {}
+
+void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value) {}
 
 #endif
 
