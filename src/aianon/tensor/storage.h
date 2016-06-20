@@ -1,4 +1,4 @@
-#ifndef AIA_STORAGE_H
+#ifndef AIA_TENSOR_STORAGE_H
 
 #include <stdatomic.h>
 #include <aianon/core/util.h>
@@ -32,5 +32,5 @@ AIA_API void aiastorage__(resize)(AIAStorage_ *this, int size);
 #define ERASURE_FILE "aianon/tensor/storage.h"
 #include <aianon/core/erasure.h>
 
-#define AIA_STORAGE_H
+#define AIA_TENSOR_STORAGE_H
 #endif

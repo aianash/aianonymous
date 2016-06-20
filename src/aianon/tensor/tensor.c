@@ -183,7 +183,7 @@ void aiatensor__(retain)(AIATensor(T_) *this) {
 }
 
 //
-void aiatensor__(free)(AIATensor(T_) *this) {
+void aiatensor__(free)(AIATensor_ *this) {
   if(!this) return;
 
   if(atomic_fetch_add(&this->refcount, -1)) {
@@ -194,6 +194,8 @@ void aiatensor__(free)(AIATensor(T_) *this) {
   }
 }
 
+//
+void aiatensor__(freeCopyTo)(AIATensor_ *this, AIATensor_ *to) {}
 
 /** -- Private Helper Functions **/
 

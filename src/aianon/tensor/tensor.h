@@ -73,9 +73,9 @@ AIA_API int aiatensor__(isContiguous)(const AIATensor_ *this);
 AIA_API int aiatensor__(isSameSizeAs)(const AIATensor_ *this, const AIATensor_ *other);
 AIA_API int aiatensor__(nElement)(const AIATensor_ *this);
 
-
 AIA_API void aiatensor__(retain)(AIATensor_ *this);
 AIA_API void aiatensor__(free)(AIATensor_ *this);
+AIA_API void aiatensor__(freeCopyTo)(AIATensor_ *this, AIATensor_ *to);
 
 #endif
 

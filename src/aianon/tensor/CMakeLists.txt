@@ -1,11 +1,13 @@
 set (HEADERS
     storage.h
     tensor.h
+    math.h
 )
 
 set (SOURCES
     storage.c
     tensor.c
+    math.c
 )
 
 set (DIR_SRCS)
