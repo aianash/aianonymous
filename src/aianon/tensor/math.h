@@ -18,7 +18,6 @@ AIA_API void aiatensor__(cdiv)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *d
 AIA_API void aiatensor__(cfmod)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
 AIA_API void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
 
-
 // res = (beta * bvec) + (alpha * (mat * vec))
 void aiatensor__(addmv)(AIATensor_ *res, T beta, AIATensor_ *bvec, T alpha, AIATensor_ *mat, AIATensor_ *vec);
 
@@ -33,11 +32,6 @@ AIA_API void aiatensor__(baddbmm)(AIATensor_ *res, T beta, AIATensor_ *batch3, T
 
 void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value) {}
 
-#endif
-
-// [TODO] REMOVE
-#ifndef aiablas__
-#define aiablas__(name) AIA_FN_ERASE_(blas, T_, name)
 #endif
 
 #define ERASE_FLOAT
