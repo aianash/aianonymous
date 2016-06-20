@@ -144,6 +144,8 @@ AIA_API void aiablas_(T_, gemm)(char transa, char transb, long m, long n, long k
 
 #ifndef aiablas_
 #define aiablas_(type, name) AIA_FN_ERASE_(blas, type, name)
+
+#define aiablas__(name) aiablas_(T_, name)
 #endif
 
 #define ERASE_FLOAT

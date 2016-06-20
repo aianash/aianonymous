@@ -3,12 +3,15 @@ set (HEADERS
     tensor.h
     math.h
     dimapply.h
+    apply.h
+    linalg.h
 )
 
 set (SOURCES
     storage.c
     tensor.c
     math.c
+    linalg.c
 )
 
 set (DIR_SRCS)

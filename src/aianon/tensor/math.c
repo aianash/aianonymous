@@ -169,10 +169,11 @@ void aiatensor__(addmm)(AIATensor_ *res, T beta, AIATensor_ *bmat, T alpha, AIAT
     SWAP(AIATensor_ *, mat1, mat2);
   } else {
     trans_res = 'n';
-    AIATensor_ *resT = aiatensor__(newTransposed)(res, 0, 1);
+    AIATensor_ *resT = aiatensor__(new)(res);
+    aiatensor__(transpose)(resT, NULL, 0, 1);
     res_ = aiatensor__(clone)(resT);
     aiatensor__(free)(resT);
-    aiatensor__(transpose)(res_, 0, 1);
+    aiatensor__(transpose)(res_, NULL, 0, 1);
   }
 
   if(mat1->stride[(trans_res == 'n' ? 0 : 1)] == 1) {
