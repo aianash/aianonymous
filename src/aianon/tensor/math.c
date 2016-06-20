@@ -21,7 +21,7 @@ void aiatensor__(cadd)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *
       }
     }
   } else {
-    AIA_TENSOR_APPLY3(T, res, T, tnsr1, T, tnsr2, *res_data = *tnsr1_data + value * *tnsr2_data);
+    AIA_TENSOR_APPLY3(T, res, T, tnsr1, T, tnsr2, *res_data = *tnsr1_data + value * *tnsr2_data;);
   }
 }
 
@@ -44,7 +44,7 @@ void aiatensor__(cmul)(AIATensor_ *res, AIATensor_ *tnsr1, AIATensor_ *tnsr2) {
       dres[i] = dtnsr1[i] * dtnsr2[i];
     }
   } else {
-    AIA_TENSOR_APPLY3(T, res, T, tnsr1, T, tnsr2, *res_data = *tnsr1_data * *tnsr2_data);
+    AIA_TENSOR_APPLY3(T, res, T, tnsr1, T, tnsr2, *res_data = *tnsr1_data * *tnsr2_data;);
   }
 }
 
@@ -62,7 +62,7 @@ void aiatensor__(cpow)(AIATensor_ *res, AIATensor_ *base, AIATensor_ *exp) {
       dres[i] = pow(dbase[i], dexp[i]);
     }
   } else {
-    AIA_TENSOR_APPLY3(T, res, T, base, T, exp, *res_data = pow(*base_data, *exp_data));
+    AIA_TENSOR_APPLY3(T, res, T, base, T, exp, *res_data = pow(*base_data, *exp_data););
   }
 }
 
@@ -80,7 +80,7 @@ void aiatensor__(cdiv)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom) {
       dres[i] = dnumer[i] / ddenom[i];
     }
   } else {
-    AIA_TENSOR_APPLY3(T, res, T, numer, T, denom, *res_data = *numer_data / *denom_data);
+    AIA_TENSOR_APPLY3(T, res, T, numer, T, denom, *res_data = *numer_data / *denom_data;);
   }
 }
 
@@ -98,7 +98,7 @@ void aiatensor__(cfmod)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom) {
       dres[i] = fmod(dnumer[i], ddenom[i]);
     }
   } else {
-    AIA_TENSOR_APPLY3(T, res, T, numer, T, denom, *res_data = fmod(*numer_data, *denom_data));
+    AIA_TENSOR_APPLY3(T, res, T, numer, T, denom, *res_data = fmod(*numer_data, *denom_data););
   }
 }
 
@@ -116,7 +116,7 @@ void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *den
       dres[i] = (ddenom[i] == 0) ? NAN : dnumer[i] - (ddenom[i] * floor(dnumer[i] / ddenom[i]));
     }
   } else {
-    AIA_TENSOR_APPLY3(T, res, T, numer, T, denom, *res_data = (*denom_data == 0) ? NAN : *numer_data - (*denom_data * floor(*numer_data / *denom_data)));
+    AIA_TENSOR_APPLY3(T, res, T, numer, T, denom, *res_data = (*denom_data == 0) ? NAN : *numer_data - (*denom_data * floor(*numer_data / *denom_data)););
   }
 }
 
