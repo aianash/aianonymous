@@ -93,6 +93,8 @@ void aiatensor__(resizeAs)(AIATensor_ *this, AIATensor_ *other) {
     aiatensor__(resize_)(this, other->nDimension, other->size, NULL);
 }
 
+void aiatensor__(select)(AIATensor_ *this, AIATensor_ *from, int dim, long sliceIndex) {}
+
 //
 void aiatensor__(replace)(AIATensor_ *this, AIATensor_ *other) {
   if(this->storage != other->storage) {

@@ -2,6 +2,7 @@ set (HEADERS
     storage.h
     tensor.h
     math.h
+    dimapply.h
 )
 
 set (SOURCES
