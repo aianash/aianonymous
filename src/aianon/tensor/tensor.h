@@ -61,6 +61,8 @@ AIA_API AIATensor_ *aiatensor__(newTransposed)(AIATensor_ *this, int dim1_, int 
 AIA_API void aiatensor__(resize)(AIATensor_ *this, TensorShape shape);
 AIA_API void aiatensor__(resizeAs)(AIATensor_ *this, AIATensor_ *other);
 
+AIA_API void aiatensor__(select)(AIATensor_ *this, AIATensor_ *from, int dim, long sliceIndex);
+
 AIA_API void aiatensor__(replace)(AIATensor_ *this, AIATensor_ *other);
 
 // AIA_API void aiatensor__(set)(AIATensor_ *this, AIATensor_ src);

@@ -1,7 +1,9 @@
-#include <limits.h>
-
 #ifndef AIA_BLAS_H
-#ifdef ERASED_TYPE_AVAILABLE
+
+#include <limits.h>
+#include <aianon/core/util.h>
+
+#ifdef ERASED_TYPE_PRESENT
 
 // [TODO] using CMAKE
 #ifndef USE_BLAS
@@ -19,7 +21,7 @@
  * y    : vector with n elements
  * incy : storage spaces between elements of y
  */
-extern void aiablas_(T_, swap)(long n, T *x, long incx, T *y, long incy);
+AIA_API void aiablas_(T_, swap)(long n, T *x, long incx, T *y, long incy);
 
 /**
  * Function: aiablas_(T_, scal)
@@ -31,7 +33,7 @@ extern void aiablas_(T_, swap)(long n, T *x, long incx, T *y, long incy);
  * x    : vector with n elements
  * incx : storage spaces between elements of y
  */
-extern void aiablas_(T_, scal)(long n, T a, T *x, long incx);
+AIA_API void aiablas_(T_, scal)(long n, T a, T *x, long incx);
 
 /**
  * Function: aiablas_(T_, copy)
@@ -44,7 +46,7 @@ extern void aiablas_(T_, scal)(long n, T a, T *x, long incx);
  * y    : vector with n elements
  * incy : storage spaces between elements of y
  */
-extern void aiablas_(T_, copy)(long n, T *x, long incx, T *y, long incy);
+AIA_API void aiablas_(T_, copy)(long n, T *x, long incx, T *y, long incy);
 
 /**
  * Function: aiablas_(T_, axpy)
@@ -59,7 +61,7 @@ extern void aiablas_(T_, copy)(long n, T *x, long incx, T *y, long incy);
  * y    : vector with n elements
  * incy : storage spaces between elements of y
  */
-extern void aiablas_(T_, axpy)(long n, T a, T *x, long incx, T *y, long incy);
+AIA_API void aiablas_(T_, axpy)(long n, T a, T *x, long incx, T *y, long incy);
 
 /**
  * Function: aiablas_(T_, dot)
@@ -74,7 +76,7 @@ extern void aiablas_(T_, axpy)(long n, T a, T *x, long incx, T *y, long incy);
  *
  * returns : vector of n elements
  */
-extern T aiablas_(T_, dot)(long n, T *x, long incx, T *y, long incy);
+AIA_API T aiablas_(T_, dot)(long n, T *x, long incx, T *y, long incy);
 
 /**
  * Function: aiablas_(T_, gemv)
@@ -94,7 +96,7 @@ extern T aiablas_(T_, dot)(long n, T *x, long incx, T *y, long incy);
  * y     :
  * incy  :
  */
-extern void aiablas_(T_, gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, long incx, T beta, T *y, long incy);
+AIA_API void aiablas_(T_, gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, long incx, T beta, T *y, long incy);
 
 /**
  * Function: aiablas_(T_, ger)
@@ -112,7 +114,7 @@ extern void aiablas_(T_, gemv)(char trans, long m, long n, T alpha, T *a, long l
  * a     :
  * lda   :
  */
-extern void aiablas_(T_, ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T *a, long lda);
+AIA_API void aiablas_(T_, ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T *a, long lda);
 
 /**
  * Function: aiablas_(T_, gemm)
@@ -136,7 +138,7 @@ extern void aiablas_(T_, ger)(long m, long n, T alpha, T *x, long incx, T *y, lo
  * c      :
  * ldc    :
  */
-extern void aiablas_(T_, gemm)(char transa, char transb, long m, long n, long k, T alpha, T *a, long lda, T *b, long ldb, T beta, T *c, long ldc);
+AIA_API void aiablas_(T_, gemm)(char transa, char transb, long m, long n, long k, T alpha, T *a, long lda, T *b, long ldb, T beta, T *c, long ldc);
 
 #endif
 
@@ -145,9 +147,8 @@ extern void aiablas_(T_, gemm)(char transa, char transb, long m, long n, long k,
 #endif
 
 #define ERASE_FLOAT
-#define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/math/blas.h"
-#include <aianon/util/erasure.h>
+#define ERASURE_FILE "aianon/core/math/blas.h"
+#include <aianon/core/erasure.h>
 
 
 #define AIA_BLAS_H

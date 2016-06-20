@@ -1,6 +1,6 @@
-#include <aianon/math/blas.h>
+#include <aianon/core/math/blas.h>
 
-#ifdef ERASED_TYPE_AVAILABLE
+#ifdef ERASED_TYPE_PRESENT
 
 #undef DS_
 #ifdef T_IS_DOUBLE
@@ -28,9 +28,6 @@ extern void sger_(int *m, int *n, float *alpha, float *x, int *incx, float *y, i
 extern void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
 extern void sgemm_(char *transa, char *transb, int *m, int *n, int *k, float *alpha, float *a, int *lda, float *b, int *ldb, float *beta, float *c, int *ldc);
 
-// [TODO] move code
-#define AIA_CONCAT_2(x, y) AIA_CONCAT_2_EXPAND(x, y)
-#define AIA_CONCAT_2_EXPAND(x, y) x ## y
 
 void aiablas_(T_, swap)(long n, T *x, long incx, T *y, long incy) {
   if(n == 1) {
@@ -197,6 +194,5 @@ void aiablas_(T_, gemm)(char transa, char transb, long m, long n, long k, T alph
 
 #endif
 #define ERASE_FLOAT
-#define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/math/blas.c"
-#include <aianon/util/erasure.h>
+#define ERASURE_FILE "aianon/core/math/blas.c"
+#include <aianon/core/erasure.h>

@@ -1,9 +1,12 @@
 set (HEADERS
     lapack.h
+    blas.h
+
 )
 
 set (SOURCES
     lapack.c
+    blas.c
 )
 
 set (DIR_SRCS)
