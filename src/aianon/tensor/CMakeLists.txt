@@ -3,6 +3,7 @@ set (HEADERS
     tensor.h
     math.h
     dimapply.h
+    apply.h
 )
 
 set (SOURCES

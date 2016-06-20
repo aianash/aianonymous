@@ -50,14 +50,16 @@ AIATensor_ *aiatensor__(empty)(void) {
 }
 
 //
-AIATensor_ *aiatensor__(newFromTensor)(AIATensor_ *other) {
+AIATensor_ *aiatensor__(new)(AIATensor_ *other) {
   AIATensor_ *this = malloc(sizeof(AIATensor_));
   RAW_TENSOR_INIT(this, 1, other->storage, other->storageOffset, other->size, other->stride, other->nDimension);
   return this;
 }
 
-// [TODO]
-void aiatensor__(copy)(AIATensor_ *tensor, AIATensor_ *src) {}
+//
+void aiatensor__(copy)(AIATensor_ *to, AIATensor_ *from) {
+  AIA_TENSOR_APPLY2(T, to, T, from, *to_data = (T)(*from_data);)
+}
 
 //
 AIATensor_ *aiatensor__(clone)(AIATensor_ *this) {
@@ -77,12 +79,6 @@ AIATensor_ *aiatensor__(contiguous)(AIATensor_ *this) {
 }
 
 //
-AIATensor_ *aiatensor__(newTransposed)(AIATensor_ *this, int dim1_, int dim2_) {
-  AIATensor_ *new = aiatensor__(newFromTensor)(this);
-  aiatensor__(transposeFrom)(new, this, dim1_, dim2_);
-}
-
-//
 void aiatensor__(resize)(AIATensor_ *this, TensorShape shape) {
   aiatensor__(resize_)(this, shape.nDimension, shape.size, shape.stride);
 }
@@ -93,49 +89,85 @@ void aiatensor__(resizeAs)(AIATensor_ *this, AIATensor_ *other) {
     aiatensor__(resize_)(this, other->nDimension, other->size, NULL);
 }
 
-void aiatensor__(select)(AIATensor_ *this, AIATensor_ *from, int dim, long sliceIndex) {}
-
 //
-void aiatensor__(replace)(AIATensor_ *this, AIATensor_ *other) {
-  if(this->storage != other->storage) {
+void aiatensor__(set)(AIATensor_ *this, AIATensor_ *to) {
+  if(this->storage != to->storage) {
     if(this->storage) aiastorage__(free)(this->storage);
 
-    if(other->storage) {
-      aiastorage__(retain)(other->storage);
-      this->storage = other->storage;
+    if(to->storage) {
+      aiastorage__(retain)(to->storage);
+      this->storage = to->storage;
     } else {
       this->storage = NULL;
     }
   }
 
-  this->storageOffset = other->storageOffset;
+  this->storageOffset = to->storageOffset;
 
-  aiatensor__(resize_)(this, other->nDimension, other->size, other->stride);
+  aiatensor__(resize_)(this, to->nDimension, to->size, to->stride);
 }
 
 //
-void aiatensor__(transpose)(AIATensor_ *this, int dim1_, int dim2_) {
-  aia_argcheck(WITHIN_RANGE(dim1_, 0, this->nDimension), 1, "out of range");
-  aia_argcheck(WITHIN_RANGE(dim2_, 0, this->nDimension), 2, "out of range");
+void aiatensor__(narrow)(AIATensor_ *this, AIATensor_ *from, int dim, long firstIdx, long size) {
+  if(!from) from = this;
 
-  if(dim1_ == dim2_) return;
+  aia_argcheck(WITHIN_RANGE(dim, 0, from->nDimension), 3, "out of range");
+  aia_argcheck(WITHIN_RANGE(firstIdx, 0, from->size[dim]), 4, "out of range");
+  aia_argcheck((size > 0) && (firstIdx + size <= from->size[dim]), 5, "out of range");
 
-  SWAP(long, this->stride[dim1_], this->stride[dim2_]);
-  SWAP(long, this->size[dim1_], this->stride[dim2_]);
+  aiatensor__(set)(this, from);
+
+  if(firstIdx > 0) this->storageOffset += firstIdx * this->stride[dim];
+
+  this->size[dim] = size;
 }
 
 //
-void aiatensor__(transposeFrom)(AIATensor_ *this, AIATensor_ *from, int dim1_, int dim2_) {
-  aia_argcheck(!from, 2, "From tensor cannot be null, otherwise use aiatensor_(T_, transpose)");
-  aia_argcheck(WITHIN_RANGE(dim1_, 0, from->nDimension), 1, "out of range");
-  aia_argcheck(WITHIN_RANGE(dim2_, 0, from->nDimension), 2, "out of range");
+void aiatensor__(select)(AIATensor_ *this, AIATensor_ *from, int dim, int sliceIdx) {
+  if(!from) from = this;
 
-  aiatensor__(replace)(this, from);
+  aia_argcheck(from->nDimension > 1, 1, "cannot select a vector");
+  aia_argcheck(WITHIN_RANGE(dim, 0, from->nDimension), 3, "out of range");
+  aia_argcheck(WITHIN_RANGE(sliceIdx, 0, from->size[dim]), 4, "out of range");
 
-  if(dim1_ == dim2_) return;
+  aiatensor__(set)(this, from);
+  aiatensor__(narrow)(this, NULL, dim, sliceIdx, 1);
 
-  SWAP(long, this->stride[dim1_], this->stride[dim2_]);
-  SWAP(long, this->size[dim1_], this->stride[dim2_]);
+  int d;
+  for(d = dim; d < this->nDimension - 1; d++) {
+    this->size[d] = this->size[d+1];
+    this->stride[d] = this->stride[d+1];
+  }
+  this->nDimension--;
+}
+
+//
+void aiatensor__(transpose)(AIATensor_ *this, AIATensor_ *from, int dim1, int dim2) {
+  aia_argcheck(WITHIN_RANGE(dim1, 0, from->nDimension), 3, "out of range");
+  aia_argcheck(WITHIN_RANGE(dim2, 0, from->nDimension), 4, "out of range");
+
+  if(from) aiatensor__(set)(this, from);
+
+  if(dim1 == dim2) return;
+
+  SWAP(long, this->stride[dim1], this->stride[dim2]);
+  SWAP(long, this->size[dim1], this->stride[dim2]);
+}
+
+//
+int aiatensor__(isSetTo)(const AIATensor_ *this, const AIATensor_ *that) {
+  if(!this->storage) return 0;
+  if(this->storage == that->storage &&
+     this->storageOffset == that->storageOffset &&
+     this->nDimension == that->nDimension) {
+    int d;
+    for(d = 0; d < this->nDimension; d++) {
+      if(this->size[d] != that->size[d] || this->stride[d] != that->size[d])
+        return 0;
+    }
+    return 1;
+  }
+  return 0;
 }
 
 //
@@ -197,7 +229,10 @@ void aiatensor__(free)(AIATensor_ *this) {
 }
 
 //
-void aiatensor__(freeCopyTo)(AIATensor_ *this, AIATensor_ *to) {}
+void aiatensor__(freeCopyTo)(AIATensor_ *this, AIATensor_ *to) {
+  if(this != to) aiatensor__(copy)(to, this);
+  aiatensor__(free)(this);
+}
 
 /** -- Private Helper Functions **/
 
@@ -258,7 +293,6 @@ static void aiatensor__(resize_)(AIATensor_ *this, int nDimension, long *size, l
     this->nDimension = 0;
   }
 }
-
 
 #endif
 #define ERASE_FLOAT
