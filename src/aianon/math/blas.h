@@ -50,7 +50,7 @@ extern void aiablas_(T_, copy)(long n, T *x, long incx, T *y, long incy);
  * Function: aiablas_(T_, axpy)
  * ----------------------------
  * Constant times a vector plus vector
- *   x := a * x + y
+ *   y := a * x + y
  *
  * n    : number of elements in given vector
  * a    : scaling constant
