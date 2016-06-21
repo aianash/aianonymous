@@ -1,8 +1,22 @@
 #ifndef AIA_TENSOR_LINALG_H
 
 #include <aianon/core/util.h>
-#include <aianon/core/math/blas.h>
+#include <aianon/core/math/lapack.h>
 #include <aianon/tensor/tensor.h>
+
+#ifndef NON_ERASED_BLOCK
+#define NON_ERASED_BLOCK
+
+#define aia_lapackCheckWithCleanup(fmt, cleanup, func, info, ...)     \
+if (info < 0) {                                                       \
+  cleanup                                                             \
+  aia_error("Lapack Error in %s : Illegal Argument %d", func, -info); \
+} else if(info > 0) {                                                 \
+  cleanup                                                             \
+  aia_error(fmt, func, info, ##__VA_ARGS__);                          \
+}
+
+#endif
 
 #ifdef EARASED_TYPE_PRESENT
 

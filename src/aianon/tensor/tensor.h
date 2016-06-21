@@ -60,6 +60,7 @@ AIA_API int aiatensor__(nElement)(const AIATensor_ *this);
 /** Tensor constructors **/
 AIA_API AIATensor_ *aiatensor__(empty)(void);
 AIA_API AIATensor_ *aiatensor__(new)(AIATensor_ *other);
+AIA_API AIATensor_ *aiatensor__(newVector)(int size);
 
 // AIA_API AIATensor_ *aiatensor__(newWithStorage)(AIAStorage_ *storage, long storageOffset, TensorShape shape);
 // AIA_API AIATensor_ *aiatensor__(newOfShape)(TensorShape shape);
@@ -86,6 +87,10 @@ AIA_API AIATensor_ *aiatensor__(contiguous)(AIATensor_ *this);
 
 AIA_API void aiatensor__(resize)(AIATensor_ *this, TensorShape shape);
 AIA_API void aiatensor__(resizeAs)(AIATensor_ *this, AIATensor_ *other);
+AIA_API void aiatensor__(resize1d)(AIATensor_ *this, long size0);
+AIA_API void aiatensor__(resize2d)(AIATensor_ *this, long size0, long size1);
+AIA_API void aiatensor__(resize3d)(AIATensor_ *this, long size0, long size1, long size2);
+AIA_API void aiatensor__(resize4d)(AIATensor_ *this, long size0, long size1, long size2, long size3);
 
 /** Extracting sub tensors **/
 //--------------------------//

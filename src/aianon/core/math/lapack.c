@@ -1,6 +1,6 @@
 #include <aianon/core/math/lapack.h>
 
-#ifdef ERASED_TYPE_AVAILABLE
+#ifdef ERASED_TYPE_PRESENT
 
 #undef DS_
 #ifdef T_IS_DOUBLE
@@ -184,6 +184,6 @@ void aialapack__(ormqr)(char side, char trans, int m, int n, int k, T *a, int ld
 
 
 #endif
-#define ERASE_ALL
+#define ERASE_FLOAT
 #define ERASURE_FILE "aianon/core/math/lapack.c"
 #include <aianon/core/erasure.h>

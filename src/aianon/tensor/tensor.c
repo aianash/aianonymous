@@ -57,6 +57,14 @@ AIATensor_ *aiatensor__(new)(AIATensor_ *other) {
 }
 
 //
+AIATensor_ *aiatensor__(newVector)(int size) {
+  AIATensor_ *this = aiatensor__(empty)();
+  long size_[1] = {size};
+  aiatensor__(resize_)(this, 1, size_, NULL);
+  return this;
+}
+
+//
 void aiatensor__(copy)(AIATensor_ *to, AIATensor_ *from) {
   AIA_TENSOR_APPLY2(T, to, T, from, *to_data = (T)(*from_data);)
 }
@@ -87,6 +95,27 @@ void aiatensor__(resize)(AIATensor_ *this, TensorShape shape) {
 void aiatensor__(resizeAs)(AIATensor_ *this, AIATensor_ *other) {
   if(!aiatensor__(isSameSizeAs)(this, other))
     aiatensor__(resize_)(this, other->nDimension, other->size, NULL);
+}
+
+//
+void aiatensor__(resize1d)(AIATensor_ *this, long size0) {
+  aiatensor__(resize4d)(this, size0, -1, -1, -1);
+}
+
+//
+void aiatensor__(resize2d)(AIATensor_ *this, long size0, long size1) {
+  aiatensor__(resize4d)(this, size0, size1, -1, -1);
+}
+
+//
+void aiatensor__(resize3d)(AIATensor_ *this, long size0, long size1, long size2) {
+  aiatensor__(resize4d)(this, size0, size1, size2, -1);
+}
+
+//
+void aiatensor__(resize4d)(AIATensor_ *this, long size0, long size1, long size2, long size3) {
+  long size[4] = {size0, size1, size2, size3};
+  aiatensor__(resize_)(this, 4, size, NULL);
 }
 
 //
