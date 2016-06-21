@@ -138,5 +138,6 @@
 
 #undef ERASURE_FILE
 #undef ERASED_TYPE_PRESENT
+#undef NON_ERASED_BLOCK
 
 #endif

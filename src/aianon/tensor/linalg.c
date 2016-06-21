@@ -108,9 +108,9 @@ void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo) {
   lda = n;
 
   aialapack__(potrf)(uplo[0], n, aiatensor__(data)(res_), lda, &info);
-  // aia_lapackCheckWithCleanup("Lapack Error %s : A(%d, %d) is 0, A cannot be factorized",
-  //                            aia_cleanup(aiatensor__(free)(res_);),
-  //                            "potrf", info, info);
+  aia_lapackCheckWithCleanup("Lapack Error %s : A(%d, %d) is 0, A cannot be factorized",
+                             aia_cleanup(aiatensor__(free)(res_);),
+                             "potrf", info, info);
 
   aiatensor__(clearUpLoTriangle)(res_, uplo);
   aiatensor__(freeCopyTo)(res_, res);
@@ -141,10 +141,10 @@ void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, cons
   aialapack__(syev)(jobz[0], uplo[0], n, aiatensor__(data)(resv_), lda,
                     aiatensor__(data)(rese), aiatensor__(data)(work), lwork, &info);
 
-  // aia_lapackCheckWithCleanup("Lapack Error %s : %d off-diagonal elements didn't converge to zero",
-  //                            aia_cleanup(aiatensor__(free)(resv_);
-  //                                        aiatensor__(free)(work);),
-  //                            "syev", info, "");
+  aia_lapackCheckWithCleanup("Lapack Error %s : %d off-diagonal elements didn't converge to zero",
+                             aia_cleanup(aiatensor__(free)(resv_);
+                                         aiatensor__(free)(work);),
+                             "syev", info, "");
   aiatensor__(freeCopyTo)(resv_, resv);
   aiatensor__(free)(work);
 }

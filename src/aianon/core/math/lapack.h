@@ -7,6 +7,20 @@
 #define USE_LAPACK
 #endif
 
+#ifndef NON_ERASED_BLOCK
+#define NON_ERASED_BLOCK
+
+#define aia_lapackCheckWithCleanup(fmt, cleanup, func, info, ...)     \
+if (info < 0) {                                                       \
+  cleanup                                                             \
+  aia_error("Lapack Error in %s : Illegal Argument %d", func, -info); \
+} else if(info > 0) {                                                 \
+  cleanup                                                             \
+  aia_error(fmt, func, info, ##__VA_ARGS__);                          \
+}
+
+#endif
+
 #ifdef ERASED_TYPE_PRESENT
 
 /* AX=B */
