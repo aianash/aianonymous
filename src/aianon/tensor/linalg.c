@@ -149,6 +149,85 @@ void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, cons
   aiatensor__(free)(work);
 }
 
+
+void aiatensor__(gesvd)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, AIATensor_ *mat, const char *jobu) {
+  AIATensor_ *rmat = aiatensor__(empty)();
+  aiatensor__(gesvd2)(resu, ress, resv, rmat, mat, jobu);
+  aiatensor__(free)(rmat);
+}
+
+void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, AIATensor_ *rmat, AIATensor_ *mat, const char *jobu) {
+  if(mat == NULL) mat = rmat;
+  aia_argcheck(aiatensor__(nDimension)(mat) == 2, 1, "A should be 2 dimensional");
+
+  int k, m, n, lda, ldu, ldvt, lwork, info;
+  AIATensor_ *work;
+  AIATensor_ *rvf_ = aiatensor__(empty)();
+  T wkopt;
+
+  AIATensor_ *rmat_ = NULL;
+  AIATensor_ *resu_ = NULL;
+  AIATensor_ *ress_ = NULL;
+  AIATensor_ *resv_ = NULL;
+
+  rmat_ = aiatensor__(cloneColumnMajor)(rmat, mat);
+
+  m = aiatensor__(size)(rmat_, 0);
+  n = aiatensor__(size)(rmat_, 1);
+  k = (m < n) ? m : n;
+
+  lda = m;
+  ldu = m;
+  ldvt = n;
+
+  aiatensor__(resize1d)(ress, k);
+  aiatensor__(resize2d)(rvf_, ldvt, n);
+  if(*jobu == 'A')
+    aiatensor__(resize2d)(resu, m, ldu);
+  else
+    aiatensor__(resize2d)(resu, k, ldu);
+
+  aiatensor__(checkTransposed)(resu);
+
+  resu_ = aiatensor__(newTransposedContiguous)(resu);
+  ress_ = aiatensor__(contiguous)(ress);
+  resv_ = aiatensor__(contiguous)(rvf_);
+
+  aialapack__(gesvd)(jobu[0], jobu[0], m, n, aiatensor__(data)(rmat_),
+    lda, aiatensor__(data)(ress_), aiatensor__(data)(resu_), ldu,
+    aiatensor__(data)(resv_), ldvt, &wkopt, -1, &info);
+
+  lwork = (int) wkopt;
+  work = aiatensor__(newVector)(lwork);
+
+  aialapack__(gesvd)(jobu[0], jobu[0], m, n, aiatensor__(data)(rmat_),
+    lda, aiatensor__(data)(ress_), aiatensor__(data)(resu_), ldu,
+    aiatensor__(data)(resv_), ldvt, aiatensor__(data)(work), lwork, &info);
+
+  aia_lapackCheckWithCleanup("Lapack error %s : %d superdiagonals failed to converge",
+                              aia_cleanup(
+                                aiatensor__(free)(resu_);
+                                aiatensor__(free)(ress_);
+                                aiatensor__(free)(resv_);
+                                aiatensor__(free)(rmat_);
+                                aiatensor__(free)(work);
+                              ), "gesvd", info, "");
+
+  if(*jobu == 'S') aiatensor__(narrow)(resv_, NULL, 1, 0, k);
+
+  aiatensor__(freeCopyTo)(resu_, resu);
+  aiatensor__(freeCopyTo)(ress_, ress);
+  aiatensor__(freeCopyTo)(resv_, rvf_);
+  aiatensor__(freeCopyTo)(rmat_, rmat);
+
+  if(*jobu == 'S') aiatensor__(narrow)(rvf_, NULL, 1, 0, k);
+
+  aiatensor__(resizeAs)(resv, rvf_);
+  aiatensor__(copy)(resv, rvf_);
+  aiatensor__(free)(rvf_);
+}
+
+
 #endif
 #define ERASE_FLOAT
 #define ERASURE_FILE "aianon/tensor/linalg.c"
