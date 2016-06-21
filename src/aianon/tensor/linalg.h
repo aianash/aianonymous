@@ -11,11 +11,6 @@ AIA_API void aiatensor__(gesvd)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *
 AIA_API void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, AIATensor_ *rmat, AIATensor_ *mat, const char *jobu);
 AIA_API void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, const char *jobz, const char *uplo);
 
-AIATensor_ *aiatensor__(newVector)(int lwork) {
-  return aiatensor__(empty)();
-}
-
-
 #endif
 
 #define ERASE_FLOAT
