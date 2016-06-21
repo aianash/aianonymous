@@ -23,6 +23,8 @@ do {                  \
   y = t;              \
 } while(0);
 
+#define aia_cleanup(...) __VA_ARGS__
+
 #define AIA_CONCAT_STRING_2(x,y) AIA_CONCAT_STRING_2_EXPAND(x,y)
 #define AIA_CONCAT_STRING_2_EXPAND(x,y) #x #y
 
