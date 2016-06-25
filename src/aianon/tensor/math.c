@@ -2,6 +2,113 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
+void aiatensor__(add)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
+  aiatensor__(resizeAs)(res, tnsr);
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+    aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
+    T *dres = aiatensor__(data)(res);
+    T *dtnsr = aiatensor__(data)(tnsr);
+    long sz = aiatensor__(nElement)(tnsr);
+    long i;
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i = 0; i < sz; i++) {
+      dres[i] = dtnsr[i] + value;
+    }
+  } else {
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = *tnsr_data + value;);
+  }
+}
+
+void aiatensor__(sub)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
+  aiatensor__(add)(res, tnsr, -value);
+}
+
+void aiatensor__(mul)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
+  aiatensor__(resizeAs)(res, tnsr);
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+    aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
+    T *dres = aiatensor__(data)(res);
+    T *dtnsr = aiatensor__(data)(tnsr);
+    long sz = aiatensor__(nElement)(tnsr);
+    long i;
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i = 0; i < sz; i++) {
+      dres[i] = dtnsr[i] * value;
+    }
+  } else {
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = *tnsr_data * value;);
+  }
+}
+
+void aiatensor__(div)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
+  aiatensor__(resizeAs)(res, tnsr);
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+    aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
+    T *dres = aiatensor__(data)(res);
+    T *dtnsr = aiatensor__(data)(tnsr);
+    long sz = aiatensor__(nElement)(tnsr);
+    long i;
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i = 0; i < sz; i++) {
+      dres[i] = dtnsr[i] / value;
+    }
+  } else {
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = *tnsr_data / value;);
+  }
+}
+
+void aiatensor__(fmod)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
+  aiatensor__(resizeAs)(res, tnsr);
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+    aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
+    T *dres = aiatensor__(data)(res);
+    T *dtnsr = aiatensor__(data)(tnsr);
+    long sz = aiatensor__(nElement)(tnsr);
+    long i;
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i = 0; i < sz; i++) {
+      dres[i] = fmod(dtnsr[i], value);
+    }
+  } else {
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = fmod(*tnsr_data, value););
+  }
+}
+
+void aiatensor__(remainder)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
+  aiatensor__(resizeAs)(res, tnsr);
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+    aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
+    T *dres = aiatensor__(data)(res);
+    T *dtnsr = aiatensor__(data)(tnsr);
+    long sz = aiatensor__(nElement)(tnsr);
+    long i;
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i = 0; i < sz; i++) {
+      dres[i] = (value == 0) ? NAN : dtnsr[i] - value * floor(dtnsr[i] / value);
+    }
+  } else {
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = (value == 0) ? NAN : 
+      *tnsr_data - value * (*tnsr_data / value););
+  }
+}
+
+void aiatensor__(clamp)(AIATensor_ *res, AIATensor_ *tnsr, T minValue, T maxValue) {
+  aiatensor__(resizeAs)(res, tnsr);
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+    aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
+    T *dres = aiatensor__(data)(res);
+    T *dtnsr = aiatensor__(data)(tnsr);
+    long sz = aiatensor__(nElement)(tnsr);
+    long i;
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i = 0; i < sz; i++) {
+      dres[i] = (dtnsr[i] < minValue) ? minValue : (dtnsr[i] > maxValue ? maxValue : dtnsr[i]);
+    }
+  } else {
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = (*tnsr_data < minValue) ? minValue : 
+      (*tnsr_data > maxValue ? maxValue : *tnsr_data););
+  }
+}
 
 /** res := tnsr1 + alpha * tnsr2 */
 void aiatensor__(cadd)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2) {
@@ -15,13 +122,13 @@ void aiatensor__(cadd)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *
       T *dtnsr2 = aiatensor__(data)(tnsr2);
       long sz = aiatensor__(nElement)(tnsr1);
       long i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+      #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
       for(i = 0; i < sz; i++) {
         dres[i] = alpha * dtnsr2[i] + dtnsr1[1];
       }
     }
   } else {
-    AIA_TENSOR_APPLY3(T, res, T, tnsr1, T, tnsr2, *res_data = *tnsr1_data + value * *tnsr2_data;);
+    AIA_TENSOR_APPLY3(T, res, T, tnsr1, T, tnsr2, *res_data = *tnsr1_data + alpha * *tnsr2_data;);
   }
 }
 
@@ -39,7 +146,7 @@ void aiatensor__(cmul)(AIATensor_ *res, AIATensor_ *tnsr1, AIATensor_ *tnsr2) {
     T *dtnsr2 = aiatensor__(data)(tnsr2);
     long sz = aiatensor__(nElement)(tnsr1);
     long i;
-    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
     for(i = 0; i < sz; i++) {
       dres[i] = dtnsr1[i] * dtnsr2[i];
     }
@@ -57,7 +164,7 @@ void aiatensor__(cpow)(AIATensor_ *res, AIATensor_ *base, AIATensor_ *exp) {
     T *dexp = aiatensor__(data)(exp);
     long sz = aiatensor__(nElement)(base);
     long i;
-    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
     for(i = 0; i < sz; i++) {
       dres[i] = pow(dbase[i], dexp[i]);
     }
@@ -75,7 +182,7 @@ void aiatensor__(cdiv)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom) {
     T *ddenom = aiatensor__(data)(denom);
     long sz = aiatensor__(nElement)(numer);
     long i;
-    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
     for(i = 0; i < sz; i++) {
       dres[i] = dnumer[i] / ddenom[i];
     }
@@ -93,7 +200,7 @@ void aiatensor__(cfmod)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom) {
     T *ddenom = aiatensor__(data)(denom);
     long sz = aiatensor__(nElement)(numer);
     long i;
-    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
     for(i = 0; i < sz; i++) {
       dres[i] = fmod(dnumer[i], ddenom[i]);
     }
@@ -111,13 +218,34 @@ void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *den
     T *ddenom = aiatensor__(data)(denom);
     long sz = aiatensor__(nElement)(numer);
     long i;
-    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
     for(i = 0; i < sz; i++) {
       dres[i] = (ddenom[i] == 0) ? NAN : dnumer[i] - (ddenom[i] * floor(dnumer[i] / ddenom[i]));
     }
   } else {
     AIA_TENSOR_APPLY3(T, res, T, numer, T, denom, *res_data = (*denom_data == 0) ? NAN : *numer_data - (*denom_data * floor(*numer_data / *denom_data)););
   }
+}
+
+void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3)
+{
+  if(res != tnsr1)
+  {
+    aiatensor__(resizeAs)(res, tnsr1);
+    aiatensor__(copy)(res, tnsr1);
+  }
+  AIA_TENSOR_APPLY3(T, res, T, tnsr2, T, tnsr3, *res_data += alpha * *tnsr2_data * *tnsr3_data;);
+}
+
+
+void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3)
+{
+  if(res != tnsr1)
+  {
+    aiatensor__(resizeAs)(res, tnsr1);
+    aiatensor__(copy)(res, tnsr1);
+  }
+  AIA_TENSOR_APPLY3(T, res, T, tnsr2, T, tnsr3, *res_data += alpha * *tnsr2_data / *tnsr3_data;);
 }
 
 // res = (beta * bvec) + (alpha * (mat * vec))
