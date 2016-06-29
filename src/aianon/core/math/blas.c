@@ -29,7 +29,7 @@ extern void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *a
 extern void sgemm_(char *transa, char *transb, int *m, int *n, int *k, float *alpha, float *a, int *lda, float *b, int *ldb, float *beta, float *c, int *ldc);
 
 
-void aiablas_(T_, swap)(long n, T *x, long incx, T *y, long incy) {
+void aiablas__(swap)(long n, T *x, long incx, T *y, long incy) {
   if(n == 1) {
     incx = 1;
     incy = 1;
@@ -48,7 +48,7 @@ void aiablas_(T_, swap)(long n, T *x, long incx, T *y, long incy) {
 }
 
 
-void aiablas_(T_, scal)(long n, T a, T *x, long incx) {
+void aiablas__(scal)(long n, T a, T *x, long incx) {
   if(n == 1) incx = 1;
 
 #if defined(USE_BLAS) && (defined(T_IS_DOUBLE) || defined(T_IS_FLOAT))
@@ -63,7 +63,7 @@ void aiablas_(T_, scal)(long n, T a, T *x, long incx) {
 }
 
 
-void aiablas_(T_, copy)(long n, T *x, long incx, T *y, long incy) {
+void aiablas__(copy)(long n, T *x, long incx, T *y, long incy) {
   if(n == 1) {
     incx = 1;
     incy = 1;
@@ -82,7 +82,7 @@ void aiablas_(T_, copy)(long n, T *x, long incx, T *y, long incy) {
 }
 
 
-void aiablas_(T_, axpy)(long n, T a, T *x, long incx, T *y, long incy) {
+void aiablas__(axpy)(long n, T a, T *x, long incx, T *y, long incy) {
   if(n == 1) {
     incx = 1;
     incy = 1;
@@ -101,7 +101,7 @@ void aiablas_(T_, axpy)(long n, T a, T *x, long incx, T *y, long incy) {
 }
 
 
-T aiablas_(T_, dot)(long n, T *x, long incx, T *y, long incy) {
+T aiablas__(dot)(long n, T *x, long incx, T *y, long incy) {
   if(n == 1) {
     incx = 1;
     incy = 1;
@@ -120,7 +120,7 @@ T aiablas_(T_, dot)(long n, T *x, long incx, T *y, long incy) {
 }
 
 
-void aiablas_(T_, gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, long incx, T beta, T *y, long incy) {
+void aiablas__(gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, long incx, T beta, T *y, long incy) {
   if(n == 1) lda = m;
 
 #if defined(USE_BLAS) && (defined(T_IS_DOUBLE) || defined(T_IS_FLOAT))
@@ -139,7 +139,7 @@ void aiablas_(T_, gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *
 }
 
 
-void aiablas_(T_, ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T *a, long lda) {
+void aiablas__(ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T *a, long lda) {
   if(n == 1) lda = m;
 
 #if defined(USE_BLAS) && (defined(T_IS_DOUBLE) || defined(T_IS_FLOAT))
@@ -158,7 +158,7 @@ void aiablas_(T_, ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy
 }
 
 
-void aiablas_(T_, gemm)(char transa, char transb, long m, long n, long k, T alpha, T *a, long lda, T *b, long ldb, T beta, T *c, long ldc) {
+void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T alpha, T *a, long lda, T *b, long ldb, T beta, T *c, long ldc) {
   int transa_ = ((transa == 't') || (transa == 'T'));
   int transb_ = ((transb == 't') || (transb == 'T'));
 
