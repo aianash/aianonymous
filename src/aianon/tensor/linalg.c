@@ -117,6 +117,30 @@ void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo) {
 }
 
 //
+void aiatensor__(potrs)(AIATensor_ *x, AIATensor_ *b, AIATensor_ *a,  const char *uplo) {
+  if(b = NULL) b = x;
+  aia_argcheck(aiatensor__(size)(a, 0) == aiatensor__(size)(a, 1), 3, "A should be a square matrix");
+
+  int n, nrhs, lda, ldb, info;
+  AIATensor_ *a_ = aiatensor__(cloneColumnMajor)(NULL, a);
+  AIATensor_ *b_ = aiatensor__(cloneColumnMajor)(x, b);
+
+  n = a_->size[0];
+  nrhs = b_->size[1];
+  lda = n;
+  ldb = n;
+
+  aialapack__(potrs)(uplo[0], n, nrhs, aiatensor__(data)(a_), lda, aiatensor__(data)(b_), ldb, &info);
+  aia_lapackCheckWithCleanup("Lapack Error in %s : A(%d,%d) is zero, singular A",
+                            aia_cleanup(
+                              aiatensor__(free)(a_);
+                              aiatensor__(free)(b_);
+                            ), "potrs", info, info);
+  aiatensor__(free)(a_);
+  aiatensor__(freeCopyTo)(b_, x);
+}
+
+//
 void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, const char *jobz, const char *uplo) {
   if(!mat) mat = resv;
   aia_argcheck(mat->nDimension == 2, 1, "mat should be 2 dimensional");
