@@ -6,6 +6,7 @@ set (HEADERS
     dimcrossapply.h
     apply.h
     linalg.h
+    diagmath.h
 )
 
 set (SOURCES
@@ -13,6 +14,7 @@ set (SOURCES
     tensor.c
     math.c
     linalg.c
+    diagmath.c
 )
 
 set (DIR_SRCS)

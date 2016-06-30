@@ -53,6 +53,46 @@ AIA_API void aiatensor__(baddbmm)(AIATensor_ *res, T beta, AIATensor_ *batch3, T
 AIA_API int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b);
 AIA_API int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi);
 
+AIA_API void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value);
+
+/**
+ * Description
+ * -----------
+ * Computes the following:
+ *   res = mat + a * I
+ *   Here I is identity matrix
+ *
+ * Input
+ * -----
+ * mat : Matrix of size n x n
+ * a   : Multiplication factor
+ *
+ * Output
+ * ------
+ * res : Matrix of size n x n
+ */
+AIA_API void aiatensor__(aipx)(AIATensor_ *res, AIATensor_ *mat, T a);
+
+/**
+ * Description
+ * -----------
+ * Returns following product:
+ *   x** * amat * y      if isinv is false
+ *   x** * amat^-1 * y   if isinv is true
+ *
+ * Input
+ * -----
+ * x     : Vector of size m
+ * amat  : Matrix of size m x n
+ * y     : Vector of size n
+ * isinv : Flag to indicate which expression should be evaluated
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xtay)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y, bool isinv);
+
 #endif
 
 #define ERASE_FLOAT

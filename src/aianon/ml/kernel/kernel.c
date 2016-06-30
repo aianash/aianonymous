@@ -2,25 +2,7 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
-/**
- * Description
- * -----------
- * Returns RBF kernel matrix
- * Radial basis function (RBF) is given by
- *   k(x_i, y_j) = alpha^2 * exp( -1/2 * (x_i - y_j)** * lambda^-1 * (x_i - y_j) )
- *
- * Input
- * -----
- * X      : Matrix of size n x d where n is number of data points
- * Y      : Matrix of size m x d where m is number of data points
- * lambda : Length scale vector of size d
- * alpha  : Signal variance of kernel
- *
- * Output
- * ------
- * K      : Kernel matrix of size n x m
- */
-void aiakernel_rbf__(mpcreate)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, AIATensor_ *lambda, T alpha) {
+void aiakernel_rbf__(mpcreate)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, bool isdiag) {
   if(Y == NULL) Y = X;
 
   aia_argcheck(aiatensor__(nDimension)(X) == 2, 1, "X must be 2-dimensional");
@@ -36,38 +18,37 @@ void aiakernel_rbf__(mpcreate)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, AIAT
   long lambda_stride = lambda->stride[0];
   T *lambda_data = aiatensor__(data)(lambda);
 
-  AIA_TENSOR_CROSS_DIM_APPLY(T, X, T, Y, T, K_, 1,
-                            T sum = 0;
-                            int idx;
-                            for(idx = 0; idx < d; idx++) {
-                              sum += (pow(X_data[idx * X_stride] - Y_data[idx * Y_stride], 2) * lambda_data[idx * lambda_stride]);
-                            }
-                            sum /= -0.5;
-                            *K__data = exp(sum) * pow(alpha, 2);
-                            );
+  if(isdiag) {
+    AIA_TENSOR_CROSS_DIM_APPLY(T, X, T, Y, T, K_, 1,
+                              T sum = 0;
+                              int idx;
+                              for(idx = 0; idx < d; idx++) {
+                                sum += (pow(X_data[idx * X_stride] - Y_data[idx * Y_stride], 2) * lambda_data[idx * lambda_stride]);
+                              }
+                              sum *= -0.5;
+                              *K__data = exp(sum) * pow(alpha, 2);
+                              );
+  } else {
+    AIATensor_ *diff = aiatensor__(newVector)(d);
+    AIATensor_ *y = aiatensor__(newVector)(d);
+    T *diff_data = aiatensor__(data)(diff);
+    long diff_stride = diff->stride[0];
+    AIA_TENSOR_CROSS_DIM_APPLY(T, X, T, Y, T, K_, 1,
+                              aiablas__(copy)(d, Y_data, Y_stride, diff_data, diff_stride);
+                              aiablas__(axpy)(d, -1, X_data, X_stride, diff_data, diff_stride);
+                              aiatensor__(trtrs)(y, diff, lambda, "L", "N", "N");
+                              *K__data = aiatensor__(dot)(y, y);
+                              *K__data *= -0.5;
+                              *K__data = exp(*K__data) * pow(alpha, 2);
+                              );
+    aiatensor__(free)(diff);
+    aiatensor__(free)(y);
+  }
   aiatensor__(resize2d)(K_, n, m);
-  aiatensor__(copy)(K, K_);
-  aiatensor__(free)(K_);
+  aiatensor__(freeCopyTo)(K, K_);
 }
 
-/**
- * Description
- * -----------
- * Return RBF kernel function value for two data points given by
- *   k(x, y) = alpha^2 * exp( -1/2 * (x - y)** * lambda^-1 * (x - y) )
- *
- * Input
- * -----
- * x      : Vector of size d
- * y      : Vector of size d
- * lambda : Length scale vector of size d
- * alpha  : Signal variance of kernel
- *
- * Output
- * ------
- * k      : Scalar of type T
- */
-void aiakernel_rbf__(sgcreate)(T *k, AIATensor_ *x, AIATensor_ *y, AIATensor_ *lambda, T alpha) {
+void aiakernel_rbf__(sgcreate)(T *k, AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, int isdiag) {
   if(y == NULL) y = x;
 
   aia_argcheck(aiatensor__(isVector)(x), 2, "function only works for vector inputs");
@@ -77,11 +58,16 @@ void aiakernel_rbf__(sgcreate)(T *k, AIATensor_ *x, AIATensor_ *y, AIATensor_ *l
   aia_argcheck(x->size[0] == lambda->size[0], 4, "incosistent tensor size for lambda");
 
   AIATensor_ *diff = aiatensor__(empty)();
-
   aiatensor__(csub)(diff, x, 1, y);
-  *k = aiatensor__(xTLy)(diff, lambda, diff);
+
+  if(isdiag) {
+    *k = aiatensor__(xtdy)(diff, lambda, diff, true);
+  } else {
+    *k = aiatensor__(xtay)(diff, lambda, diff, true);
+  }
   *k *= -0.5;
   *k = exp(*k) * pow(alpha, 2);
+  aiatensor__(free)(diff);
 }
 
 #endif

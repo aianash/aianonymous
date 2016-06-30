@@ -4,7 +4,7 @@
 
 void aiatensor__(add)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
   aiatensor__(resizeAs)(res, tnsr);
-  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) &&
     aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
     T *dres = aiatensor__(data)(res);
     T *dtnsr = aiatensor__(data)(tnsr);
@@ -25,7 +25,7 @@ void aiatensor__(sub)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
 
 void aiatensor__(mul)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
   aiatensor__(resizeAs)(res, tnsr);
-  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) &&
     aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
     T *dres = aiatensor__(data)(res);
     T *dtnsr = aiatensor__(data)(tnsr);
@@ -42,7 +42,7 @@ void aiatensor__(mul)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
 
 void aiatensor__(div)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
   aiatensor__(resizeAs)(res, tnsr);
-  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) &&
     aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
     T *dres = aiatensor__(data)(res);
     T *dtnsr = aiatensor__(data)(tnsr);
@@ -59,7 +59,7 @@ void aiatensor__(div)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
 
 void aiatensor__(fmod)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
   aiatensor__(resizeAs)(res, tnsr);
-  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) &&
     aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
     T *dres = aiatensor__(data)(res);
     T *dtnsr = aiatensor__(data)(tnsr);
@@ -76,7 +76,7 @@ void aiatensor__(fmod)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
 
 void aiatensor__(remainder)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
   aiatensor__(resizeAs)(res, tnsr);
-  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) &&
     aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
     T *dres = aiatensor__(data)(res);
     T *dtnsr = aiatensor__(data)(tnsr);
@@ -87,14 +87,14 @@ void aiatensor__(remainder)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
       dres[i] = (value == 0) ? NAN : dtnsr[i] - value * floor(dtnsr[i] / value);
     }
   } else {
-    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = (value == 0) ? NAN : 
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = (value == 0) ? NAN :
       *tnsr_data - value * (*tnsr_data / value););
   }
 }
 
 void aiatensor__(clamp)(AIATensor_ *res, AIATensor_ *tnsr, T minValue, T maxValue) {
   aiatensor__(resizeAs)(res, tnsr);
-  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) && 
+  if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) &&
     aiatensor__(nElement)(res) == aiatensor__(nElement)(tnsr)) {
     T *dres = aiatensor__(data)(res);
     T *dtnsr = aiatensor__(data)(tnsr);
@@ -105,7 +105,7 @@ void aiatensor__(clamp)(AIATensor_ *res, AIATensor_ *tnsr, T minValue, T maxValu
       dres[i] = (dtnsr[i] < minValue) ? minValue : (dtnsr[i] > maxValue ? maxValue : dtnsr[i]);
     }
   } else {
-    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = (*tnsr_data < minValue) ? minValue : 
+    AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = (*tnsr_data < minValue) ? minValue :
       (*tnsr_data > maxValue ? maxValue : *tnsr_data););
   }
 }
@@ -132,7 +132,7 @@ void aiatensor__(cadd)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *
   }
 }
 
-/** res := tnsr1 + alpha * tnsr2 */
+/** res := tnsr1 - alpha * tnsr2 */
 void aiatensor__(csub)(AIATensor_ *res, AIATensor_ *tnsr1, T value, AIATensor_ *tnsr2) {
   aiatensor__(cadd)(res, tnsr1, - value, tnsr2);
 }
@@ -510,6 +510,44 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
 #endif
   }
   return equal;
+}
+
+void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value) {
+
+}
+
+void aiatensor__(aipx)(AIATensor_ *res, AIATensor_ *mat, T a) {
+  aia_argcheck(mat->nDimension == 2, 2, "mat should be 2-dimensional");
+  aia_argcheck(mat->size[0] == mat->size[1], 2, "mat should be a square matrix");
+
+  aiatensor__(resizeAs)(res, mat);
+  aiatensor__(copy)(res, mat);
+
+  T *res_data = aiatensor__(data)(res);
+  long idx;
+  for(idx = 0; idx < res->size[0]; idx++) {
+    *res_data += a;
+    res_data += (res->stride[0] + res->stride[1]);
+  }
+}
+
+T aiatensor__(xtay)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y, bool isinv) {
+  aia_argcheck(aiatensor__(isVector)(x), 1, "x should be a vector");
+  aia_argcheck(amat->nDimension == 2, 2, "A should be a matrix");
+  aia_argcheck(aiatensor__(isVector)(y), 3, "y should be a vector");
+  aia_argcheck(amat->size[0] == x->size[0], 2, "inconsistent tensor size");
+  aia_argcheck(amat->size[1] == y->size[0], 2, "inconsistent tensor size");
+
+  AIATensor_ *achol = aiatensor__(empty)();
+  AIATensor_ *ay = aiatensor__(newVector)(y->size[0]);
+
+  if(isinv) {
+    aiatensor__(potrf)(achol, amat, "L");
+    aiatensor__(potrs)(ay, y, achol, "L");
+  } else {
+    aiatensor__(mv)(ay, amat, y);
+  }
+  return aiatensor__(dot)(x, ay);
 }
 
 #endif

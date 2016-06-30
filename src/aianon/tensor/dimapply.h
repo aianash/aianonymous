@@ -145,7 +145,7 @@
 
 
 #define AIA_TENSOR_DIM_APPLY(T, tensor, dimension, code) { \
-  T1 *tensor##_data = NULL; \
+  T *tensor##_data = NULL; \
   long tensor##_stride = 0, tensor##_size = 0; \
   long *aia_tensor_dim_apply_counter = NULL; \
   int aia_tensor_dim_apply_finished = 0; \

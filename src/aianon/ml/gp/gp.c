@@ -2,24 +2,6 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
-
-/**
- * Description
- * -----------
- * Prediction for multiple certain input
- *
- * Input
- * -----
- * K     : Cholesky factorization of (Ktrain + sigma^2 * I) as obtained using potrf
- * Kx    : Kernel matrix of test datapoints
- * Kxx   : Cross kernel matrix size n x m where m is the number of test datapoints
- *          and n is number of training datapoints
- *
- * Output
- * ------
- * fmean : Mean of predictive posterior distribution
- * fcov  : Covariance matrix of predictive posterior distribution
- */
 void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
   long n = K->size[0];
 
@@ -38,24 +20,7 @@ void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const c
   aiatensor__(free)(KxTKKx);
 }
 
-
-/**
- * Descriotion
- * -----------
- * Prediction for single certain input
- *
- * Input
- * -----
- * K     : Cholesky factorization of (Ktrain + sigma^2 * I) as obtained using potrf
- * Kx    : Cross kernel Vector of size n
- * Kxx   : Kernel value for test input. Scalar of type T.
- *
- * Output
- * ------
- * fmean : Mean of predictive posterior distribution
- * fcov  : Standard deviation of predictive posterior distribution
- */
-void aiagp__(soredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
+void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
   long n = K->size[0];
 
   AIATensor_ *alpha = aiatensor__(newVector)(n);
@@ -71,23 +36,47 @@ void aiagp__(soredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATens
   *fcov = Kxx - KxTKKx;
 }
 
+void aiagp__(vpreduc)() {}
+
+void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *K, AIATensor_ *lambda, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *xm, AIATensor_ *xcov) {}
+
 /**
  * Description
  * -----------
- * Performs following computation
- * beta = (K + sigma^2 * I)^-1 * y
+ * Computes vector q with ith entry of q as
+ *   q_i = alpha^2 * | xcov * lambda^-1 + I |^-1/2 * exp( -1/2 * (x_i - xxm)** * (xxcov + lambda)^-1 * (x_i - xxm) )
+ *   where xm and xcov are mean and covariance matrix of test data respectively.
  *
  * Input
  * -----
- * K    : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
- * y    : vector of size n with training data
- * uplo : 'U' if A contains the uppar triangular matrix
- *        'L' if A contains the lower triangular matrix
+ * X: Training input data. Matrix of size n x d.
  *
  * Output
  * ------
- * beta : vector of size n
+ * q: Vector of size
  */
+void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T alpha, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
+  long d = Xxcov->size[0];
+  AIATensor_ *constmat = aiatensor__(empty)();
+  AIATensor_ *Kxmu = aiatensor__(empty)();
+  AIATensor_ *XxcovpL = aiatensor__(empty)();
+
+  aiatensor__(diagm)(constmat, Xxcov, lambda, true);
+  aiatensor__(aipx)(constmat, constmat, 1);
+  T const_ = pow(aiatensor__(det)(constmat), -0.5);
+
+  // compute cholskey of Xxcov + lambda
+  aiatensor__(cadd)(XxcovpL, Xxcov, 1, lambda);
+  aiatensor__(potrf)(XxcovpL, NULL, "L");
+
+  // compute exp part of q
+  aiakernel_rbf__(mpcreate)(Kxmu, X, Xxm, alpha, XxcovpL, false);
+  aiatensor__(cmul)(q, Kxmu, const_);
+
+  aiatensor__(free)(constmat);
+  aiatensor__(free)(Kxmu);
+}
+
 void aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *K, AIATensor_ *y, const char* uplo) {
   aia_argcheck(K->nDimension == 2, 1, "K should be 2-dimensional matrix");
   aia_argcheck(y->nDimension == 1, 2, "y should be a vector");

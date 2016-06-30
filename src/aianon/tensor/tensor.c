@@ -362,6 +362,24 @@ static void aiatensor__(resize_)(AIATensor_ *this, int nDimension, long *size, l
   }
 }
 
+void aiatensor__(mv)(AIATensor_ *a, AIATensor_ *b, AIATensor_ *c) {}
+
+T aiatensor__(dot)(AIATensor_ *b, AIATensor_ *c) {
+  return 0;
+}
+
+int aiatensor__(isVector)(AIATensor_ *a) {
+  return (a->nDimension == 1);
+}
+
+bool aiatensor__(isMatrix)(AIATensor_ *a) {
+  return (a->nDimension == 2);
+}
+
+bool aiatensor__(isSquare)(AIATensor_ *a) {
+  return (a->nDimension == 2 && a->size[0] == a->size[1]);
+}
+
 #endif
 #define ERASE_FLOAT
 #define ERASURE_FILE "aianon/tensor/tensor.c"
