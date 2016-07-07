@@ -1,5 +1,4 @@
 #ifndef AIA_ML_KERNEL_H
-#define AIA_ML_KERNEL_H
 
 #include <aianon/core/util.h>
 #include <aianon/core/util/memory.h>
@@ -21,14 +20,19 @@
  * X      : Matrix of size n x d where n is number of data points
  * Y      : Matrix of size m x d where m is number of data points
  * alpha  : Signal variance of kernel
- * lambda : Length scale vector of size d
+ * lambda : Length scale matrix of size of size d x d
+ *            - if isdiag is true, matrix should be diagonal
+ *            - if isdiag is false, it should be cholskey decomposition of length scale matrix
  * isdiag : True if lambda is diagonal matrix, false otherwise
+ * uplo   : "U" or "L" depending on whether lambda has upper or lower triangular matrix
  *
  * Output
  * ------
  * K      : Kernel matrix of size n x m
+ * If K is NULL, it creates a matrix and returns it. Client has to free this memory.
+ *
  */
-void aiakernel_rbf__(mpcreate)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, bool isdiag);
+AIA_API AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, bool isdiag, const char *uplo);
 
 /**
  * Description
@@ -40,24 +44,29 @@ void aiakernel_rbf__(mpcreate)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T al
  * -----
  * x      : Vector of size d
  * y      : Vector of size d
- * lambda : Length scale vector of size d
  * alpha  : Signal variance of kernel
+ * lambda : Length scale matrix of size of size d x d
+ *            - if isdiag is true, matrix should be diagonal
+ *            - if isdiag is false, it should be cholskey decomposition of length scale matrix
+ * isdiag : True if lambda is diagonal matrix, false otherwise
+ * uplo   : "U" or "L" depending on whether lambda has upper or lower triangular matrix
  *
  * Output
  * ------
- * k      : Scalar of type T
+ * Returns Scalar of type T
  */
-AIA_API void aiakernel_rbf__(sgcreate)(T *k, AIATensor_ *x, AIATensor_ *y, AIATensor_ *lambda, T alpha);
+AIA_API T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, int isdiag, const char *uplo);
 
 #endif
 
-#ifndef aiakernel_rbf_
-#define aiakernel_rbf_(type, name) AIA_FN_ERASE_(kernel_rbf, type, name)
-#define aiakernel_rbf__(name) aiakernel_rbf_(T_, name)
+#ifndef aiakernel_se_
+#define aiakernel_se_(type, name) AIA_FN_ERASE_(kernel_se, type, name)
+#define aiakernel_se__(name) aiakernel_se_(T_, name)
 #endif
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aianon/ml/kernel/kernel.h"
 #include <aianon/core/erasure.h>
 
+#define AIA_ML_KERNEL_H
 #endif

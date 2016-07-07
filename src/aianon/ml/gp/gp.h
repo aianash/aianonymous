@@ -1,5 +1,4 @@
 #ifndef AIA_ML_GP_H
-#define AIA_ML_GP_H
 
 #include <aianon/core/util.h>
 #include <aianon/core/math/blas.h>
@@ -84,4 +83,5 @@ AIA_API void aiagp__(graduc)();
 #define ERASURE_FILE "aianon/ml/gp/gp.h"
 #include <aianon/core/erasure.h>
 
+#define AIA_ML_GP_H
 #endif

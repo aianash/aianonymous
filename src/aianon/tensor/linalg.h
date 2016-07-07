@@ -7,7 +7,8 @@
 #ifdef ERASED_TYPE_PRESENT
 
 AIA_API void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo);
-AIA_API void aiatensor__(potrs)(AIATensor_ *x, AIATensor_ *b, AIATensor_ *a,  const char *uplo);
+AIA_API void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *a, const char *uplo);
+AIA_API void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *a, const char *uplo, const char *trans, const char *diag);
 AIA_API void aiatensor__(gesvd)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, AIATensor_ *mat, const char *jobu);
 AIA_API void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, AIATensor_ *rmat, AIATensor_ *mat, const char *jobu);
 AIA_API void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, const char *jobz, const char *uplo);

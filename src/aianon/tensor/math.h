@@ -55,6 +55,10 @@ AIA_API int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi);
 
 AIA_API void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value);
 
+AIA_API void aiatensor__(mm)(AIATensor_ *res, AIATensor_ *mat1, AIATensor_ *mat2);
+AIA_API void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
+AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);
+
 /**
  * Description
  * -----------
@@ -71,27 +75,192 @@ AIA_API void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value);
  * ------
  * res : Matrix of size n x n
  */
-AIA_API void aiatensor__(aipx)(AIATensor_ *res, AIATensor_ *mat, T a);
+AIA_API void aiatensor__(aIpx)(AIATensor_ *res, AIATensor_ *mat, T a);
 
 /**
  * Description
  * -----------
  * Returns following product:
- *   x** * amat * y      if isinv is false
- *   x** * amat^-1 * y   if isinv is true
+ *   x** * amat * y
  *
  * Input
  * -----
- * x     : Vector of size m
- * amat  : Matrix of size m x n
- * y     : Vector of size n
- * isinv : Flag to indicate which expression should be evaluated
+ * x    : Vector of size m
+ * amat : Matrix of size m x n
+ * y    : Vector of size n
  *
  * Output
  * ------
  * Returns a scalar
  */
-AIA_API T aiatensor__(xtay)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y, bool isinv);
+AIA_API T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
+
+/**
+ * Description
+ * -----------
+ * Returns following product:
+ *   x** * amat * x
+ *
+ * Input
+ * -----
+ * x    : Vector of size n
+ * amat : Matrix of size n x n
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAx)(AIATensor_ *x, AIATensor_ *amat);
+
+/**
+ * Description
+ * -----------
+ * Returns following product
+ *   x** * A^-1 * x
+ *
+ * Input
+ * -----
+ * x    : Vector of size n
+ * amat : LU factorization of matrix A where A is of size n x n
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAIx)(AIATensor_ *x, AIATensor_ *amat);
+
+/**
+ * Description
+ * -----------
+ * Returns following product:
+ *   x** * A^-1 * y
+ *
+ * Input
+ * -----
+ * x    : Vector of size n
+ * amat : LU factorization of matrix A where A is of size n x n
+ * y    : Vector of size n
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
+
+/**
+ * Description
+ * -----------
+ * Returns following product for a symmetric matrix A
+ *   x** * A * x
+ *
+ * Input
+ * -----
+ * x    : Vector of size n
+ * amat : Symmetric matrix of size n x n
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAsymmx)(AIATensor_ *x, AIATensor_ *amat);
+
+/**
+ * Description
+ * -----------
+ * Returns following product for a symmetric matrix A
+ *   x** * A * y
+ *
+ * Input
+ * -----
+ * x    : Vector of size n
+ * amat : Symmetric matrix of size n x n
+ * y    : Vector of size n
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
+
+/**
+ * Description
+ * -----------
+ * Returns following product for a symmetric matrix A
+ *   x** * A^-1 * x
+ *
+ * Input
+ * -----
+ * x    : Vector of size n
+ * amat : Cholskey factorization of a symmetric matrix of size n x n
+ * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAsymmIx)(AIATensor_ *x, AIATensor_ *amat, const char *uplo);
+
+/**
+ * Description
+ * -----------
+ * Returns following product for a symmetric matrix A
+ *   x** * A^-1 * y
+ *
+ * Input
+ * -----
+ * x    : Vector of size n
+ * amat : Cholskey factorization of a symmetric matrix of size n x n
+ * y    : Vector of size n
+ * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y, const char *uplo);
+
+/**
+ * Description
+ * -----------
+ * Computes following matrix-matrix multiplication
+ *   X** * A * X + a * Y
+ *
+ * Input
+ * -----
+ * xmat : Matrix of size n x n
+ * amat : Symmetric matrix of size n x n
+ * a    : Multiplication factor
+ * ymat : Matrix of size n x n
+ *
+ * Output
+ * ------
+ * res  : Matrix of size n x n
+ * If res is NULL, it creates a new matrix. Client has to delete the returned matrix.
+ *
+ */
+AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, T a, AIATensor_ *ymat);
+
+/**
+ * Description
+ * -----------
+ * Computes following matrix-matrix multiplication
+ *   X** * A^-1 * X + a * Y
+ *
+ * Input
+ * -----
+ * xmat : Matrix of size n x n
+ * amat : Cholskey factorization of symmetric matrix of size n x n
+ * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
+ * a    : Multiplication factor
+ * ymat : Matrix of size n x n
+ *
+ * Output
+ * ------
+ * res  : Matrix of size n x n
+ * If res is NULL, it creates a new matrix. Client has to delete the returned matrix.
+ *
+ */
+AIA_API AIATensor_ *aiatensor__(XTAsymmIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, const char *uplo, T a, AIATensor_ *ymat);
 
 #endif
 

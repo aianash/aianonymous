@@ -4,20 +4,17 @@
 
 void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
   long n = K->size[0];
+  AIATensor_ *KxT = aiatensor__(empty)();
 
-  AIATensor_ *alpha  = aiatensor__(newVector)(n);
-  AIATensor_ *KxTKKx = aiatensor__(empty)();
-  AIATensor_ *KxT    = aiatensor__(empty)();
-
+  // calculation of fmean
   aiatensor__(transpose)(KxT, Kx, 0, 1);
   aiatensor__(mv)(fmean, KxT, beta);
 
-  aiatensor__(potrs)(alpha, Kx, K, uplo);
-  aiatensor__(mv)(KxTKKx, KxT, alpha);
-  aiatensor__(csub)(fcov, Kxx, 1, KxTKKx);
+  // calculation of fcov
+  aiatensor__(XTAsymmIXpaY)(fcov, Kx, -1, Kxx, K);
+  aiatensor__(mul)(fcov, fcov, -1);
 
-  aiatensor__(free)(alpha);
-  aiatensor__(free)(KxTKKx);
+  aiatensor__(free)(KxT);
 }
 
 void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
@@ -26,13 +23,12 @@ void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATens
   AIATensor_ *alpha = aiatensor__(newVector)(n);
   AIATensor_ *KxT   = aiatensor__(empty)();
 
+  // calculation of fmean
   aiatensor__(transpose)(KxT, Kx, 0, 1);
-
   *fmean = aiatensor__(dot)(KxT, beta);
 
-  aiatensor__(potrs)(alpha, Kx, K, uplo);
-  T KxTKKx = aiatensor__(dot)(KxT, alpha);
-
+  // calculation of fcov
+  T KxTKKx = aiatensor__(xTAsymmx)(Kx, K);
   *fcov = Kxx - KxTKKx;
 }
 
@@ -56,21 +52,22 @@ void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *K, AIATensor_ *lambda, AIAT
  * q: Vector of size
  */
 void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T alpha, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
-  long d = Xxcov->size[0];
+  AIATensor_ *Kxmu;
+  T const_;
   AIATensor_ *constmat = aiatensor__(empty)();
-  AIATensor_ *Kxmu = aiatensor__(empty)();
   AIATensor_ *XxcovpL = aiatensor__(empty)();
+  char *uplo = "L";
 
-  aiatensor__(diagm)(constmat, Xxcov, lambda, true);
-  aiatensor__(aipx)(constmat, constmat, 1);
-  T const_ = pow(aiatensor__(det)(constmat), -0.5);
+  aiatensor__(diagmm)(constmat, Xxcov, lambda, TRUE);
+  aiatensor__(aIpx)(constmat, constmat, 1);
+  const_ = pow(aiatensor__(det)(constmat), -0.5);
 
   // compute cholskey of Xxcov + lambda
   aiatensor__(cadd)(XxcovpL, Xxcov, 1, lambda);
-  aiatensor__(potrf)(XxcovpL, NULL, "L");
+  aiatensor__(potrf)(XxcovpL, NULL, uplo);
 
   // compute exp part of q
-  aiakernel_rbf__(mpcreate)(Kxmu, X, Xxm, alpha, XxcovpL, false);
+  Kxmu = aiakernel_se__(matrix)(NULL, X, Xxm, alpha, XxcovpL, FALSE, uplo);
   aiatensor__(cmul)(q, Kxmu, const_);
 
   aiatensor__(free)(constmat);

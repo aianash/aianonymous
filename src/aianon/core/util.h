@@ -17,8 +17,8 @@
 #define USE_LAPACK
 
 typedef int bool;
-#define true 1
-#define false 0
+#define TRUE 1
+#define FALSE 0
 
 #define SWAP(T, x, y) \
 do {                  \

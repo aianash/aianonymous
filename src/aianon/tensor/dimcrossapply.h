@@ -1,7 +1,7 @@
 #ifndef AIA_TENSOR_CROSS_DIM_APPLY_H
 #define AIA_TENSOR_CROSS_DIM_APPLY_H
 
-#define AIA_TENSOR_CROSS_DIM_APPLY(T1, tensor1, T2, tensor2, T3, tensor3, dimension, code) { \
+#define AIA_TENSOR_CROSS_DIM_APPLY3(T1, tensor1, T2, tensor2, T3, tensor3, dimension, code) { \
   int th_cross_dim_apply_finished = 0; \
   int tensor1##_finished = 0; \
   int tensor2##_finished = 0; \

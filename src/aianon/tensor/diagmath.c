@@ -2,7 +2,7 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
-void aiatensor__(diagm)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *dmat, bool isinv) {
+void aiatensor__(diagmm)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *dmat, bool isinv) {
   aia_argcheck(aiatensor__(isMatrix)(mat), 2, "mat should be 2-dimensional");
   aia_argcheck(dmat->nDimension == 1, 3, "empty diagonal matrix");
   aia_argcheck(mat->size[1] == dmat->size[0], 3, "inconsistent tensor size");
@@ -20,7 +20,7 @@ void aiatensor__(diagm)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *dmat, bool
     );
 }
 
-void aiatensor__(diagpm)(AIATensor_ *res, AIATensor_ *mat, T alpha, AIATensor_ *dmat) {
+void aiatensor__(cadddiag)(AIATensor_ *res, AIATensor_ *mat, T alpha, AIATensor_ *dmat) {
   aia_argcheck(aiatensor__(isSquare)(mat), 2, "mat should be a square matrix");
   aia_argcheck(dmat->nDimension == 1, 3, "incorrect diagonal matrix");
   aia_argcheck(mat->size[1] == dmat->size[0], 3, "inconsistent tensor size");
@@ -45,7 +45,11 @@ void aiatensor__(diaginv)(AIATensor_ *matinv, AIATensor_ *mat) {
   AIA_TENSOR_APPLY2(T, mat, T, matinv, *matinv_data = pow(*mat_data););
 }
 
-T aiatensor__(xtdy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y) {
+T aiatensor__(xTAdiagx)(AIATensor_ *x, AIATensor_ *dmat) {
+  return aiatensor__(xTAdiagy)(x, dmat, x);
+}
+
+T aiatensor__(xTAdiagy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be a vector");
   aia_argcheck(aiatensor__(isVector)(y), 3, "y should be a vector");
   aia_argcheck(dmat->nDimension == 1, 3, "incorrect diagonal matrix");
@@ -54,6 +58,22 @@ T aiatensor__(xtdy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y) {
 
   T sum = 0;
   AIA_TENSOR_APPLY3(T, x, T, dmat, T, y, sum += (*x_data * *dmat_data * *y_data););
+  return sum;
+}
+
+T aiatensor__(xTAdiagIx)(AIATensor_ *x, AIATensor_ *dmat) {
+  return aiatensor__(xTAdiagIy)(x, dmat, x);
+}
+
+T aiatensor__(xTAdiagIy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y) {
+  aia_argcheck(aiatensor__(isVector)(x), 1, "x should be a vector");
+  aia_argcheck(aiatensor__(isVector)(y), 3, "y should be a vector");
+  aia_argcheck(dmat->nDimension == 1, 3, "incorrect diagonal matrix");
+  aia_argcheck(x->size[0] == dmat->size[0], 1, "inconsistent tensor size");
+  aia_argcheck(y->size[0] == dmat->size[0], 3, "inconsistent tensor size");
+
+  T sum = 0;
+  AIA_TENSOR_APPLY3(T, x, T, dmat, T, y, sum += (*x_data * pow(*dmat_data, -1) * *y_data););
   return sum;
 }
 

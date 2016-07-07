@@ -29,7 +29,7 @@
  * ------
  * res   : Matrix of size m x n
  */
-AIA_API void aiatensor__(diagm)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *dmat, bool isinv);
+AIA_API void aiatensor__(diagmm)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *dmat, bool isinv);
 
 /**
  * Description
@@ -48,7 +48,7 @@ AIA_API void aiatensor__(diagm)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *dm
  * res   : Matrix of size n x n
  *
  */
-AIA_API void aiatensor__(diagpm)(AIATensor_ *res, AIATensor_ *mat, T alpha, AIATensor_ *dmat);
+AIA_API void aiatensor__(cadddiag)(AIATensor_ *res, AIATensor_ *mat, T alpha, AIATensor_ *dmat);
 
 /**
  * Description
@@ -65,6 +65,8 @@ AIA_API void aiatensor__(diagpm)(AIATensor_ *res, AIATensor_ *mat, T alpha, AIAT
  */
 AIA_API void aiatensor__(diaginv)(AIATensor_ *matinv, AIATensor_ *mat);
 
+AIA_API T aiatensor__(xTAdiagx)(AIATensor_ *x, AIATensor_ *dmat);
+
 /**
  * Description
  * -----------
@@ -80,7 +82,11 @@ AIA_API void aiatensor__(diaginv)(AIATensor_ *matinv, AIATensor_ *mat);
  * ------
  * Returns result of type T
  */
-AIA_API T aiatensor__(xtdy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y);
+AIA_API T aiatensor__(xTAdiagy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y);
+
+AIA_API T aiatensor__(xTAdiagIx)(AIATensor_ *x, AIATensor_ *dmat);
+
+AIA_API T aiatensor__(xTAdiagIy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y);
 
 #endif
 
