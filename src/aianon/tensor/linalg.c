@@ -117,12 +117,12 @@ void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo) {
 }
 
 //
-void aiatensor__(potrs)(AIATensor_ *x, AIATensor_ *b, AIATensor_ *a,  const char *uplo) {
+void aiatensor__(potrs)(AIATensor_ *x, AIATensor_ *b, AIATensor_ *amat,  const char *uplo) {
   if(b = NULL) b = x;
-  aia_argcheck(aiatensor__(size)(a, 0) == aiatensor__(size)(a, 1), 3, "A should be a square matrix");
+  aia_argcheck(aiatensor__(size)(amat, 0) == aiatensor__(size)(amat, 1), 3, "A should be a square matrix");
 
   int n, nrhs, lda, ldb, info;
-  AIATensor_ *a_ = aiatensor__(cloneColumnMajor)(NULL, a);
+  AIATensor_ *a_ = aiatensor__(cloneColumnMajor)(NULL, amat);
   AIATensor_ *b_ = aiatensor__(cloneColumnMajor)(x, b);
 
   n = a_->size[0];
@@ -138,6 +138,11 @@ void aiatensor__(potrs)(AIATensor_ *x, AIATensor_ *b, AIATensor_ *a,  const char
                             ), "potrs", info, info);
   aiatensor__(free)(a_);
   aiatensor__(freeCopyTo)(b_, x);
+}
+
+void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *amat, const char *uplo, const char *trans, const char *diag) {
+  printf("ERR: function aiatensor__(trtrs) is not implemented");
+  exit(-1);
 }
 
 //

@@ -516,12 +516,50 @@ void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value) {
 
 }
 
-void aiatensor__(aIpx)(AIATensor_ *res, AIATensor_ *mat, T a) {
+T aiatensor__(trace)(AIATensor_ *mat) {
+  aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be 2-dimensional");
+
+  T *mat_data = aiatensor__(data)(mat);
+  long stride = mat->stride[0] + mat->stride[1];
+  long idx;
+  T tr = 0;
+
+  for(idx = 0; idx < mat->size[0]; idx++) {
+    tr += mat_data[idx * stride];
+  }
+
+  return tr;
+}
+
+/** det(mat) */
+T aiatensor__(detsymm)(AIATensor_ *mat) {
+  aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be square matrix");
+
+  AIATensor_ *matchol = aiatensor__(new)(mat);
+  T *data = aiatensor__(data)(matchol);
+  long stride = matchol->stride[0] + matchol->stride[1];
+  T det = 1;
+  long idx;
+
+  aiatensor__(potrf)(matchol, matchol, "L");
+  for(idx = 0; idx < matchol->size[0]; idx++) {
+    det *= data[idx * stride];
+  }
+  det = pow(det, 2);
+  aiatensor__(free)(matchol);
+  return det;
+}
+
+/** X + a * I */
+void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a) {
+  if(mat == NULL) mat = res;
   aia_argcheck(aiatensor__(isMatrix)(mat), 2, "mat should be 2-dimensional");
   aia_argcheck(mat->size[0] == mat->size[1], 2, "mat should be a square matrix");
 
-  aiatensor__(resizeAs)(res, mat);
-  aiatensor__(copy)(res, mat);
+  if(mat != res) {
+    aiatensor__(resizeAs)(res, mat);
+    aiatensor__(copy)(res, mat);
+  }
 
   T *res_data = aiatensor__(data)(res);
   long idx;

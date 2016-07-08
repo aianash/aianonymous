@@ -15,6 +15,7 @@
 \
   long tensor1##_stride = tensor1->stride[dimension], tensor1##_size = tensor1->size[dimension]; \
   long tensor2##_stride = tensor2->stride[dimension], tensor2##_size = tensor2->size[dimension]; \
+  long tensor3##_stride = tensor3->stride[0], tensor3##_size = tensor3->size[0]; \
   long tensor1##_dim_i = 0, tensor2##_dim_i = 0; \
 \
   while(!th_cross_dim_apply_finished) { \

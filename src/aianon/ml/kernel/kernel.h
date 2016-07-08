@@ -22,7 +22,7 @@
  * alpha  : Signal variance of kernel
  * lambda : Length scale matrix of size of size d x d
  *            - if isdiag is true, matrix should be diagonal
- *            - if isdiag is false, it should be cholskey decomposition of length scale matrix
+ *            - if isdiag is false, it should be cholesky decomposition of length scale matrix
  * isdiag : True if lambda is diagonal matrix, false otherwise
  * uplo   : "U" or "L" depending on whether lambda has upper or lower triangular matrix
  *
@@ -47,7 +47,7 @@ AIA_API AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATens
  * alpha  : Signal variance of kernel
  * lambda : Length scale matrix of size of size d x d
  *            - if isdiag is true, matrix should be diagonal
- *            - if isdiag is false, it should be cholskey decomposition of length scale matrix
+ *            - if isdiag is false, it should be cholesky decomposition of length scale matrix
  * isdiag : True if lambda is diagonal matrix, false otherwise
  * uplo   : "U" or "L" depending on whether lambda has upper or lower triangular matrix
  *

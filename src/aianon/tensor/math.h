@@ -59,6 +59,23 @@ AIA_API void aiatensor__(mm)(AIATensor_ *res, AIATensor_ *mat1, AIATensor_ *mat2
 AIA_API void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
 AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);
 
+AIA_API T aiatensor__(trace)(AIATensor_ *mat);
+
+/**
+ * Description
+ * -----------
+ * Computes determinant of a symmetric matrix
+ *
+ * Input
+ * -----
+ * mat : Symmetric matrix of size n x n
+ *
+ * Output
+ * ------
+ * Returns determinant of matrix
+ */
+AIA_API T aiatensor__(detsymm)(AIATensor_ *mat);
+
 /**
  * Description
  * -----------
@@ -75,7 +92,7 @@ AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);
  * ------
  * res : Matrix of size n x n
  */
-AIA_API void aiatensor__(aIpx)(AIATensor_ *res, AIATensor_ *mat, T a);
+AIA_API void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a);
 
 /**
  * Description
@@ -191,7 +208,7 @@ AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Input
  * -----
  * x    : Vector of size n
- * amat : Cholskey factorization of a symmetric matrix of size n x n
+ * amat : Cholesky factorization of a symmetric matrix of size n x n
  * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
  *
  * Output
@@ -209,7 +226,7 @@ AIA_API T aiatensor__(xTAsymmIx)(AIATensor_ *x, AIATensor_ *amat, const char *up
  * Input
  * -----
  * x    : Vector of size n
- * amat : Cholskey factorization of a symmetric matrix of size n x n
+ * amat : Cholesky factorization of a symmetric matrix of size n x n
  * y    : Vector of size n
  * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
  *
@@ -249,7 +266,7 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  * Input
  * -----
  * xmat : Matrix of size n x n
- * amat : Cholskey factorization of symmetric matrix of size n x n
+ * amat : Cholesky factorization of symmetric matrix of size n x n
  * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
  * a    : Multiplication factor
  * ymat : Matrix of size n x n
