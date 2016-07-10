@@ -2,6 +2,10 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////// PRIVATE HELPER FUNCTIONS /////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Description
  * -----------
@@ -17,7 +21,7 @@
  * ------
  * q: Vector of size
  */
-void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T alpha, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
+static void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T alpha, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
   AIATensor_ *Kxmu;
   T const_;
   AIATensor_ *constmat = aiatensor__(empty)();
@@ -58,7 +62,7 @@ void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T alpha, A
  * ------
  * Q      : Matrix of size n x n
  */
-void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
+static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
   AIATensor_ *K1, *K2, *constmat, *Y = X;
   T const_;
   long n = X->size[0], d = X->size[1];
@@ -92,6 +96,10 @@ void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIATensor_
   aiatensor__(free)(Z);
   aiatensor__(free)(lenscal);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// PUBLIC FUNCTIONS /////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
   long n = K->size[0];
