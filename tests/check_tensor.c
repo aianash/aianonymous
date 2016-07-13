@@ -15,7 +15,6 @@ void teardown(void) {
 
 START_TEST(test_tensor_create)
 {
-  ck_assert_msg(a == 10, "true", "false");
   aiatensor_(float, resize1d)(tnsr, 10);
   ck_assert_int_eq(aiatensor_(float, size)(tnsr, 0), 10);
 }

@@ -22,5 +22,3 @@ typedef int64_t intmax_t;
 #if !defined(HAVE_UINTMAX_T)
 typedef uint64_t uintmax_t;
 #endif
-
-int a = 10;
