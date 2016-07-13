@@ -72,9 +72,9 @@ endif (LAPACK_FOUND)
 
 # check for inline and __thread support
 
-# create config file where settings from cmake is inserted
-configure_file ("config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
-set(AIANON_SRCS ${AIANON_SRCS} "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
+# # create config file where settings from cmake is inserted
+# configure_file ("config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
+# set(AIANON_SRCS ${AIANON_SRCS} "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
 
 set_target_properties (aianon
   PROPERTIES
@@ -94,9 +94,9 @@ add_custom_command(TARGET aianon_headers POST_BUILD
   COMMAND ${CMAKE_COMMAND} ARGS -E
     copy ${CMAKE_CURRENT_BINARY_DIR}/aianon_export.h
          ${CMAKE_BINARY_DIR}/include/aianon/
-  COMMAND ${CMAKE_COMMAND} ARGS -E
-    copy ${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h
-         ${CMAKE_BINARY_DIR}/include/aianon/
+  # COMMAND ${CMAKE_COMMAND} ARGS -E
+  #   copy ${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h
+  #        ${CMAKE_BINARY_DIR}/include/aianon/
 )
 
 foreach(inc_file ${INCLUDE_FILES})
