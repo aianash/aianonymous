@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <aianon/tensor/tensor.h>
+#include <aianon/tensor/math.h>
 
 int main(int argc, char *argv[]) {
   double a = 8;
