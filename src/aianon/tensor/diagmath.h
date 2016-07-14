@@ -5,9 +5,6 @@
 #include <aianon/tensor/tensor.h>
 #include <aianon/tensor/dimapply.h>
 
-// TODO: remove this code
-#define AIA_TENSOR_APPLY3(T1, A, T2, B, T3, C, code) {}
-
 #ifdef ERASED_TYPE_PRESENT
 
 /**

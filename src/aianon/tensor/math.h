@@ -53,8 +53,6 @@ AIA_API void aiatensor__(baddbmm)(AIATensor_ *res, T beta, AIATensor_ *batch3, T
 AIA_API int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b);
 AIA_API int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi);
 
-AIA_API void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value);
-
 AIA_API void aiatensor__(mm)(AIATensor_ *res, AIATensor_ *mat1, AIATensor_ *mat2);
 AIA_API void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
 AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);

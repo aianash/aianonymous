@@ -42,7 +42,7 @@ void aiatensor__(diaginv)(AIATensor_ *matinv, AIATensor_ *mat) {
   aia_argcheck(mat->nDimension == 1, 3, "incorrect diagonal matrix");
 
   aiatensor__(resizeAs)(matinv, mat);
-  AIA_TENSOR_APPLY2(T, mat, T, matinv, *matinv_data = pow(*mat_data););
+  AIA_TENSOR_APPLY2(T, mat, T, matinv, *matinv_data = pow(*mat_data, -1););
 }
 
 T aiatensor__(xTAdiagx)(AIATensor_ *x, AIATensor_ *dmat) {

@@ -512,10 +512,6 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
   return equal;
 }
 
-void aiatensor__(mul)(AIATensor_ *r_, AIATensor_ *t, T value) {
-
-}
-
 T aiatensor__(trace)(AIATensor_ *mat) {
   aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be 2-dimensional");
 
