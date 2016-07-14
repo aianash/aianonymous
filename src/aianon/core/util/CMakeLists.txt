@@ -1,11 +1,13 @@
 set (HEADERS
     check.h
     memory.h
+    array.h
 )
 
 set (SOURCES
     memory.c
     check.c
+    array.c
 )
 
 set (DIR_SRCS)
