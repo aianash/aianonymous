@@ -29,6 +29,7 @@ static long size4x4[2] = {4l, 4l};
 static long size3x3[2] = {3l, 3l};
 static long size3x4[2] = {3l, 4l};
 static long size3[1] = {3l};
+static long size4[1] = {4l};
 
 static long stride3[1] = {1l};
 static long stride4x4[2] = {4, 1};
@@ -285,10 +286,19 @@ START_TEST(test_tensor_narrow) {
 }
 END_TEST
 
-// // Select
-// START_TEST(test_tensor_select) {
+// Select
+START_TEST(test_tensor_select) {
+  AIATensor(float) *tmp = aiatensor_(float, empty)();
+  aiatensor_(float, select)(tmp, f4x4tnsr, 0, 1);
+  float exp_4_d[4] = { 0.849078f,  0.665310f,  0.931576f,  0.711065f };
+  AIATensor(float) *exp_4 = aiatensor_(float, newFromData)(arr_(float, clone)(exp_4_d, 4), 1, size4, NULL);
 
-// }
+  ck_assert_msg(aiatensor_(float, eq)(exp_4, tmp),
+    "Failed to select");
+  aiatensor_(float, free)(exp_4);
+  aiatensor_(float, free)(tmp);
+}
+END_TEST
 
 //
 Suite *make_tensor_suite(void) {
@@ -309,6 +319,7 @@ Suite *make_tensor_suite(void) {
   tcase_add_test(tc, test_tensor_copy);
   tcase_add_test(tc, test_tensor_cloning);
   tcase_add_test(tc, test_tensor_narrow);
+  tcase_add_test(tc, test_tensor_select);
   suite_add_tcase(s, tc);
   return s;
 }
