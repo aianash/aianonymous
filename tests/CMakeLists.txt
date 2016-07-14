@@ -17,13 +17,11 @@ find_package (Check REQUIRED)
 include_directories(${CHECK_INCLUDE_DIRS})
 
 set(AIANON_MATH_TEST_SOURCES
-    sample_tensors.c
     check_aianon-math_tensor.c
     check_aianon-math.c
 )
 
 set(AIANON_MATH_TEST_HEADERS
-    sample_tensors.h
     check_aianon-math.h)
 
 add_executable (check_aianon-math ${AIANON_MATH_TEST_HEADERS} ${AIANON_MATH_TEST_SOURCES})

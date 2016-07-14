@@ -1,8 +1,8 @@
 #include <tests/config.h>
 #include <check.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-#include "sample_tensors.h"
 #include "check_aianon-math.h"
 
 int main(void) {

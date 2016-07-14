@@ -45,5 +45,6 @@ do {                  \
 
 #include <aianon/core/util/memory.h>
 #include <aianon/core/util/check.h>
+#include <aianon/core/util/array.h>
 
 #endif

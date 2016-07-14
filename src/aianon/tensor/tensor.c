@@ -65,29 +65,29 @@ AIATensor_ *aiatensor__(newVector)(int size) {
 }
 
 //
-AIATensor_ *aiatensor__(newFromData)(T *data, TensorShape shape) {
+AIATensor_ *aiatensor__(newFromData)(T *data, int nDimension, long *size, long *stride) {
   int d;
-  long totalSize = 0;
+  long totalSize = 1;
   AIATensor_ *this = aia_alloc(sizeof(AIATensor_));
-  long *size = aia_alloc(sizeof(long) * shape.nDimension);
-  long *stride = aia_alloc(sizeof(long) * shape.nDimension);
+  long *size_ = aia_alloc(sizeof(long) * nDimension);
+  long *stride_ = aia_alloc(sizeof(long) * nDimension);
 
-  for(d = shape.nDimension - 1; d >= 0; d--) {
-    size[d] = shape.size[d];
-    if(shape.stride && (shape.stride[d] >= 0))
-      stride[d] = shape.stride[d];
+  for(d = nDimension - 1; d >= 0; d--) {
+    size_[d] = size[d];
+    if(stride && (stride[d] >= 0))
+      stride_[d] = stride[d];
     else {
-      if(d == shape.nDimension - 1)
-        stride[d] = 1;
+      if(d == nDimension - 1)
+        stride_[d] = 1;
       else
-        stride[d] = size[d+1] * stride[d+1];
+        stride_[d] = size_[d+1] * stride_[d+1];
     }
-    totalSize += (size[d] - 1) * stride[d];
+    totalSize += (size_[d] - 1) * stride_[d];
   }
 
   AIAStorage_ *storage = aiastorage__(newFromData)(data, totalSize);
 
-  RAW_TENSOR_INIT(this, 1, storage, 0, size, stride, shape.nDimension);
+  RAW_TENSOR_INIT(this, 1, storage, 0, size_, stride_, nDimension);
   return this;
 }
 
@@ -114,8 +114,8 @@ AIATensor_ *aiatensor__(contiguous)(AIATensor_ *this) {
 }
 
 //
-void aiatensor__(resize)(AIATensor_ *this, TensorShape shape) {
-  aiatensor__(resize_)(this, shape.nDimension, shape.size, shape.stride);
+void aiatensor__(resize)(AIATensor_ *this, int nDimension, long *size, long *stride) {
+  aiatensor__(resize_)(this, nDimension, size, stride);
 }
 
 //
@@ -218,7 +218,7 @@ int aiatensor__(isSetTo)(const AIATensor_ *this, const AIATensor_ *that) {
      this->nDimension == that->nDimension) {
     int d;
     for(d = 0; d < this->nDimension; d++) {
-      if(this->size[d] != that->size[d] || this->stride[d] != that->size[d])
+      if(this->size[d] != that->size[d] || this->stride[d] != that->stride[d])
         return 0;
     }
     return 1;
@@ -253,6 +253,18 @@ int aiatensor__(isSameSizeAs)(const AIATensor_ *this, const AIATensor_ *other) {
 }
 
 //
+int aiatensor__(isSameShape)(const AIATensor_ *this, int nDimension, long *size, long *stride) {
+  int d;
+  if(this->nDimension != nDimension)
+    return 0;
+  for(d = 0; d < this->nDimension; ++d) {
+    if(this->size[d] != size[d] || this->stride[d] != stride[d])
+      return 0;
+  }
+  return 1;
+}
+
+//
 int aiatensor__(nElement)(const AIATensor_ *this) {
   if(this->nDimension == 0)
     return 0;
@@ -276,7 +288,7 @@ void aiatensor__(retain)(AIATensor(T_) *this) {
 void aiatensor__(free)(AIATensor_ *this) {
   if(!this) return;
 
-  if(atomic_fetch_add(&this->refcount, -1)) {
+  if(atomic_fetch_add(&this->refcount, -1) == 1) {
     free(this->size);
     free(this->stride);
     if(this->storage) aiastorage__(free)(this->storage);

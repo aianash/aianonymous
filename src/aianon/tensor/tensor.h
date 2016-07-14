@@ -8,15 +8,6 @@
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
 
-typedef struct TensorShape {
-  long *size;
-  long *stride;
-  int nDimension;
-} TensorShape;
-
-#define NEW_TENSOR_SHAPE(nDimension_, size_, stride_) \
-{ .nDimension=(nDimension_), .size=(size_), .stride=(stride_) }
-
 #define RAW_TENSOR_INIT(this, refcount_, storage_, offset_, size_, stride_, nDimension_) \
 {                                                                                        \
   this->refcount = refcount_;                                                            \
@@ -49,19 +40,20 @@ AIA_API int aiatensor__(nDimension)(const AIATensor_ *this);
 AIA_API long aiatensor__(size)(const AIATensor_ *this, int dim);
 AIA_API long aiatensor__(stride)(const AIATensor_ *this, int dim);
 AIA_API T *aiatensor__(data)(const AIATensor_ *this);
+AIA_API int aiatensor__(nElement)(const AIATensor_ *this);
 
 /** Tests **/
 //---------//
 
 AIA_API int aiatensor__(isContiguous)(const AIATensor_ *this);
 AIA_API int aiatensor__(isSameSizeAs)(const AIATensor_ *this, const AIATensor_ *other);
-AIA_API int aiatensor__(nElement)(const AIATensor_ *this);
+AIA_API int aiatensor__(isSameShape)(const AIATensor_ *this, int nDimension, long *size, long *stride);
 
 /** Tensor constructors **/
 AIA_API AIATensor_ *aiatensor__(empty)(void);
 AIA_API AIATensor_ *aiatensor__(new)(AIATensor_ *other);
 AIA_API AIATensor_ *aiatensor__(newVector)(int size);
-AIA_API AIATensor_ *aiatensor__(newFromData)(T *data, TensorShape shape);
+AIA_API AIATensor_ *aiatensor__(newFromData)(T *data, int nDimension, long *size, long *stride);
 
 // AIA_API AIATensor_ *aiatensor__(newWithStorage)(AIAStorage_ *storage, long storageOffset, TensorShape shape);
 // AIA_API AIATensor_ *aiatensor__(newOfShape)(TensorShape shape);
@@ -86,7 +78,7 @@ AIA_API AIATensor_ *aiatensor__(contiguous)(AIATensor_ *this);
 /** Resizing **/
 //------------//
 
-AIA_API void aiatensor__(resize)(AIATensor_ *this, TensorShape shape);
+AIA_API void aiatensor__(resize)(AIATensor_ *this, int nDimension, long *size, long *stride);
 AIA_API void aiatensor__(resizeAs)(AIATensor_ *this, AIATensor_ *other);
 AIA_API void aiatensor__(resize1d)(AIATensor_ *this, long size0);
 AIA_API void aiatensor__(resize2d)(AIATensor_ *this, long size0, long size1);
