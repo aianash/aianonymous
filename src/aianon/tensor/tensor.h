@@ -49,13 +49,14 @@ AIA_API int aiatensor__(nDimension)(const AIATensor_ *this);
 AIA_API long aiatensor__(size)(const AIATensor_ *this, int dim);
 AIA_API long aiatensor__(stride)(const AIATensor_ *this, int dim);
 AIA_API T *aiatensor__(data)(const AIATensor_ *this);
+AIA_API int aiatensor__(nElement)(const AIATensor_ *this);
 
 /** Tests **/
 //---------//
 
 AIA_API int aiatensor__(isContiguous)(const AIATensor_ *this);
 AIA_API int aiatensor__(isSameSizeAs)(const AIATensor_ *this, const AIATensor_ *other);
-AIA_API int aiatensor__(nElement)(const AIATensor_ *this);
+AIA_API int aiatensor__(isSameShape)(const AIATensor_ *this, const TensorShape shape);
 
 /** Tensor constructors **/
 AIA_API AIATensor_ *aiatensor__(empty)(void);

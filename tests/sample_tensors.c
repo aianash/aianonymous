@@ -13,7 +13,7 @@ TensorShape shape3x3 = NEW_TENSOR_SHAPE(2, size3x3, NULL);
 
 #ifdef ERASED_TYPE_PRESENT
 
-static T *clone(T *arr, int size) {
+static T *mktnsr__(clone)(T *arr, int size) {
   T *res = aia_alloc(sizeof(T) * size);
   int i;
   for(i = 0; i < size; i++) res[i] = arr[i];
@@ -21,10 +21,26 @@ static T *clone(T *arr, int size) {
 }
 
 T Mat_(rnd4x4)[16] =
-  { 0.44783241,  0.06268606,  0.03410412,  0.65443608,
-    0.96924508,  0.85259425,  0.08037111,  0.6618764 ,
-    0.93053844,  0.21757096,  0.5980586 ,  0.66421652,
-    0.95874301,  0.55492546,  0.87603126,  0.8948417  };
+  { 0.07991805,  0.97586422,  0.2668651 ,  0.9124779 ,
+    0.84907812,  0.66531035,  0.93157663,  0.71106513,
+    0.66486698,  0.30385106,  0.21018787,  0.77947325,
+    0.41738024,  0.90427542,  0.16466475,  0.09119455 };
+
+T Mat_(rnd4x4T)[16] =
+  { 0.07991805,  0.84907812,  0.66486698,  0.41738024,
+    0.97586422,  0.66531035,  0.30385106,  0.90427542,
+    0.2668651 ,  0.93157663,  0.21018787,  0.16466475,
+    0.9124779 ,  0.71106513,  0.77947325,  0.09119455 };
+
+T Mat_(rnd3x3)[9] =
+  { 0.07991805,  0.97586422,  0.2668651 ,
+    0.84907812,  0.66531035,  0.93157663,
+    0.66486698,  0.30385106,  0.21018787 };
+
+T Mat_(rnd3x3T)[9] =
+  { 0.07991805,  0.84907812,  0.66486698,
+    0.97586422,  0.66531035,  0.30385106,
+    0.2668651 ,  0.93157663,  0.21018787 };
 
 T Mat_(pd3x3)[9] =
   { 0.29291524,  0.06772514,  0.00308962,
@@ -33,11 +49,23 @@ T Mat_(pd3x3)[9] =
 
 
 AIATensor_ *mktnsr__(rnd4x4)(void) {
-  return aiatensor__(newFromData)(clone(Mat_(rnd4x4), 16), shape4x4);
+  return aiatensor__(newFromData)(mktnsr__(clone)(Mat_(rnd4x4), 16), shape4x4);
+}
+
+AIATensor_ *mktnsr__(rnd4x4T)(void) {
+  return aiatensor__(newFromData)(mktnsr__(clone)(Mat_(rnd4x4T), 16), shape4x4);
+}
+
+AIATensor_ *mktnsr__(rnd3x3)(void) {
+  return aiatensor__(newFromData)(mktnsr__(clone)(Mat_(rnd3x3), 9), shape3x3);
+}
+
+AIATensor_ *mktnsr__(rnd3x3T)(void) {
+  return aiatensor__(newFromData)(mktnsr__(clone)(Mat_(rnd3x3T), 9), shape3x3);
 }
 
 AIATensor_ *mktnsr__(pd3x3)(void) {
-  return aiatensor__(newFromData)(clone(Mat_(pd3x3), 9), shape3x3);
+  return aiatensor__(newFromData)(mktnsr__(clone)(Mat_(pd3x3), 9), shape3x3);
 }
 
 

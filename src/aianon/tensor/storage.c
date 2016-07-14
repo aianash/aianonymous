@@ -45,7 +45,7 @@ void aiastorage__(retain)(AIAStorage_ *this) {
 void aiastorage__(free)(AIAStorage_ *this) {
   if(!this) return;
 
-  if(atomic_fetch_add(&this->refcount, -1)) {
+  if(atomic_fetch_add(&this->refcount, -1) == 1) {
     free(this->data);
     free(this);
   }
