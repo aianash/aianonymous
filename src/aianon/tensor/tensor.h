@@ -61,6 +61,7 @@ AIA_API int aiatensor__(nElement)(const AIATensor_ *this);
 AIA_API AIATensor_ *aiatensor__(empty)(void);
 AIA_API AIATensor_ *aiatensor__(new)(AIATensor_ *other);
 AIA_API AIATensor_ *aiatensor__(newVector)(int size);
+AIA_API AIATensor_ *aiatensor__(newFromData)(T *data, TensorShape shape);
 
 // AIA_API AIATensor_ *aiatensor__(newWithStorage)(AIAStorage_ *storage, long storageOffset, TensorShape shape);
 // AIA_API AIATensor_ *aiatensor__(newOfShape)(TensorShape shape);

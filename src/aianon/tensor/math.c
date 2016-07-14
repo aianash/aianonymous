@@ -455,6 +455,62 @@ void aiatensor__(baddbmm)(AIATensor_ *res, T beta, AIATensor_ *batch3, T alpha, 
   aiatensor__(free)(res_mat);
 }
 
+//
+int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b) {
+  int equal = 1;
+  if(!aiatensor__(isSameSizeAs)(a, b)) return 0;
+  if(aiatensor__(isContiguous)(a) && aiatensor__(isContiguous)(b)) {
+    T *ad = aiatensor__(data)(a);
+    T *bd = aiatensor__(data)(b);
+    long n = aiatensor__(nElement)(a);
+    long i;
+    for(i = 0; i < n; i++) {
+      if(ad[i] != bd[i]) return 0;
+    }
+  } else {
+    AIA_TENSOR_APPLY2(T, a, T, b,
+                      if(equal && *a_data != *b_data) {
+                        equal = 0;
+                        tensor_apply_finished = 1; break;
+                      })
+  }
+  return equal;
+}
+
+//
+int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
+  int equal = 1;
+  if(!aiatensor__(isSameSizeAs)(a, b)) return 0;
+  if(epsi < 0) epsi = -epsi;
+  if(aiatensor__(isContiguous)(a) && aiatensor__(isContiguous)(b)) {
+    T *ad = aiatensor__(data)(a);
+    T *bd = aiatensor__(data)(b);
+    long n = aiatensor__(nElement)(a);
+    long i;
+    for(i = 0; i < n; i++) {
+#ifdef T_IS_FLOAT
+      if(fabsf(ad[i] - bd[i]) > epsi) return 0;
+#elif T_IS_DOUBLE
+      if(fabs(ad[i] - bd[i]) > epsi) return 0;
+#endif
+    }
+  } else {
+#ifdef T_IS_FLOAT
+    AIA_TENSOR_APPLY2(T, a, T, b,
+                      if(equal && fabsf(a_data - b_data) > epsi) {
+                        equal = 0;
+                        tensor_apply_finished = 1; break;
+                      })
+#elif T_IS_DOUBLE
+    AIA_TENSOR_APPLY2(T, a, T, b,
+                      if(equal && fabs(a_data - b_data) > epsi) {
+                        equal = 0;
+                        tensor_apply_finished = 1; break;
+                      })
+#endif
+  }
+  return equal;
+}
 
 #endif
 #define ERASE_FLOAT

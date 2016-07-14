@@ -44,14 +44,14 @@ static void aiatensor__(resize_)(AIATensor_ *this, int nDimension, long *size, l
 
 //
 AIATensor_ *aiatensor__(empty)(void) {
-  AIATensor_ *this = malloc(sizeof(AIATensor_));
+  AIATensor_ *this = aia_alloc(sizeof(AIATensor_));
   RAW_TENSOR_INIT(this, 1, NULL, 0, NULL, NULL, 0);
   return this;
 }
 
 //
 AIATensor_ *aiatensor__(new)(AIATensor_ *other) {
-  AIATensor_ *this = malloc(sizeof(AIATensor_));
+  AIATensor_ *this = aia_alloc(sizeof(AIATensor_));
   RAW_TENSOR_INIT(this, 1, other->storage, other->storageOffset, other->size, other->stride, other->nDimension);
   return this;
 }
@@ -61,6 +61,33 @@ AIATensor_ *aiatensor__(newVector)(int size) {
   AIATensor_ *this = aiatensor__(empty)();
   long size_[1] = {size};
   aiatensor__(resize_)(this, 1, size_, NULL);
+  return this;
+}
+
+//
+AIATensor_ *aiatensor__(newFromData)(T *data, TensorShape shape) {
+  int d;
+  long totalSize = 0;
+  AIATensor_ *this = aia_alloc(sizeof(AIATensor_));
+  long *size = aia_alloc(sizeof(long) * shape.nDimension);
+  long *stride = aia_alloc(sizeof(long) * shape.nDimension);
+
+  for(d = shape.nDimension - 1; d >= 0; d--) {
+    size[d] = shape.size[d];
+    if(shape.stride && (shape.stride[d] >= 0))
+      stride[d] = shape.stride[d];
+    else {
+      if(d == shape.nDimension - 1)
+        stride[d] = 1;
+      else
+        stride[d] = size[d+1] * stride[d+1];
+    }
+    totalSize += (size[d] - 1) * stride[d];
+  }
+
+  AIAStorage_ *storage = aiastorage__(newFromData)(data, totalSize);
+
+  RAW_TENSOR_INIT(this, 1, storage, 0, size, stride, shape.nDimension);
   return this;
 }
 

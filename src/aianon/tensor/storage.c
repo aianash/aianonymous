@@ -10,9 +10,17 @@ AIAStorage_ *aiastorage__(empty)(void) {
   return this;
 }
 
-AIAStorage_ *aiastorage__(new)(int size) {
+AIAStorage_ *aiastorage__(new)(long size) {
   AIAStorage_ *this = aia_alloc(sizeof(AIAStorage_));
   this->data = aia_alloc(sizeof(T) * size);
+  this->size = size;
+  this->refcount = 1;
+  return this;
+}
+
+AIAStorage_ *aiastorage__(newFromData)(T *data, long size) {
+  AIAStorage_ *this = aia_alloc(sizeof(AIAStorage_));
+  this->data = data;
   this->size = size;
   this->refcount = 1;
   return this;
