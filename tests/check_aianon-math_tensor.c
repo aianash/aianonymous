@@ -3,16 +3,51 @@
 #include <stdlib.h>
 #include <aianon/tensor/tensor.h>
 
-#include "sample_tensors.h"
+static float rnd4x4[16] =
+  { 0.079918f,  0.975864f,  0.266865f,  0.912477f,
+    0.849078f,  0.665310f,  0.931576f,  0.711065f,
+    0.664866f,  0.303851f,  0.210187f,  0.779473f,
+    0.417380f,  0.904275f,  0.164664f,  0.091194f };
 
-AIATensor(float) *f4x4tnsr;
-AIATensor(float) *f4x4tnsrT;
-AIATensor(float) *f3x3tnsr;
+static float rnd4x4T[16] =
+  { 0.079918f,  0.849078f,  0.664866f,  0.417380f,
+    0.975864f,  0.665310f,  0.303851f,  0.904275f,
+    0.266865f,  0.931576f,  0.210187f,  0.164664f,
+    0.912477f,  0.711065f,  0.779473f,  0.091194f };
+
+static float rnd3x3[9] =
+  { 0.0799180,  0.9758642,  0.2668651,
+    0.8490781,  0.6653103,  0.9315766,
+    0.6648669,  0.3038510,  0.2101878 };
+
+static float rnd3x3T[9] =
+  { 0.0799180,  0.8490781,  0.6648669,
+    0.9758642,  0.6653103,  0.3038510,
+    0.2668651,  0.9315766,  0.2101878 };
+
+static long size4x4[2] = {4l, 4l};
+static long size3x3[2] = {3l, 3l};
+static long size3x4[2] = {3l, 4l};
+static long size3[1] = {3l};
+
+static long stride3[1] = {1l};
+static long stride4x4[2] = {4, 1};
+static long stride3x3[2] = {3, 1};
+
+static AIATensor(float) *f4x4tnsr;
+static AIATensor(float) *f4x4tnsrT;
+static AIATensor(float) *f3x3tnsr;
+
+#define SHAPE_WITH_STRIDE(shape, strideInit) \
+{ \
+  long stride[shape.nDimension] = strideInit; \
+  shape.stride = stride; \
+}\
 
 void tensor_setup(void) {
-  f4x4tnsr = mktnsr_(float, rnd4x4)();
-  f4x4tnsrT = mktnsr_(float, rnd4x4T)();
-  f3x3tnsr = mktnsr_(float, rnd3x3)();
+  f4x4tnsr = aiatensor_(float, newFromData)(arr_(float, clone)(rnd4x4, 16), 2, size4x4, NULL);
+  f4x4tnsrT = aiatensor_(float, newFromData)(arr_(float, clone)(rnd4x4T, 16), 2, size4x4, NULL);
+  f3x3tnsr = aiatensor_(float, newFromData)(arr_(float, clone)(rnd3x3, 9), 2, size3x3, NULL);
 }
 
 void tensor_teardown(void) {
@@ -117,11 +152,8 @@ START_TEST(test_tensor_test_methods) {
     "Same size matrix check failed between 4x4 3x3");
 
   // isSameShape
-  long stride4x4[2] = {4, 1};
-  shape4x4.stride = stride4x4;
-  ck_assert_msg(aiatensor_(float, isSameShape)(f4x4tnsr, shape4x4),
+  ck_assert_msg(aiatensor_(float, isSameShape)(f4x4tnsr, 2, size4x4, stride4x4),
     "isSameShape failed");
-  shape4x4.stride = NULL;
 
   aiatensor_(float, free)(tr);
 }
@@ -132,35 +164,25 @@ START_TEST(test_tensor_resize) {
   AIATensor(float) *tmp = aiatensor_(float, empty)();
 
   // resize
-  aiatensor_(float, resize)(tmp, shape3x3);
-  long stride3x3[2] = {3, 1};
-  shape3x3.stride = stride3x3;
-  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, shape3x3),
+  aiatensor_(float, resize)(tmp, 2, size3x3, NULL);
+
+  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, 2, size3x3, stride3x3),
     "Resize failed on empty tensor");
-  shape3x3.stride = NULL;
 
   // resizeAs
   aiatensor_(float, resizeAs)(tmp, f4x4tnsr);
-  long stride4x4[2] = {4, 1};
-  shape4x4.stride = stride4x4;
-  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, shape4x4),
+  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, 2, size4x4, stride4x4),
     "ResizeAs failed");
-  shape4x4.stride = NULL;
 
   // resize1d
-  long size3[1] = {3l};
-  long stride3[1] = {1l};
-  TensorShape shape3 = NEW_TENSOR_SHAPE(1, size3, stride3);
   aiatensor_(float, resize1d)(tmp, 3);
-  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, shape3),
+  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, 1, size3, stride3),
     "Resize1d failed");
 
   // resize2d
   aiatensor_(float, resize2d)(tmp, 4, 4);
-  shape4x4.stride = stride4x4;
-  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, shape4x4),
+  ck_assert_msg(aiatensor_(float, isSameShape)(tmp, 2, size4x4, stride4x4),
     "Resize2d failed");
-  shape4x4.stride = NULL;
 
   aiatensor_(float, free)(tmp);
 }
@@ -189,11 +211,9 @@ START_TEST(test_tensor_transpose) {
   ck_assert_msg(aiatensor_(float, eq)(tr, f4x4tnsrT),
     "Failed to transpose 4x4 matrix");
 
-  long stride4x4[2] = {1, 4};
-  shape4x4.stride = stride4x4;
-  ck_assert_msg(aiatensor_(float, isSameShape)(tr, shape4x4),
+  long trstride[2] = {1, 4};
+  ck_assert_msg(aiatensor_(float, isSameShape)(tr, 2, size4x4, trstride),
     "wrong shape after transpose");
-  shape4x4.stride = NULL;
 
   aiatensor_(float, free)(tr);
 }
@@ -202,7 +222,7 @@ END_TEST
 // Copy
 START_TEST(test_tensor_copy) {
   AIATensor(float) *tmp = aiatensor_(float, empty)();
-  aiatensor_(float, resize)(tmp, shape4x4);
+  aiatensor_(float, resize)(tmp, 2, size4x4, stride4x4);
 
   // copy
   aiatensor_(float, copy)(tmp, f4x4tnsr);
@@ -211,7 +231,7 @@ START_TEST(test_tensor_copy) {
 
   // freeCopyTo
   AIATensor(float) *dest = aiatensor_(float, empty)();
-  aiatensor_(float, resize)(dest, shape4x4);
+  aiatensor_(float, resize)(dest, 2, size4x4, stride4x4);
   aiatensor_(float, retain)(tmp);
   aiatensor_(float, freeCopyTo)(tmp, dest);
   ck_assert_msg(aiatensor_(float, eq)(dest, f4x4tnsr) && tmp->refcount == 1,
@@ -236,6 +256,40 @@ START_TEST(test_tensor_cloning) {
 }
 END_TEST
 
+// Narrow
+START_TEST(test_tensor_narrow) {
+  AIATensor(float) *tmp = aiatensor_(float, empty)();
+  aiatensor_(float, narrow)(tmp, f4x4tnsr, 0, 1, 3);
+  float exp_3x4_d[12] =
+    { 0.849078f,  0.665310f,  0.931576f,  0.711065f,
+      0.664866f,  0.303851f,  0.210187f,  0.779473f,
+      0.417380f,  0.904275f,  0.164664f,  0.091194f };
+  AIATensor(float) *exp_3x4 = aiatensor_(float, newFromData)(arr_(float, clone)(exp_3x4_d, 12), 2, size3x4, NULL);
+
+  ck_assert_msg(aiatensor_(float, eq)(exp_3x4, tmp),
+    "Failed to narrow");
+  aiatensor_(float, free)(exp_3x4);
+
+  aiatensor_(float, narrow)(tmp, tmp, 1, 0, 3);
+  float exp_3x3_d[12] =
+    { 0.849078f,  0.665310f,  0.931576f,
+      0.664866f,  0.303851f,  0.210187f,
+      0.417380f,  0.904275f,  0.164664f };
+  AIATensor(float) *exp_3x3 = aiatensor_(float, newFromData)(arr_(float, clone)(exp_3x3_d, 9), 2, size3x3, NULL);
+
+  ck_assert_msg(aiatensor_(float, eq)(exp_3x3, tmp),
+    "Failed to narrow second time");
+  aiatensor_(float, free)(exp_3x3);
+
+  aiatensor_(float, free)(tmp);
+}
+END_TEST
+
+// // Select
+// START_TEST(test_tensor_select) {
+
+// }
+
 //
 Suite *make_tensor_suite(void) {
   Suite *s;
@@ -254,6 +308,7 @@ Suite *make_tensor_suite(void) {
   tcase_add_test(tc, test_tensor_transpose);
   tcase_add_test(tc, test_tensor_copy);
   tcase_add_test(tc, test_tensor_cloning);
+  tcase_add_test(tc, test_tensor_narrow);
   suite_add_tcase(s, tc);
   return s;
 }
