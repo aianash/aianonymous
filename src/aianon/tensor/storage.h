@@ -12,6 +12,10 @@ typedef struct AIAStorage_ {
 } AIAStorage_;
 
 AIA_API AIAStorage_ *aiastorage__(empty)(void);
+AIA_API AIAStorage_ *aiastorage__(new)(long size);
+AIA_API AIAStorage_ *aiastorage__(newFromData)(T *data, long size);
+
+
 AIA_API void aiastorage__(retain)(AIAStorage_ *this);
 AIA_API void aiastorage__(free)(AIAStorage_ *this);
 AIA_API void aiastorage__(resize)(AIAStorage_ *this, int size);
