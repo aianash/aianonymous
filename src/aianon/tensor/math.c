@@ -227,10 +227,8 @@ void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *den
   }
 }
 
-void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3)
-{
-  if(res != tnsr1)
-  {
+void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3) {
+  if(res != tnsr1) {
     aiatensor__(resizeAs)(res, tnsr1);
     aiatensor__(copy)(res, tnsr1);
   }
@@ -238,8 +236,7 @@ void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor
 }
 
 
-void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3)
-{
+void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3) {
   if(res != tnsr1)
   {
     aiatensor__(resizeAs)(res, tnsr1);
