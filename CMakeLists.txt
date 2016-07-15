@@ -50,9 +50,10 @@ include_directories (BEFORE "${CMAKE_BINARY_DIR}")
 include_directories (BEFORE "${CMAKE_SOURCE_DIR}/src")
 
 add_subdirectory (src/aianon)
+add_subdirectory (src/aianon-optim)
 add_subdirectory (tests)
 
-set (DEPS ${DEPS} aianon)
+set (DEPS ${DEPS} aianon aianon-optim)
 
 add_executable (aianonymous aianonymous.c)
 target_link_libraries (aianonymous ${DEPS})
