@@ -11,6 +11,6 @@ T *arr__(clone)(T *arr, int size) {
 
 #endif
 
-#define ERASE_FLOAT
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/core/util/array.c"
 #include <aianon/core/erasure.h>

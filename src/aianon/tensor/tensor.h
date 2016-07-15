@@ -51,9 +51,11 @@ AIA_API int aiatensor__(isSameShape)(const AIATensor_ *this, int nDimension, lon
 
 /** Tensor constructors **/
 AIA_API AIATensor_ *aiatensor__(empty)(void);
+AIA_API AIATensor_ *aiatensor__(emptyAs)(AIATensor_ *other);
 AIA_API AIATensor_ *aiatensor__(new)(AIATensor_ *other);
 AIA_API AIATensor_ *aiatensor__(newVector)(int size);
 AIA_API AIATensor_ *aiatensor__(newFromData)(T *data, int nDimension, long *size, long *stride);
+AIA_API AIATensor_ *aiatensor__(newCopy)(AIATensor_ *other);
 
 // AIA_API AIATensor_ *aiatensor__(newWithStorage)(AIAStorage_ *storage, long storageOffset, TensorShape shape);
 // AIA_API AIATensor_ *aiatensor__(newOfShape)(TensorShape shape);
@@ -108,6 +110,10 @@ AIA_API void aiatensor__(transpose)(AIATensor_ *this, AIATensor_ *from, int dim1
 //-----------------------------------//
 // TODO: fill. zeros
 AIA_API void aiatensor__(copy)(AIATensor_ *to, AIATensor_ *from);
+AIA_API void aiatensor__(copyInt)(AIATensor_ *to, int *from);
+AIA_API void aiatensor__(copyLong)(AIATensor_ *to, long *from);
+AIA_API void aiatensor__(copyFloat)(AIATensor_ *to, float *from);
+AIA_API void aiatensor__(copyDouble)(AIATensor_ *to, double *from);
 
 /** Expanding/Replicating/Squeezing Tensors **/
 //-------------------------------------------//

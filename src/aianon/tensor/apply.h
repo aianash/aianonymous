@@ -13,7 +13,7 @@
 	if (tensor->nDimension == 0) \
 		tensor_apply_finished = 1; \
 	else { \
-		tensor##_data = tensor->storage->data + tensor.storageOffset; \
+		tensor##_data = tensor->storage->data + tensor->storageOffset; \
 \
 		/* get first stride after ignoring dimensions with size value 1 */ \
 		for (tensor##_dim = tensor->nDimension - 1; tensor##_dim >= 0; tensor##_dim--) { \
