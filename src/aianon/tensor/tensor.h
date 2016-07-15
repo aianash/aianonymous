@@ -118,9 +118,6 @@ AIA_API void aiatensor__(retain)(AIATensor_ *this);
 AIA_API void aiatensor__(free)(AIATensor_ *this);
 AIA_API void aiatensor__(freeCopyTo)(AIATensor_ *this, AIATensor_ *to);
 
-AIA_API void aiatensor__(mv)(AIATensor_ *a, AIATensor_ *b, AIATensor_ *c);
-AIA_API T aiatensor__(dot)(AIATensor_ *b, AIATensor_ *c);
-
 AIA_API bool aiatensor__(isVector)(AIATensor_ *a);
 AIA_API bool aiatensor__(isMatrix)(AIATensor_ *a);
 AIA_API bool aiatensor__(isSquare)(AIATensor_ *a);

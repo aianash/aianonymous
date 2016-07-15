@@ -18,6 +18,7 @@ include_directories(${CHECK_INCLUDE_DIRS})
 
 set(AIANON_MATH_TEST_SOURCES
     check_aianon-math_tensor.c
+    check_aianon-math_tensormath.c
     check_aianon-math.c
 )
 

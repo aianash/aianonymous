@@ -4,6 +4,7 @@
 #include <aianon/core/util/memory.h>
 #include <aianon/core/math/blas.h>
 #include <aianon/tensor/tensor.h>
+#include <aianon/tensor/math.h>
 #include <aianon/tensor/dimcrossapply.h>
 
 #ifdef ERASED_TYPE_PRESENT

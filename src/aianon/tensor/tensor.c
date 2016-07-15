@@ -362,22 +362,32 @@ static void aiatensor__(resize_)(AIATensor_ *this, int nDimension, long *size, l
   }
 }
 
-void aiatensor__(mv)(AIATensor_ *a, AIATensor_ *b, AIATensor_ *c) {}
-
-T aiatensor__(dot)(AIATensor_ *b, AIATensor_ *c) {
-  return 0;
+int aiatensor__(isVector)(AIATensor_ *tnsr) {
+  return (tnsr->nDimension == 1);
 }
 
-int aiatensor__(isVector)(AIATensor_ *a) {
-  return (a->nDimension == 1);
+bool aiatensor__(isMatrix)(AIATensor_ *tnsr) {
+  return (tnsr->nDimension == 2);
 }
 
-bool aiatensor__(isMatrix)(AIATensor_ *a) {
-  return (a->nDimension == 2);
+bool aiatensor__(isSquare)(AIATensor_ *tnsr) {
+  return (tnsr->nDimension == 2 && tnsr->size[0] == tnsr->size[1]);
 }
 
-bool aiatensor__(isSquare)(AIATensor_ *a) {
-  return (a->nDimension == 2 && a->size[0] == a->size[1]);
+char *aiatensor__(toString)(AIATensor_ *tnsr) {
+  char *str;
+  char *tmp;
+  T *tnsr_data = aiatensor__(data)(tnsr);
+  long i, j;
+  for(i = 0; i < tnsr->size[0]; i++) {
+    for(j = 0; j < tnsr->size[1]; j++) {
+      sprintf(tmp, "%f", tnsr_data[i * tnsr->stride[0] + j * tnsr->stride[1]]);
+      strcat(str, tmp);
+      break;
+    }
+    break;
+  }
+  return str;
 }
 
 #endif

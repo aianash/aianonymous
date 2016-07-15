@@ -38,7 +38,7 @@ static void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T a
 
   // compute exp part of q
   Kxmu = aiakernel_se__(matrix)(NULL, X, Xxm, alpha, XxcovpL, FALSE, uplo);
-  aiatensor__(cmul)(q, Kxmu, const_);
+  aiatensor__(mul)(q, Kxmu, const_);
 
   aiatensor__(free)(constmat);
   aiatensor__(free)(Kxmu);
@@ -72,10 +72,10 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
   aiatensor__(resize2d)(Z, n * n, d);
   aiatensor__(diagmm)(constmat, Xxcov, lambda, TRUE);
   aiatensor__(aIpX)(constmat, NULL, 1);
-  aiatensor__(cmul)(constmat, constmat, 2);
+  aiatensor__(mul)(constmat, constmat, 2);
   const_ = pow(aiatensor__(detsymm)(constmat), -0.5);
 
-  aiatensor__(cmul)(lenscal, lambda, 2);
+  aiatensor__(mul)(lenscal, lambda, 2);
   K1 = aiakernel_se__(matrix)(NULL, X, NULL, 1, lenscal, TRUE, NULL);
 
   AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, Z, 0,
@@ -110,7 +110,7 @@ void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const c
   aiatensor__(mv)(fmean, KxT, beta);
 
   // calculation of fcov
-  aiatensor__(XTAsymmIXpaY)(fcov, Kx, -1, Kxx, K);
+  aiatensor__(XTAsymmIXpaY)(fcov, Kx, K, uplo, -1, Kxx);
   aiatensor__(mul)(fcov, fcov, -1);
 
   aiatensor__(free)(KxT);

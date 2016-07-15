@@ -3,6 +3,7 @@
 #include <aianon/core/util.h>
 #include <aianon/core/math/blas.h>
 #include <aianon/tensor/tensor.h>
+#include <aianon/tensor/math.h>
 #include <aianon/tensor/dimapply.h>
 #include <aianon/tensor/diagmath.h>
 #include <aianon/ml/kernel/kernel.h>

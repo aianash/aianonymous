@@ -455,6 +455,12 @@ void aiatensor__(baddbmm)(AIATensor_ *res, T beta, AIATensor_ *batch3, T alpha, 
   aiatensor__(free)(res_mat);
 }
 
+void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {}
+
+T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2) {
+  return 0;
+}
+
 //
 int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b) {
   int equal = 1;
