@@ -115,7 +115,7 @@ void aiatensor__(copy)(AIATensor_ *to, AIATensor_ *from) {
 
 //
 void aiatensor__(copyInt)(AIATensor_ *to, int *from) {
-  int i = 0;
+  long i = 0;
   AIA_TENSOR_APPLY(T, to,
     {
       *to_data = (T)(from[i]);
@@ -125,7 +125,7 @@ void aiatensor__(copyInt)(AIATensor_ *to, int *from) {
 
 //
 void aiatensor__(copyLong)(AIATensor_ *to, long *from) {
-  int i = 0;
+  long i = 0;
   AIA_TENSOR_APPLY(T, to,
     {
       *to_data = (T)(from[i]);
@@ -135,7 +135,7 @@ void aiatensor__(copyLong)(AIATensor_ *to, long *from) {
 
 //
 void aiatensor__(copyFloat)(AIATensor_ *to, float *from) {
-  int i = 0;
+  long i = 0;
   AIA_TENSOR_APPLY(T, to,
     {
       *to_data = (T)(from[i]);
@@ -145,7 +145,7 @@ void aiatensor__(copyFloat)(AIATensor_ *to, float *from) {
 
 //
 void aiatensor__(copyDouble)(AIATensor_ *to, double *from) {
-  int i = 0;
+  long i = 0;
   AIA_TENSOR_APPLY(T, to,
     {
       *to_data = (T)(from[i]);
