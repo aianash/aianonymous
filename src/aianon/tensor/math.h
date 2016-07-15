@@ -200,39 +200,39 @@ AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
 /**
  * Description
  * -----------
- * Returns following product for a symmetric matrix A
+ * Returns following product for a positive definite matrix A
  *   x** * A^-1 * x
  *
  * Input
  * -----
- * x    : Vector of size n
- * amat : Cholesky factorization of a symmetric matrix of size n x n
- * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
+ * x     : Vector of size n
+ * achol : Cholesky factorization of a positive definite matrix of size n x n
+ * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
  *
  * Output
  * ------
  * Returns a scalar
  */
-AIA_API T aiatensor__(xTAsymmIx)(AIATensor_ *x, AIATensor_ *amat, const char *uplo);
+AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo);
 
 /**
  * Description
  * -----------
- * Returns following product for a symmetric matrix A
+ * Returns following product for a positive definite matrix A
  *   x** * A^-1 * y
  *
  * Input
  * -----
- * x    : Vector of size n
- * amat : Cholesky factorization of a symmetric matrix of size n x n
- * y    : Vector of size n
- * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
+ * x     : Vector of size n
+ * achol : Cholesky factorization of a positive definite matrix of size n x n
+ * y     : Vector of size n
+ * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
  *
  * Output
  * ------
  * Returns a scalar
  */
-AIA_API T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y, const char *uplo);
+AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y);
 
 /**
  * Description
@@ -258,16 +258,16 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
 /**
  * Description
  * -----------
- * Computes following matrix-matrix multiplication
+ * Computes following matrix-matrix multiplication for positive definite matrix A
  *   X** * A^-1 * X + a * Y
  *
  * Input
  * -----
- * xmat : Matrix of size n x n
- * amat : Cholesky factorization of symmetric matrix of size n x n
- * uplo : "U" or "L" depending on whether amat has upper or lower triangular matrix
- * a    : Multiplication factor
- * ymat : Matrix of size n x n
+ * xmat  : Matrix of size n x n
+ * achol : Cholesky factorization of positive definite matrix of size n x n
+ * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
+ * a     : Multiplication factor
+ * ymat  : Matrix of size n x n
  *
  * Output
  * ------
@@ -275,7 +275,7 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  * If res is NULL, it creates a new matrix. Client has to delete the returned matrix.
  *
  */
-AIA_API AIATensor_ *aiatensor__(XTAsymmIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, const char *uplo, T a, AIATensor_ *ymat);
+AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat);
 
 #endif
 

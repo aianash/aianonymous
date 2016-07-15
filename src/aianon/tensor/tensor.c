@@ -374,18 +374,24 @@ bool aiatensor__(isSquare)(AIATensor_ *tnsr) {
   return (tnsr->nDimension == 2 && tnsr->size[0] == tnsr->size[1]);
 }
 
-char *aiatensor__(toString)(AIATensor_ *tnsr) {
-  char *str;
-  char *tmp;
-  T *tnsr_data = aiatensor__(data)(tnsr);
+/** Print a matrix */
+char *aiatensor__(mat2str)(AIATensor_ *mat) {
+  char *str = (char*) calloc(1, sizeof(char));
+  char *fmt;
+  char tmp[50];
+  T *mat_data = aiatensor__(data)(mat);
   long i, j;
-  for(i = 0; i < tnsr->size[0]; i++) {
-    for(j = 0; j < tnsr->size[1]; j++) {
-      sprintf(tmp, "%f", tnsr_data[i * tnsr->stride[0] + j * tnsr->stride[1]]);
+
+  for(i = 0; i < mat->size[0]; i++) {
+    for(j = 0; j < mat->size[1]; j++) {
+      if(j == mat->size[1] - 1)
+        fmt = "%f\n";
+      else
+        fmt = "%f,\t";
+      sprintf(tmp, fmt, mat_data[i * mat->stride[0] + j * mat->stride[1]]);
+      str = realloc(str, (strlen(str) + strlen(tmp) + 1) * sizeof(char));
       strcat(str, tmp);
-      break;
     }
-    break;
   }
   return str;
 }

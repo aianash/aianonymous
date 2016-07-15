@@ -18,17 +18,17 @@
  *
  * Input
  * -----
- * K    : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
+ * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
  *        where sigma is noise variance
- * uplo : 'U' if K contains the uppar triangular matrix
- *        'L' if K contains the lower triangular matrix
- * y    : vector of size n with training data
+ * uplo  : 'U' if Kchol contains the uppar triangular matrix
+ *         'L' if Kchol contains the lower triangular matrix
+ * y     : vector of size n with training data
  *
  * Output
  * ------
- * beta : vector of size n
+ * beta  : vector of size n
  */
-AIA_API void aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *K, const char* uplo, AIATensor_ *y);
+AIA_API void aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, const char* uplo, AIATensor_ *y);
 
 /**
  * Description
@@ -37,18 +37,21 @@ AIA_API void aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *K, const char* uplo
  *
  * Input
  * -----
- * K     : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
+ * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
  *         where sigma is noise variance
+ * uplo  : 'U' if Kchol contains the uppar triangular matrix
+ *         'L' if Kchol contains the lower triangular matrix
  * Kx    : Kernel matrix of test datapoints
  * Kxx   : Cross kernel matrix size n x m where m is the number of test datapoints
  *          and n is number of training datapoints
+ * beta  : As calculated using aiagp__(calcbeta) function
  *
  * Output
  * ------
  * fmean : Mean of predictive posterior distribution
  * fcov  : Covariance matrix of predictive posterior distribution
  */
-AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta);
+AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta);
 
 /**
  * Descriotion
@@ -57,19 +60,20 @@ AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K,
  *
  * Input
  * -----
- * K     : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
+ * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
  *         where sigma is noise variance
  * uplo  : 'U' if K contains the uppar triangular matrix
  *         'L' if K contains the lower triangular matrix
  * Kx    : Cross kernel Vector of size n
- * Kxx   : Kernel value for test input. Scalar of type T.
+ * Kxx   : Kernel value for test input. Scalar of type T
+ * beta  : As calculated using aiagp__(calcbeta) function
  *
  * Output
  * ------
  * fmean : Mean of predictive posterior distribution
  * fcov  : Standard deviation of predictive posterior distribution
  */
-AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta);
+AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta);
 
 /**
  * Desciption
@@ -78,7 +82,7 @@ AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo,
  *
  * Input
  * -----
- * K      : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
+ * Kchol  : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
  * uplo   : 'U' if K contains the uppar triangular matrix
  *          'L' if K contains the lower triangular matrix
  * lambda : Length scale factor
@@ -93,7 +97,7 @@ AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo,
  * fmean  : Mean of output for test input
  * fcov   : Standard deviation of output for test input
  */
-AIA_API void aiagp__(preduc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *Xxm, AIATensor_ *Xxcov);
+AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *Xxm, AIATensor_ *Xxcov);
 
 #endif
 

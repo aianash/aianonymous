@@ -64,6 +64,3 @@ add_test (NAME check_aianon-math COMMAND check_aianon-math)
 # set(AIANONYMOUS_INSTALL_BIN_SUBDIR "bin" CACHE PATH "AIANONYMOUS install binary subdirectory")
 # install (TARGETS aianonymous
 #     DESTINATION "${AIANONYMOUS_INSTALL_BIN_SUBDIR}")
-
-# Testing
-include (CTest)

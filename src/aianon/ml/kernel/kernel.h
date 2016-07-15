@@ -46,8 +46,8 @@ AIA_API AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATens
  * x      : Vector of size d
  * y      : Vector of size d
  * alpha  : Signal variance of kernel
- * lambda : Length scale matrix of size of size d x d
- *            - if isdiag is true, matrix should be diagonal
+ * lambda : For a positive definite length scale matrix of size of size d x d
+ *            - if isdiag is true, matrix should be diagonal and should be length scale matrix
  *            - if isdiag is false, it should be cholesky decomposition of length scale matrix
  * isdiag : True if lambda is diagonal matrix, false otherwise
  * uplo   : "U" or "L" depending on whether lambda has upper or lower triangular matrix

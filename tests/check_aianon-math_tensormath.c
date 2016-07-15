@@ -47,7 +47,7 @@ START_TEST(test_add_float) {
 
   ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
   ck_assert_msg(aiatensor_(float, size)(frestnsr, 1) == 4, "result has wrong dim 1");
-  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi), "add test failed");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi), "add test failed %d and %d", frestnsr->size[0], frestnsr->size[1]);
 
   aiatensor_(float, free)(fexptnsr);
 }
@@ -168,7 +168,8 @@ START_TEST(test_cadd_float) {
 
   ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
   ck_assert_msg(aiatensor_(float, size)(frestnsr, 1) == 4, "result has wrong dim 1");
-  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi), "cadd test failed %f", d[0]);
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "cadd test failed. expected =\n%s\nactual =\n%s\n", aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
 }

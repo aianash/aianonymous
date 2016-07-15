@@ -618,17 +618,17 @@ T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   exit(-1);
 }
 
-/** x** * Asymm^-1 * x */
-T aiatensor__(xTAsymmIx)(AIATensor_ *x, AIATensor_ *amat, const char *uplo) {
+/** x** * Apd^-1 * x */
+T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
-  aia_argcheck(aiatensor__(isSquare)(amat), 2, "A should be square matrix");
-  aia_argcheck(x->size[0] == amat->size[0], 2, "inconsistent tensor size");
+  aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
+  aia_argcheck(x->size[0] == achol->size[0], 2, "inconsistent tensor size");
 
-  AIATensor_ *L = aiatensor__(new)(amat);
-  AIATensor_ *LIx = aiatensor__(newVector)(amat->size[0]);
+  AIATensor_ *L = aiatensor__(new)(achol);
+  AIATensor_ *LIx = aiatensor__(newVector)(achol->size[0]);
   T res;
 
-  aiatensor__(potrf)(L, amat, "L");
+  aiatensor__(potrf)(L, achol, "L");
   aiatensor__(trtrs)(LIx, x, L, "L", "N", "N");
   res = aiatensor__(dot)(LIx, LIx);
   aiatensor__(free)(L);
@@ -636,19 +636,19 @@ T aiatensor__(xTAsymmIx)(AIATensor_ *x, AIATensor_ *amat, const char *uplo) {
   return res;
 }
 
-/** x** * Asymm^-1 * y */
-T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y, const char *uplo) {
+/** x** * Apd^-1 * y */
+T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
-  aia_argcheck(aiatensor__(isSquare)(amat), 2, "A should be square matrix");
+  aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
   aia_argcheck(aiatensor__(isVector)(y), 3, "y should be 1-dimensional");
-  aia_argcheck(x->size[0] == amat->size[0], 2, "inconsistent tensor size");
-  aia_argcheck(y->size[0] == amat->size[1], 2, "inconsistent tensor size");
+  aia_argcheck(x->size[0] == achol->size[0], 2, "inconsistent tensor size");
+  aia_argcheck(y->size[0] == achol->size[1], 2, "inconsistent tensor size");
 
-  AIATensor_ *L = aiatensor__(new)(amat);
-  AIATensor_ *LIy = aiatensor__(newVector)(amat->size[0]);
+  AIATensor_ *L = aiatensor__(new)(achol);
+  AIATensor_ *LIy = aiatensor__(newVector)(achol->size[0]);
   T res;
 
-  aiatensor__(potrf)(L, amat, "L");
+  aiatensor__(potrf)(L, achol, "L");
   aiatensor__(potrs)(LIy, y, L, "L");
   res = aiatensor__(dot)(LIy, x);
   return res;
@@ -661,18 +661,18 @@ AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATenso
   return res;
 }
 
-/** X** * Asymm^-1 * X + a * Y */
-AIATensor_ *aiatensor__(XTAsymmIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, const char *uplo, T a, AIATensor_ *ymat) {
+/** X** * Apd^-1 * X + a * Y */
+AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat) {
   aia_argcheck(aiatensor__(isSquare)(xmat), 2, "X should be square matrix");
-  aia_argcheck(aiatensor__(isSquare)(amat), 3, "A should be square matrix");
+  aia_argcheck(aiatensor__(isSquare)(achol), 3, "A should be square matrix");
   aia_argcheck(aiatensor__(isSquare)(ymat), 6, "Y should be square matrix");
-  aia_argcheck(xmat->size[0] == amat->size[0], 2, "inconsistent tensor size");
+  aia_argcheck(xmat->size[0] == achol->size[0], 2, "inconsistent tensor size");
   aia_argcheck(xmat->size[0] == ymat->size[0], 3, "inconsistent tensor size");
 
   AIATensor_ *aIx  = aiatensor__(empty)();
   AIATensor_ *aIxT = aiatensor__(empty)();
 
-  aiatensor__(trtrs)(aIx, xmat, amat, uplo, "N", "N");
+  aiatensor__(trtrs)(aIx, xmat, achol, uplo, "N", "N");
   aiatensor__(transpose)(aIxT, aIx, 0, 1);
   aiatensor__(addmm)(res, a, ymat, 1, aIx, aIxT);
 

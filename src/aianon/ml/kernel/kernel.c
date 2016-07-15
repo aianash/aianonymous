@@ -67,7 +67,7 @@ T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambd
   if(isdiag) {
     k = aiatensor__(xTAdiagIx)(diff, lambda);
   } else {
-    k = aiatensor__(xTAsymmIx)(diff, lambda, uplo);
+    k = aiatensor__(xTApdIx)(diff, lambda, uplo);
   }
   k *= -0.5;
   k = exp(k) * pow(alpha, 2);

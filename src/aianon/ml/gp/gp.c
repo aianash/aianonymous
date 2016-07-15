@@ -101,8 +101,8 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
 ////////////////////////////////////////////////// PUBLIC FUNCTIONS /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
-  long n = K->size[0];
+void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
+  long n = Kchol->size[0];
   AIATensor_ *KxT = aiatensor__(empty)();
 
   // calculation of fmean
@@ -110,14 +110,14 @@ void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *K, const c
   aiatensor__(mv)(fmean, KxT, beta);
 
   // calculation of fcov
-  aiatensor__(XTAsymmIXpaY)(fcov, Kx, K, uplo, -1, Kxx);
+  aiatensor__(XTApdIXpaY)(fcov, Kx, Kchol, uplo, -1, Kxx);
   aiatensor__(mul)(fcov, fcov, -1);
 
   aiatensor__(free)(KxT);
 }
 
-void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
-  long n = K->size[0];
+void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
+  long n = Kchol->size[0];
 
   AIATensor_ *alpha = aiatensor__(newVector)(n);
   AIATensor_ *KxT   = aiatensor__(empty)();
@@ -127,11 +127,11 @@ void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATens
   *fmean = aiatensor__(dot)(KxT, beta);
 
   // calculation of fcov
-  T KxTKKx = aiatensor__(xTAsymmx)(Kx, K);
+  T KxTKKx = aiatensor__(xTApdIx)(Kx, Kchol, uplo);
   *fcov = Kxx - KxTKKx;
 }
 
-void aiagp__(preduc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
+void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
   AIATensor_ *q = aiatensor__(empty)();
   aiagp__(calcq)(q, X, lambda, alpha, Xxm, Xxcov);
   *fmean = aiatensor__(dot)(beta, q);
@@ -139,16 +139,16 @@ void aiagp__(preduc)(T *fmean, T *fcov, AIATensor_ *K, const char *uplo, AIATens
   AIATensor_ *Q = aiatensor__(empty)();
   aiagp__(calcQ)(Q, X, lambda, Xxm, Xxcov);
   AIATensor_ *KIQ = aiatensor__(empty)();
-  aiatensor__(potrs)(KIQ, Q, K, uplo);
+  aiatensor__(potrs)(KIQ, Q, Kchol, uplo);
   *fcov = pow(alpha, 2) - aiatensor__(trace)(KIQ) + aiatensor__(xTAx)(beta, Q) - pow(*fmean, 2);
 }
 
-void aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *K, const char* uplo, AIATensor_ *y) {
-  aia_argcheck(K->nDimension == 2, 1, "K should be 2-dimensional matrix");
+void aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, const char* uplo, AIATensor_ *y) {
+  aia_argcheck(Kchol->nDimension == 2, 1, "Kchol should be 2-dimensional matrix");
   aia_argcheck(y->nDimension == 1, 2, "y should be a vector");
-  aia_argcheck(K->size[0] == y->size[0], 2, "inconsistent tensor size");
+  aia_argcheck(Kchol->size[0] == y->size[0], 2, "inconsistent tensor size");
 
-  aiatensor__(potrs)(beta, y, K, uplo);
+  aiatensor__(potrs)(beta, y, Kchol, uplo);
 }
 
 #endif
