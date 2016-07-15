@@ -67,7 +67,7 @@ AIA_API T aiatensor__(xTAdiagx)(AIATensor_ *x, AIATensor_ *dmat);
 /**
  * Description
  * -----------
- * Returns result of x** * d * y where d is a diagonal matrix
+ * Returns result of x.T * d * y where d is a diagonal matrix
  *
  * Input
  * -----

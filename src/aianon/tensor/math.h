@@ -107,7 +107,7 @@ AIA_API void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a);
  * Description
  * -----------
  * Returns following product:
- *   x** * amat * y
+ *   x.T * amat * y
  *
  * Input
  * -----
@@ -125,7 +125,7 @@ AIA_API T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Description
  * -----------
  * Returns following product:
- *   x** * amat * x
+ *   x.T * amat * x
  *
  * Input
  * -----
@@ -142,7 +142,7 @@ AIA_API T aiatensor__(xTAx)(AIATensor_ *x, AIATensor_ *amat);
  * Description
  * -----------
  * Returns following product
- *   x** * A^-1 * x
+ *   x.T * A^-1 * x
  *
  * Input
  * -----
@@ -159,7 +159,7 @@ AIA_API T aiatensor__(xTAIx)(AIATensor_ *x, AIATensor_ *amat);
  * Description
  * -----------
  * Returns following product:
- *   x** * A^-1 * y
+ *   x.T * A^-1 * y
  *
  * Input
  * -----
@@ -177,7 +177,7 @@ AIA_API T aiatensor__(xTAIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Description
  * -----------
  * Returns following product for a symmetric matrix A
- *   x** * A * x
+ *   x.T * A * x
  *
  * Input
  * -----
@@ -194,7 +194,7 @@ AIA_API T aiatensor__(xTAsymmx)(AIATensor_ *x, AIATensor_ *amat);
  * Description
  * -----------
  * Returns following product for a symmetric matrix A
- *   x** * A * y
+ *   x.T * A * y
  *
  * Input
  * -----
@@ -212,7 +212,7 @@ AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Description
  * -----------
  * Returns following product for a positive definite matrix A
- *   x** * A^-1 * x
+ *   x.T * A^-1 * x
  *
  * Input
  * -----
@@ -230,7 +230,7 @@ AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *upl
  * Description
  * -----------
  * Returns following product for a positive definite matrix A
- *   x** * A^-1 * y
+ *   x.T * A^-1 * y
  *
  * Input
  * -----
@@ -249,7 +249,7 @@ AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, const char *upl
  * Description
  * -----------
  * Computes following matrix-matrix multiplication
- *   X** * A * X + a * Y
+ *   X.T * A * X + a * Y
  *
  * Input
  * -----
@@ -270,7 +270,7 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  * Description
  * -----------
  * Computes following matrix-matrix multiplication for positive definite matrix A
- *   X** * A^-1 * X + a * Y
+ *   X.T * A^-1 * X + a * Y
  *
  * Input
  * -----

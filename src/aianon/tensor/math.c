@@ -124,7 +124,7 @@ void aiatensor__(cadd)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *
       long i;
       #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
       for(i = 0; i < sz; i++) {
-        dres[i] = alpha * dtnsr2[i] + dtnsr1[1];
+        dres[i] = dtnsr1[i] + alpha * dtnsr2[i];
       }
     }
   } else {
@@ -622,12 +622,12 @@ void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a) {
   }
 }
 
-/** x** * A * x */
+/** x.T * A * x */
 T aiatensor__(xTAx)(AIATensor_ *x, AIATensor_ *amat) {
   return aiatensor__(xTAy)(x, amat, x);
 }
 
-/** x** * A * y */
+/** x.T * A * y */
 T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
   aia_argcheck(aiatensor__(isMatrix)(amat), 2, "A should be a matrix");
@@ -646,30 +646,30 @@ T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   return res;
 }
 
-/** x** * A^-1 * x */
+/** x.T * A^-1 * x */
 T aiatensor__(xTAIx)(AIATensor_ *x, AIATensor_ *amat) {
   return aiatensor__(xTAIy)(x, amat, x);
 }
 
-/** x** * A^-1 * y */
+/** x.T * A^-1 * y */
 T aiatensor__(xTAIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   printf("ERR: function aiatensor__(xTAIy) is not implemented");
   exit(-1);
 }
 
-/** x** * Asymm * x */
+/** x.T * Asymm * x */
 T aiatensor__(xTAsymmx)(AIATensor_ *x, AIATensor_ *amat) {
   printf("ERR: function aiatensor__(xTAsymmx) is not implemented");
   exit(-1);
 }
 
-/** x** * Asymm * y */
+/** x.T * Asymm * y */
 T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   printf("ERR: function aiatensor__(xTAsymmy) is not implemented");
   exit(-1);
 }
 
-/** x** * Apd^-1 * x */
+/** x.T * Apd^-1 * x */
 T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
   aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
@@ -687,7 +687,7 @@ T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo) {
   return res;
 }
 
-/** x** * Apd^-1 * y */
+/** x.T * Apd^-1 * y */
 T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
   aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
@@ -705,14 +705,14 @@ T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIA
   return res;
 }
 
-/** X** * Asymm * X + a * Y */
+/** X.T * Asymm * X + a * Y */
 AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, T a, AIATensor_ *ymat) {
   printf("ERR: function aiatensor__(XTAsymmXpaY) is not implemented");
   exit(-1);
   return res;
 }
 
-/** X** * Apd^-1 * X + a * Y */
+/** X.T * Apd^-1 * X + a * Y */
 AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat) {
   aia_argcheck(aiatensor__(isSquare)(xmat), 2, "X should be square matrix");
   aia_argcheck(aiatensor__(isSquare)(achol), 3, "A should be square matrix");
