@@ -50,6 +50,13 @@ AIATensor_ *aiatensor__(empty)(void) {
 }
 
 //
+AIATensor_ *aiatensor__(emptyAs)(AIATensor_ *other) {
+  AIATensor_ *ret = aiatensor__(empty)();
+  aiatensor__(resizeAs)(ret, other);
+  return ret;
+}
+
+//
 AIATensor_ *aiatensor__(new)(AIATensor_ *other) {
   AIATensor_ *this = aia_alloc(sizeof(AIATensor_));
   RAW_TENSOR_INIT(this, 1, other->storage, other->storageOffset, other->size, other->stride, other->nDimension);
@@ -92,8 +99,55 @@ AIATensor_ *aiatensor__(newFromData)(T *data, int nDimension, long *size, long *
 }
 
 //
+AIATensor_ *aiatensor__(newCopy)(AIATensor_ *other) {
+  AIATensor_ *this = aiatensor__(emptyAs)(other);
+  aiatensor__(copy)(this, other);
+  return this;
+}
+
+//
 void aiatensor__(copy)(AIATensor_ *to, AIATensor_ *from) {
   AIA_TENSOR_APPLY2(T, to, T, from, *to_data = (T)(*from_data);)
+}
+
+//
+void aiatensor__(copyInt)(AIATensor_ *to, int *from) {
+  int i = 0;
+  AIA_TENSOR_APPLY(T, to,
+    {
+      *to_data = (T)(from[i]);
+      i++;
+    })
+}
+
+//
+void aiatensor__(copyLong)(AIATensor_ *to, long *from) {
+  int i = 0;
+  AIA_TENSOR_APPLY(T, to,
+    {
+      *to_data = (T)(from[i]);
+      i++;
+    })
+}
+
+//
+void aiatensor__(copyFloat)(AIATensor_ *to, float *from) {
+  int i = 0;
+  AIA_TENSOR_APPLY(T, to,
+    {
+      *to_data = (T)(from[i]);
+      i++;
+    })
+}
+
+//
+void aiatensor__(copyDouble)(AIATensor_ *to, double *from) {
+  int i = 0;
+  AIA_TENSOR_APPLY(T, to,
+    {
+      *to_data = (T)(from[i]);
+      i++;
+    })
 }
 
 //
