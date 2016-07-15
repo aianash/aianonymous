@@ -362,6 +362,40 @@ static void aiatensor__(resize_)(AIATensor_ *this, int nDimension, long *size, l
   }
 }
 
+int aiatensor__(isVector)(AIATensor_ *tnsr) {
+  return (tnsr->nDimension == 1);
+}
+
+bool aiatensor__(isMatrix)(AIATensor_ *tnsr) {
+  return (tnsr->nDimension == 2);
+}
+
+bool aiatensor__(isSquare)(AIATensor_ *tnsr) {
+  return (tnsr->nDimension == 2 && tnsr->size[0] == tnsr->size[1]);
+}
+
+/** Print a matrix */
+char *aiatensor__(mat2str)(AIATensor_ *mat) {
+  char *str = (char*) calloc(1, sizeof(char));
+  char *fmt;
+  char tmp[50];
+  T *mat_data = aiatensor__(data)(mat);
+  long i, j;
+
+  for(i = 0; i < mat->size[0]; i++) {
+    for(j = 0; j < mat->size[1]; j++) {
+      if(j == mat->size[1] - 1)
+        fmt = "%f\n";
+      else
+        fmt = "%f,\t";
+      sprintf(tmp, fmt, mat_data[i * mat->stride[0] + j * mat->stride[1]]);
+      str = realloc(str, (strlen(str) + strlen(tmp) + 1) * sizeof(char));
+      strcat(str, tmp);
+    }
+  }
+  return str;
+}
+
 #endif
 #define ERASE_FLOAT
 #define ERASURE_FILE "aianon/tensor/tensor.c"

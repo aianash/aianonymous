@@ -1,20 +1,9 @@
 set (HEADERS
-    storage.h
-    tensor.h
-    math.h
-    dimapply.h
-    dimcrossapply.h
-    apply.h
-    linalg.h
-    diagmath.h
+    gp.h
 )
 
 set (SOURCES
-    storage.c
-    tensor.c
-    math.c
-    linalg.c
-    diagmath.c
+    gp.c
 )
 
 set (DIR_SRCS)

@@ -24,7 +24,7 @@
     if(tensor1->size[aia_tensor_dim_apply_i] != tensor3->size[aia_tensor_dim_apply_i]) aia_error("inconsistent tensor size"); \
   } \
 \
-  aia_tensor_dim_apply_counter = (long*) AIAAlloc(sizeof(long) * tensor1->nDimension); \
+  aia_tensor_dim_apply_counter = (long*) aia_alloc(sizeof(long) * tensor1->nDimension); \
   for(aia_tensor_dim_apply_i = 0; aia_tensor_dim_apply_i < tensor1->nDimension; aia_tensor_dim_apply_i++) aia_tensor_dim_apply_counter[aia_tensor_dim_apply_i] = 0; \
 \
   tensor1##_data = tensor1->storage->data + tensor1->storageOffset; \
@@ -96,7 +96,7 @@
       aia_error("inconsistent tensor sizes"); \
   } \
 \
-  aia_tensor_dim_apply_counter = (long*) AIAAlloc(sizeof(long) * tensor1->nDimension); \
+  aia_tensor_dim_apply_counter = (long*) aia_alloc(sizeof(long) * tensor1->nDimension); \
   for(aia_tensor_dim_apply_i = 0; aia_tensor_dim_apply_i < tensor1->nDimension; aia_tensor_dim_apply_i++) \
     aia_tensor_dim_apply_counter[aia_tensor_dim_apply_i] = 0; \
 \
@@ -145,7 +145,7 @@
 
 
 #define AIA_TENSOR_DIM_APPLY(T, tensor, dimension, code) { \
-  T1 *tensor##_data = NULL; \
+  T *tensor##_data = NULL; \
   long tensor##_stride = 0, tensor##_size = 0; \
   long *aia_tensor_dim_apply_counter = NULL; \
   int aia_tensor_dim_apply_finished = 0; \
@@ -154,7 +154,7 @@
   if((dimension < 0) || (dimension > tensor->nDimension)) \
     aia_error("invalid tensor size"); \
 \
-  aia_tensor_dim_apply_counter = (long*) AIAAlloc(sizeof(long) * tensor->nDimension); \
+  aia_tensor_dim_apply_counter = (long*) aia_alloc(sizeof(long) * tensor->nDimension); \
   for(aia_tensor_dim_apply_i = 0; aia_tensor_dim_apply_i < tensor->nDimension; aia_tensor_dim_apply_i++) \
     aia_tensor_dim_apply_counter[aia_tensor_dim_apply_i] = 0; \
 \

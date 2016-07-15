@@ -16,6 +16,10 @@
 #define USE_BLAS
 #define USE_LAPACK
 
+typedef int bool;
+#define TRUE 1
+#define FALSE 0
+
 #define SWAP(T, x, y) \
 do {                  \
   T t = x;            \
