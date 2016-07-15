@@ -17,7 +17,14 @@ typedef struct sgd_config_ {
   int nesterov;
 } sgd_config;
 
+typedef struct adagrad_config_ {
+  float learningRate;
+  float learningRateDecay;
+  float weightDecay;
+} adagrad_config;
+
 extern sgd_config default_sgd_config;
+extern adagrad_config default_adagrad_config;
 
 #endif
 
@@ -28,14 +35,21 @@ typedef struct optim_state_(sgd) {
   int evalCounter;
 } optim_state_(sgd);
 
+typedef struct optim_state_(adagrad) {
+  AIATensor_ *paramVariance;
+  AIATensor_ *paramStd;
+  int evalCounter;
+} optim_state_(adagrad);
+
 typedef void (*optim__(opfunc))(AIATensor_ *x, T *fx, AIATensor_ *df_dx);
 
 AIA_API AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_config *config, optim_state_(sgd) *state);
+AIA_API AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, adagrad_config *config, optim_state_(adagrad) *state);
 
 #endif
 
 #ifndef optim_state
-#define optim_state(type, method) AIA_CONCAT_3(optim_state, sgd_, type)
+#define optim_state(type, method) AIA_CONCAT_3(optim_state, method, type)
 #define optim_state_(method) optim_state(T_, method)
 #endif
 

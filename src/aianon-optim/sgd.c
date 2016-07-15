@@ -19,6 +19,7 @@ sgd_config default_sgd_config = {
 #ifdef ERASED_TYPE_PRESENT
 
 AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_config *config, optim_state_(sgd) *state) {
+  aia_argcheck(state == NULL, 5, "state parameter expected got null");
   if(!config) config = &default_sgd_config;
 
   float damp     = config->dampening;

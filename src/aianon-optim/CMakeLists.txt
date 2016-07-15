@@ -16,6 +16,7 @@ set (HEADERS
 
 set (SOURCES
     sgd.c
+    adagrad.c
 )
 
 set (DIR_SRCS)
