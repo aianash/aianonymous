@@ -13,7 +13,7 @@ T *arr__(clone)(T *arr, int size);
 #define arr__(name) arr_(T_, name)
 #endif
 
-#define ERASE_FLOAT
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/core/util/array.h"
 #include <aianon/core/erasure.h>
 

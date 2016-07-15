@@ -59,7 +59,10 @@ AIATensor_ *aiatensor__(emptyAs)(AIATensor_ *other) {
 //
 AIATensor_ *aiatensor__(new)(AIATensor_ *other) {
   AIATensor_ *this = aia_alloc(sizeof(AIATensor_));
-  RAW_TENSOR_INIT(this, 1, other->storage, other->storageOffset, other->size, other->stride, other->nDimension);
+  aiastorage__(retain)(other->storage);
+  long *size = arr_(long, clone)(other->size, other->nDimension);
+  long *stride = arr_(long, clone)(other->stride, other->nDimension);
+  RAW_TENSOR_INIT(this, 1, other->storage, other->storageOffset, size, stride, other->nDimension);
   return this;
 }
 

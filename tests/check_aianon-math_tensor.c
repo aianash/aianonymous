@@ -74,14 +74,34 @@ START_TEST(test_tensor_create) {
   aiatensor_(float, free)(tmp);
   ck_assert_msg(tmp->refcount == 1,
     "wrong refcount of tmp after free %d != 1(true)", tmp->refcount);
+  aiatensor_(float, free)(tmp);
 
+  AIATensor(float) *n = aiatensor_(float, new)(f4x4tnsr);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(n, f4x4tnsr),
+    "New from another tensor failed to create from 4x4");
+  ck_assert_msg(f4x4tnsr->storage->refcount == 2,
+    "Refcount of storage not increased after new operation");
+  aiatensor_(float, free)(n);
+
+  AIATensor(float) *vec = aiatensor_(float, newVector)(4);
+  ck_assert_msg(vec->nDimension == 1 && vec->size[0] == 4 && vec->stride[0] == 1,
+    "Vector creation failed");
+  aiatensor_(float, free)(vec);
+
+  tmp = aiatensor_(float, emptyAs)(f3x3tnsr);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(tmp, f3x3tnsr),
+    "EmptyAs failed to create from 3x3");
+  aiatensor_(float, free)(tmp);
+
+  tmp = aiatensor_(float, newCopy)(f3x3tnsr);
+  ck_assert_msg(aiatensor_(float, eq)(tmp, f3x3tnsr),
+    "Failed to set tensor");
   aiatensor_(float, free)(tmp);
 
   ck_assert_msg(aiatensor_(float, size)(f4x4tnsr, 0) == 4,
     "Failed to construct from data, wrong size at dim 0 = %li\n", aiatensor_(float, size)(f4x4tnsr, 0));
   ck_assert_msg(aiatensor_(float, size)(f4x4tnsr, 1) == 4,
     "Failed to construct from data, wrong size at dim 1 = %li\n", aiatensor_(float, size)(f4x4tnsr, 1));
-
 }
 END_TEST
 
@@ -165,6 +185,7 @@ START_TEST(test_tensor_resize) {
   AIATensor(float) *tmp = aiatensor_(float, empty)();
 
   // resize
+  aiatensor_(float, resize)(tmp, 2, size4x4, NULL);
   aiatensor_(float, resize)(tmp, 2, size3x3, NULL);
 
   ck_assert_msg(aiatensor_(float, isSameShape)(tmp, 2, size3x3, stride3x3),
@@ -237,6 +258,12 @@ START_TEST(test_tensor_copy) {
   aiatensor_(float, freeCopyTo)(tmp, dest);
   ck_assert_msg(aiatensor_(float, eq)(dest, f4x4tnsr) && tmp->refcount == 1,
     "Failed to free copy to");
+
+  // copy float (other copies are similar)
+  aiatensor_(float, resize)(tmp, 2, size3x3, NULL);
+  aiatensor_(float, copyFloat)(tmp, rnd3x3);
+  ck_assert_msg(aiatensor_(float, eq)(tmp, f3x3tnsr),
+    "Failed to copy");
 
   aiatensor_(float, free)(tmp);
 }
