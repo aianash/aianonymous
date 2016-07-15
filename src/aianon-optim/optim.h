@@ -23,23 +23,23 @@ extern sgd_config default_sgd_config;
 
 #ifdef ERASED_TYPE_PRESENT
 
-typedef struct state__(sgd)
+typedef struct optim_state_(sgd)
 {
   AIATensor_ *df_dx;
   AIATensor_ *decayParameters;
   AIATensor_ *deltaParameters;
   int evalCounter;
-} state__(sgd);
+} optim_state_(sgd);
 
 typedef void (*optim__(opfunc))(AIATensor_ *x, T *fx, AIATensor_ *df_dx);
 
-AIA_API void optim__(sgd)(AIATensor_ *xx, AIATensor_ *fx, optim__(opfunc) opfunc, AIATensor_ *x, sgd_config *config, state__(sgd) *state);
+AIA_API void optim__(sgd)(AIATensor_ *xx, AIATensor_ *fx, optim__(opfunc) opfunc, AIATensor_ *x, sgd_config *config, optim_state_(sgd) *state);
 
 #endif
 
-#ifndef state_
-#define state_(type, method) AIA_CONCAT_3(state_, sgd_, type)
-#define state__(method) state_(T_, method)
+#ifndef optim_state
+#define optim_state(type, method) AIA_CONCAT_3(optim_state, sgd_, type)
+#define optim_state_(method) optim_state(T_, method)
 #endif
 
 #ifndef optim_

@@ -17,7 +17,7 @@ sgd_config default_sgd_config = {
 
 #ifdef ERASED_TYPE_PRESENT
 
-void optim__(sgd)(AIATensor_ *xx, AIATensor_ *fx_, optim__(opfunc) opfunc, AIATensor_ *x, sgd_config *config, state__(sgd) *state) {
+void optim__(sgd)(AIATensor_ *xx, AIATensor_ *fx_, optim__(opfunc) opfunc, AIATensor_ *x, sgd_config *config, optim_state_(sgd) *state) {
 
   // // evaluate f(x) and df/dx
   // T fx;
