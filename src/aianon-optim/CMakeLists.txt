@@ -15,7 +15,7 @@ set (HEADERS
 )
 
 set (SOURCES
-    cg.c
+    sgd.c
 )
 
 set (DIR_SRCS)

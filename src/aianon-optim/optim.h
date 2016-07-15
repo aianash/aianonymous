@@ -6,9 +6,9 @@
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
 
-typedef struct sgd_config_
-{
+typedef struct sgd_config_ {
   float learningRate;
+  float *learningRates;
   float learningRateDecay;
   float weightDecay;
   float *weightDecays;
@@ -23,17 +23,14 @@ extern sgd_config default_sgd_config;
 
 #ifdef ERASED_TYPE_PRESENT
 
-typedef struct optim_state_(sgd)
-{
+typedef struct optim_state_(sgd) {
   AIATensor_ *df_dx;
-  AIATensor_ *decayParameters;
-  AIATensor_ *deltaParameters;
   int evalCounter;
 } optim_state_(sgd);
 
 typedef void (*optim__(opfunc))(AIATensor_ *x, T *fx, AIATensor_ *df_dx);
 
-AIA_API void optim__(sgd)(AIATensor_ *xx, AIATensor_ *fx, optim__(opfunc) opfunc, AIATensor_ *x, sgd_config *config, optim_state_(sgd) *state);
+AIA_API AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_config *config, optim_state_(sgd) *state);
 
 #endif
 
