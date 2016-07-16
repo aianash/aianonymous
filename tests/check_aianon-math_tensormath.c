@@ -40,7 +40,20 @@ static float rndc4x4T[16] =
     0.3f,  0.9f,  0.6f,  0.9f,
     0.8f,  0.3f,  0.1f,  0.1f };
 
+static float rndpd4x4[16] =
+  { 0.63392f,  0.92338f,  0.88542f,  1.07961f,
+    0.92338f,  2.11086f,  1.57509f,  2.06504f,
+    0.88542f,  1.57509f,  1.71206f,  2.13114f,
+    1.07961f,  2.06504f,  2.13114f,  2.79528f };
+
+static float rndveca4[4] =
+  {0.2f,  0.9f,  0.5f,  0.4f};
+
+static float rndvecb4[4] =
+  {0.218616f,  0.974018f ,  0.820125f,  0.941869f};
+
 static long size4x4[2] = {4l, 4l};
+static long size4[1]   = {4l};
 
 static float fepsi = 1e-5f;
 
@@ -48,6 +61,7 @@ static float fepsi = 1e-5f;
 AIATensor(float) *ftnsr1c;
 AIATensor(float) *ftnsr2c;
 AIATensor(float) *ftnsr3c;
+AIATensor(float) *fpdtnsrc;
 
 // transposed tensors
 AIATensor(float) *ftnsr1cT;
@@ -59,18 +73,28 @@ AIATensor(float) *ftnsr1nc;
 AIATensor(float) *ftnsr2nc;
 AIATensor(float) *ftnsr3nc;
 
+// vectors
+AIATensor(float) *fvec1;
+AIATensor(float) *fvec2;
+
 // result tensors
 AIATensor(float) *frestnsr;
 AIATensor(float) *fexptnsr;
 
 void tensormath_setup(void) {
+  // matrix
   ftnsr1c  = aiatensor_(float, newFromData)(arr_(float, clone)(rnda4x4, 16), 2, size4x4, NULL);
   ftnsr2c  = aiatensor_(float, newFromData)(arr_(float, clone)(rndb4x4, 16), 2, size4x4, NULL);
   ftnsr3c  = aiatensor_(float, newFromData)(arr_(float, clone)(rndc4x4, 16), 2, size4x4, NULL);
+  fpdtnsrc = aiatensor_(float, newFromData)(arr_(float, clone)(rndpd4x4, 16), 2, size4x4, NULL);
   ftnsr1cT = aiatensor_(float, newFromData)(arr_(float, clone)(rnda4x4T, 16), 2, size4x4, NULL);
-  ftnsr1nc = aiatensor_(float, empty)();
+  ftnsr1nc = aiatensor_(float, new)(ftnsr1cT);
   aiatensor_(float, transpose)(ftnsr1nc, ftnsr1cT, 0, 1);
   frestnsr = aiatensor_(float, empty)();
+
+  // vector
+  fvec1 = aiatensor_(float, newFromData)(arr_(float, clone)(rndveca4, 4), 1, size4, NULL);
+  fvec2 = aiatensor_(float, newFromData)(arr_(float, clone)(rndvecb4, 4), 1, size4, NULL);
 }
 
 void tensormath_teardown(void) {
@@ -80,6 +104,8 @@ void tensormath_teardown(void) {
   aiatensor_(float, free)(ftnsr1cT);
   aiatensor_(float, free)(ftnsr1nc);
   aiatensor_(float, free)(frestnsr);
+  aiatensor_(float, free)(fvec1);
+  aiatensor_(float, free)(fvec2);
 }
 
 START_TEST(test_add_float) {
@@ -449,6 +475,114 @@ START_TEST(test_addcdiv_float) {
 }
 END_TEST
 
+START_TEST(test_addmv_float) {
+  float exp4[4] = {0.171163f,  0.574637f,  0.448013f,  0.634511f};
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4, 4), 1, size4, NULL);
+
+  aiatensor_(float, addmv)(frestnsr, 0.2f, fvec2, 0.3f, ftnsr1c, fvec1);
+
+  ck_assert_msg(aiatensor_(float, isVector)(frestnsr), "result should be a vector");
+  ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, vec2str)(fexptnsr), aiatensor_(float, vec2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
+
+START_TEST(test_addmm_float) {
+  float exp4x4[16] =
+    { 0.289173f,  0.283463f,  0.571895f,  0.273271f,
+      0.545708f,  0.499517f,  0.631792f,  0.445307f,
+      0.372787f,  0.210716f,  0.509776f,  0.349444f,
+      0.289440f,  0.292052f,  0.511183f,  0.368199f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  // TODO: result with different strides
+
+  aiatensor_(float, addmm)(frestnsr, 0.2f, ftnsr1c, 0.3f, ftnsr2c, ftnsr3c);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
+  ck_assert_msg(aiatensor_(float, size)(frestnsr, 1) == 4, "result has wrong dim 1");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  // aiatensor_(float, addmm)(frestnsr, 0.2f, ftnsr1c, 0.3f, ftnsr2nc, ftnsr3c);
+  // ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  // ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
+  // ck_assert_msg(aiatensor_(float, size)(frestnsr, 1) == 4, "result has wrong dim 1");
+  // ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+  //   "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+  //   aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  // aiatensor_(float, addmm)(frestnsr, 0.2f, ftnsr1c, 0.3f, ftnsr2c, ftnsr3nc);
+  // ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  // ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
+  // ck_assert_msg(aiatensor_(float, size)(frestnsr, 1) == 4, "result has wrong dim 1");
+  // ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+  //   "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+  //   aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
+
+START_TEST(test_addr_float) {
+  float exp4x4[16] =
+    { 0.102682f,  0.070977f,  0.056027f,  0.187398f,
+      0.252874f,  0.433502f,  0.237507f,  0.386678f,
+      0.218898f,  0.189616f,  0.242628f,  0.274122f,
+      0.217981f,  0.227866f,  0.273621f,  0.291992f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, addr)(frestnsr, 0.2f, ftnsr1c, 0.3f, fvec1, fvec2);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
+  ck_assert_msg(aiatensor_(float, size)(frestnsr, 1) == 4, "result has wrong dim 1");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
+
+START_TEST(test_trace_float) {
+  float exp = 1.399999f;
+  float res = aiatensor_(float, trace)(ftnsr3c);
+  ck_assert_msg(exp - res <= fepsi, "trace test failed. expected output = %f and actual output = %f", exp, res);
+}
+END_TEST
+
+START_TEST(test_detpd_float) {
+  float exp = 0.020788f;
+  float res = aiatensor_(float, detpd)(fpdtnsrc);
+  ck_assert_msg(exp - res <= fepsi, "detpd test failed. expected output = %f and actual output = %f", exp, res);
+}
+END_TEST
+
+START_TEST(test_aIpX_float) {
+  float exp4x4[16] =
+    { 0.74783f,  0.06268f,  0.03410f,  0.65443f,
+      0.96924f,  1.15259f,  0.08037f,  0.66187f,
+      0.93053f,  0.21757f,  0.89805f,  0.66421f,
+      0.95874f,  0.55492f,  0.87603f,  1.19484f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, aIpX)(frestnsr, ftnsr1c, 0.3f);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  ck_assert_msg(aiatensor_(float, size)(frestnsr, 0) == 4, "result has wrong dim 0");
+  ck_assert_msg(aiatensor_(float, size)(frestnsr, 1) == 4, "result has wrong dim 1");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "aIpX test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
+
 Suite *make_tensormath_suite(void) {
   Suite *s;
   TCase *tc;
@@ -474,7 +608,12 @@ Suite *make_tensormath_suite(void) {
   tcase_add_test(tc, test_cremainder_float);
   tcase_add_test(tc, test_addcmul_float);
   tcase_add_test(tc, test_addcdiv_float);
-
+  tcase_add_test(tc, test_addmv_float);
+  tcase_add_test(tc, test_addmm_float);
+  tcase_add_test(tc, test_addr_float);
+  tcase_add_test(tc, test_trace_float);
+  tcase_add_test(tc, test_detpd_float);
+  tcase_add_test(tc, test_aIpX_float);
   suite_add_tcase(s, tc);
   return s;
 }

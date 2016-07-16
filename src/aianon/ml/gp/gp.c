@@ -30,7 +30,7 @@ static void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T a
 
   aiatensor__(diagmm)(constmat, Xxcov, lambda, TRUE);
   aiatensor__(aIpX)(constmat, NULL, 1);
-  const_ = pow(aiatensor__(detsymm)(constmat), -0.5);
+  const_ = pow(aiatensor__(detpd)(constmat), -0.5);
 
   // compute cholesky of Xxcov + lambda
   aiatensor__(cadd)(XxcovpL, Xxcov, 1, lambda);
@@ -73,7 +73,7 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
   aiatensor__(diagmm)(constmat, Xxcov, lambda, TRUE);
   aiatensor__(aIpX)(constmat, NULL, 1);
   aiatensor__(mul)(constmat, constmat, 2);
-  const_ = pow(aiatensor__(detsymm)(constmat), -0.5);
+  const_ = pow(aiatensor__(detpd)(constmat), -0.5);
 
   aiatensor__(mul)(lenscal, lambda, 2);
   K1 = aiakernel_se__(matrix)(NULL, X, NULL, 1, lenscal, TRUE, NULL);

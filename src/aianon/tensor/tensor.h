@@ -131,6 +131,7 @@ AIA_API bool aiatensor__(isMatrix)(AIATensor_ *a);
 AIA_API bool aiatensor__(isSquare)(AIATensor_ *a);
 
 AIA_API char *aiatensor__(mat2str)(AIATensor_ *mat);
+AIA_API char *aiatensor__(vec2str)(AIATensor_ *vec);
 
 
 #endif

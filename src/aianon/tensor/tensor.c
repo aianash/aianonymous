@@ -271,6 +271,7 @@ void aiatensor__(select)(AIATensor_ *this, AIATensor_ *from, int dim, int sliceI
 
 //
 void aiatensor__(transpose)(AIATensor_ *this, AIATensor_ *from, int dim1, int dim2) {
+  if(!from) from = this;
   aia_argcheck(WITHIN_RANGE(dim1, 0, from->nDimension), 3, "out of range");
   aia_argcheck(WITHIN_RANGE(dim2, 0, from->nDimension), 4, "out of range");
 
@@ -464,6 +465,26 @@ char *aiatensor__(mat2str)(AIATensor_ *mat) {
       str = realloc(str, (strlen(str) + strlen(tmp) + 1) * sizeof(char));
       strcat(str, tmp);
     }
+  }
+  return str;
+}
+
+/** Print a vector */
+char *aiatensor__(vec2str)(AIATensor_ *vec) {
+  char *str = (char*) calloc(1, sizeof(char));
+  char *fmt;
+  char tmp[50];
+  T *mat_data = aiatensor__(data)(vec);
+  long i;
+
+  for(i = 0; i < vec->size[0]; i++) {
+    if(i == vec->size[0] - 1)
+      fmt = "%f\n";
+    else
+      fmt = "%f,\t";
+    sprintf(tmp, fmt, mat_data[i * vec->stride[0]]);
+    str = realloc(str, (strlen(str) + strlen(tmp) + 1) * sizeof(char));
+    strcat(str, tmp);
   }
   return str;
 }

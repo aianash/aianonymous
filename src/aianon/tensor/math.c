@@ -247,11 +247,11 @@ void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor
 
 /** res = (beta * bvec) + (alpha * (mat * vec)) */
 void aiatensor__(addmv)(AIATensor_ *res, T beta, AIATensor_ *bvec, T alpha, AIATensor_ *mat, AIATensor_ *vec) {
-  aia_argcheck(mat->nDimension != 2, 5, "matrix expected got %dD", mat->nDimension);
-  aia_argcheck(vec->nDimension != 1, 6, "vector expected got %dD", vec->nDimension);
-  aia_argcheck(bvec->nDimension != 1, 3, "vector expected got %dD", bvec->nDimension);
-  aia_argcheck(mat->size[1] != vec->size[0], 5, "size mismatch between matrix and vector");
-  aia_argcheck(mat->size[0] != bvec->size[0], 5, "size mismatch between matrix and bvector");
+  aia_argcheck(mat->nDimension == 2, 5, "matrix expected got %dD", mat->nDimension);
+  aia_argcheck(vec->nDimension == 1, 6, "vector expected got %dD", vec->nDimension);
+  aia_argcheck(bvec->nDimension == 1, 3, "vector expected got %dD", bvec->nDimension);
+  aia_argcheck(mat->size[1] == vec->size[0], 5, "size mismatch between matrix and vector");
+  aia_argcheck(mat->size[0] == bvec->size[0], 5, "size mismatch between matrix and bvector");
 
   if(res != bvec) {
     aiatensor__(resizeAs)(res, bvec);
@@ -517,15 +517,15 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
 }
 #endif
 
-T aiatensor__(trace)(AIATensor_ *mat) {
-  aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be 2-dimensional");
+T aiatensor__(trace)(AIATensor_ *this) {
+  aia_argcheck(aiatensor__(isSquare)(this), 1, "A should be 2-dimensional");
 
-  T *mat_data = aiatensor__(data)(mat);
-  long stride = mat->stride[0] + mat->stride[1];
+  T *mat_data = aiatensor__(data)(this);
+  long stride = this->stride[0] + this->stride[1];
   long idx;
   T tr = 0;
 
-  for(idx = 0; idx < mat->size[0]; idx++) {
+  for(idx = 0; idx < this->size[0]; idx++) {
     tr += mat_data[idx * stride];
   }
 
@@ -581,22 +581,22 @@ void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride
   aiatensor__(fill)(res, (T)1.0);
 }
 
-/** det(mat) */
-T aiatensor__(detsymm)(AIATensor_ *mat) {
-  aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be square matrix");
+/** det(detpd) */
+T aiatensor__(detpd)(AIATensor_ *this) {
+  aia_argcheck(aiatensor__(isSquare)(this), 1, "A should be square matrix");
 
-  AIATensor_ *matchol = aiatensor__(new)(mat);
-  T *data = aiatensor__(data)(matchol);
-  long stride = matchol->stride[0] + matchol->stride[1];
+  AIATensor_ *chol = aiatensor__(new)(this);
+  T *data = aiatensor__(data)(chol);
+  long stride = chol->stride[0] + chol->stride[1];
   T det = 1;
   long idx;
 
-  aiatensor__(potrf)(matchol, matchol, "L");
-  for(idx = 0; idx < matchol->size[0]; idx++) {
+  aiatensor__(potrf)(chol, NULL, "L");
+  for(idx = 0; idx < chol->size[0]; idx++) {
     det *= data[idx * stride];
   }
   det = pow(det, 2);
-  aiatensor__(free)(matchol);
+  aiatensor__(free)(chol);
   return det;
 }
 

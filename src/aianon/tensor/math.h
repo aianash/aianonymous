@@ -73,17 +73,17 @@ AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long
 /**
  * Description
  * -----------
- * Computes determinant of a symmetric matrix
+ * Computes determinant of a positive definite matrix
  *
  * Input
  * -----
- * mat : Symmetric matrix of size n x n
+ * mat : Positive definite matrix of size n x n
  *
  * Output
  * ------
  * Returns determinant of matrix
  */
-AIA_API T aiatensor__(detsymm)(AIATensor_ *mat);
+AIA_API T aiatensor__(detpd)(AIATensor_ *mat);
 
 /**
  * Description
