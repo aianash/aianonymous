@@ -50,14 +50,25 @@ void aiatensor__(addr)(AIATensor_ *res, T beta, AIATensor_ *bmat, T alpha, AIATe
 AIA_API void aiatensor__(addbmm)(AIATensor_ *res, T beta, AIATensor_ *bmat, T alpha, AIATensor_ *batch1, AIATensor_ *batch2);
 AIA_API void aiatensor__(baddbmm)(AIATensor_ *res, T beta, AIATensor_ *batch3, T alpha, AIATensor_ *batch1, AIATensor_ *batch2);
 
+
 AIA_API int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b);
+
+#if defined(T_IS_FLOAT) || defined(T_IS_DOUBLE)
 AIA_API int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi);
+#endif
 
 AIA_API void aiatensor__(mm)(AIATensor_ *res, AIATensor_ *mat1, AIATensor_ *mat2);
 AIA_API void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
 AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);
 
 AIA_API T aiatensor__(trace)(AIATensor_ *mat);
+
+AIA_API void aiatensor__(fill)(AIATensor_ *res, T value);
+AIA_API void aiatensor__(zero)(AIATensor_ *res);
+AIA_API void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T value);
+
+AIA_API void aiatensor__(zeros)(AIATensor_ *res, int nDimension, long *size, long *stride);
+AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride);
 
 /**
  * Description
@@ -279,7 +290,7 @@ AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, A
 
 #endif
 
-#define ERASE_FLOAT
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/math.h"
 #include <aianon/core/erasure.h>
 

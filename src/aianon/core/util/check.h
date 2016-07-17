@@ -6,12 +6,14 @@
 #include <stdarg.h>
 
 extern void _aia_error(const char *file, const int line, const char *fmt, ...);
+extern void _aia_warning(const char *file, const int line, const char *fmt, ...);
 extern void _aia_argcheck(const char *file, int line, int condition, int argNumber, const char *fmt, ...);
 extern void _aia_assertionFailed(const char *file, const int line, const char *exp, const char *fmt, ...);
 
 #define WITHIN_RANGE(x, from, to) (x >= from) && (x < to)
 
 #define aia_error(...) _aia_error(__FILE__, __LINE__, __VA_ARGS__)
+#define aia_warning(...) _aia_error(__FILE__, __LINE__, __VA_ARGS__)
 
 #define aia_argcheck(...)                             \
 do {                                                  \
@@ -31,5 +33,14 @@ do {                                                                  \
     _aia_assertionFailed(__FILE__, __LINE__, #exp, __VA_ARGS__);      \
   }                                                                   \
 } while(0)
+
+#ifdef __GNUC__
+#define DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define DEPRECATED __declspec(deprecated)
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define DEPRECATED
+#endif
 
 #endif

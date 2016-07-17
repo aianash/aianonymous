@@ -57,6 +57,21 @@ AIATensor_ *aiatensor__(emptyAs)(AIATensor_ *other) {
 }
 
 //
+AIATensor_ *aiatensor__(emptyOfSize)(int nDimension, long *size, long *stride) {
+  AIATensor_ *ret = aiatensor__(empty)();
+  aiatensor__(resize)(ret, nDimension, size, stride);
+  return ret;
+}
+
+//
+AIATensor_ *aiatensor__(emptyVector)(int size) {
+  AIATensor_ *this = aiatensor__(empty)();
+  long size_[1] = {size};
+  aiatensor__(resize_)(this, 1, size_, NULL);
+  return this;
+}
+
+//
 AIATensor_ *aiatensor__(new)(AIATensor_ *other) {
   AIATensor_ *this = aia_alloc(sizeof(AIATensor_));
   aiastorage__(retain)(other->storage);
@@ -454,6 +469,7 @@ char *aiatensor__(mat2str)(AIATensor_ *mat) {
 }
 
 #endif
-#define ERASE_FLOAT
+
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/tensor.c"
 #include <aianon/core/erasure.h>

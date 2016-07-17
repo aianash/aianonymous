@@ -15,6 +15,20 @@ void _aia_error(const char *file, const int line, const char *fmt, ...) {
   exit(-1);
 }
 
+void _aia_warning(const char *file, const int line, const char *fmt, ...) {
+  char msg[2048];
+  va_list args;
+
+  va_start(args, fmt);
+  int n = vsnprintf(msg, 2048, fmt, args);
+  va_end(args);
+
+  if(n < 2048) {
+    snprintf(msg + n, 2048 - n, " at %s:%d", file, line);
+  }
+  printf("WARNING: [AIA] %s\n", msg);
+}
+
 void _aia_assertionFailed(const char *file, const int line, const char *exp, const char *fmt, ...) {
   char msg[1024];
   va_list args;

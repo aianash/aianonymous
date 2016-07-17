@@ -9,6 +9,21 @@ T *arr__(clone)(T *arr, int size) {
   return res;
 }
 
+void arr__(fill)(T *arr, const T c, const long n) {
+  long i = 0;
+  for(; i < n - 4; i += 4) {
+    arr[i] = c;
+    arr[i + 1] = c;
+    arr[i + 2] = c;
+    arr[i + 3] = c;
+  }
+  for(; i < n; i++) arr[i] = c;
+}
+
+void arr__(zero)(T *arr, const long n) {
+  memset(arr, 0, n);
+}
+
 #endif
 
 #define ERASE_ALL

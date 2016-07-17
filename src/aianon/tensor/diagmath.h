@@ -87,7 +87,7 @@ AIA_API T aiatensor__(xTAdiagIy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y)
 
 #endif
 
-#define ERASE_FLOAT
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/diagmath.h"
 #include <aianon/core/erasure.h>
 
