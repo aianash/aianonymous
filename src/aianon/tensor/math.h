@@ -63,17 +63,14 @@ AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);
 
 AIA_API T aiatensor__(trace)(AIATensor_ *mat);
 
-<<<<<<< HEAD
 AIA_API void aiatensor__(fill)(AIATensor_ *res, T value);
 AIA_API void aiatensor__(zero)(AIATensor_ *res);
 AIA_API void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T value);
 
 AIA_API void aiatensor__(zeros)(AIATensor_ *res, int nDimension, long *size, long *stride);
 AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride);
-=======
-AIA_API void aiatensor__(zero)(AIATensor_ *tnsr);
+
 AIA_API void aiatensor__(sqrt)(AIATensor_ * res, AIATensor_ *tnsr);
->>>>>>> add: adagrad and dependent function declaration in tensor math (not tested)
 
 #if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
