@@ -483,6 +483,7 @@ int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b) {
   return equal;
 }
 
+#if defined(T_IS_FLOAT) || defined(T_IS_DOUBLE)
 //
 int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
   int equal = 1;
@@ -496,7 +497,7 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
     for(i = 0; i < n; i++) {
 #ifdef T_IS_FLOAT
       if(fabsf(ad[i] - bd[i]) > epsi) return 0;
-#elif T_IS_DOUBLE
+#elif defined(T_IS_DOUBLE)
       if(fabs(ad[i] - bd[i]) > epsi) return 0;
 #endif
     }
@@ -507,7 +508,7 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
                         equal = 0;
                         tensor_apply_finished = 1; break;
                       })
-#elif T_IS_DOUBLE
+#elif defined(T_IS_DOUBLE)
     AIA_TENSOR_APPLY2(T, a, T, b,
                       if(equal && fabs(a_data - b_data) > epsi) {
                         equal = 0;
@@ -517,6 +518,7 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
   }
   return equal;
 }
+#endif
 
 T aiatensor__(trace)(AIATensor_ *mat) {
   aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be 2-dimensional");
@@ -531,6 +533,55 @@ T aiatensor__(trace)(AIATensor_ *mat) {
   }
 
   return tr;
+}
+
+//
+void aiatensor__(fill)(AIATensor_ *res, T value) {
+  AIA_TENSOR_APPLY(T, res,
+                  {
+                    arr__(fill)(res_data, value, res_size); break;
+                  })
+}
+
+//
+void aiatensor__(zero)(AIATensor_ *res) {
+  AIA_TENSOR_APPLY(T, res,
+                  {
+                    arr__(zero)(res_data, res_size); break;
+                  })
+}
+
+//
+void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T value) {
+  AIA_TENSOR_APPLY2(T, res, unsigned char, mask, if(*mask_data == 1) *res_data = value;)
+}
+
+//
+void aiatensor__(maskedCopy)(AIATensor_ *res, AIATensor(uchar) *mask, AIATensor_ *from) {
+  long nele_res = aiatensor__(nElement)(res);
+  long nele_mask = aiatensor_(uchar, nElement)(mask);
+  long nele_from = aiatensor__(nElement)(from);
+  aia_argcheck(nele_res == nele_mask && nele_res == nele_from, 1,
+    "Number of elements in res, mask and from should be equal, use narrow");
+
+  AIA_TENSOR_APPLY3(T, res, unsigned char, mask , T, from,
+    {
+      if(*mask_data == 1)
+        *res_data = *from_data;
+    }
+  )
+}
+
+//
+void aiatensor__(zeros)(AIATensor_ *res, int nDimension, long *size, long *stride) {
+  aiatensor__(resize)(res, nDimension, size, stride);
+  aiatensor__(zero)(res);
+}
+
+//
+void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride) {
+  aiatensor__(resize)(res, nDimension, size, stride);
+  aiatensor__(fill)(res, (T)1.0);
 }
 
 /** det(mat) */
@@ -682,6 +733,7 @@ AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor
 }
 
 #endif
-#define ERASE_FLOAT
+
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/math.c"
 #include <aianon/core/erasure.h>

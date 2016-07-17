@@ -32,7 +32,7 @@ AIA_API void aiastorage__(resize)(AIAStorage_ *this, int size);
 #define aiastorage__(name) aiastorage_(T_, name)
 #endif
 
-#define ERASE_FLOAT
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/storage.h"
 #include <aianon/core/erasure.h>
 

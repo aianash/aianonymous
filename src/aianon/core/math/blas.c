@@ -43,7 +43,7 @@ void aiablas__(swap)(long n, T *x, long incx, T *y, long incy) {
     ds_(swap_)(&i_n, x, &i_incx, y, &i_incy);
   }
 #else
-#  error swap: Blas library not found in compile time.
+#  warning swap: Blas library not found in compile time.
 #endif
 }
 
@@ -58,7 +58,7 @@ void aiablas__(scal)(long n, T a, T *x, long incx) {
     ds_(scal_)(&i_n, &a, x, &i_incx);
   }
 #else
-# error scal: Blas library not found in compile time.
+# warning scal: Blas library not found in compile time.
 #endif
 }
 
@@ -77,7 +77,7 @@ void aiablas__(copy)(long n, T *x, long incx, T *y, long incy) {
     ds_(copy_)(&i_n, x, &i_incx, y, &i_incy);
   }
 #else
-#  error copy: Blas library not found in compile time.
+#  warning copy: Blas library not found in compile time.
 #endif
 }
 
@@ -96,7 +96,7 @@ void aiablas__(axpy)(long n, T a, T *x, long incx, T *y, long incy) {
     ds_(axpy_)(&i_n, &a, x, &i_incx, y, &i_incy);
   }
 #else
-#  error axpy: Blas library not found in compile time.
+#  warning axpy: Blas library not found in compile time.
 #endif
 }
 
@@ -115,7 +115,7 @@ T aiablas__(dot)(long n, T *x, long incx, T *y, long incy) {
     return (T) ds_(dot_)(&i_n, x, &i_incx, y, &i_incy);
   }
 #else
-#  error dot: Blas library not found in compile time.
+#  warning dot: Blas library not found in compile time.
 #endif
 }
 
@@ -134,7 +134,7 @@ void aiablas__(gemv)(char trans, long m, long n, T alpha, T *a, long lda, T *x, 
     ds_(gemv_)(&trans, &i_m, &i_n, &alpha, a, &i_lda, x, &i_incx, &beta, y, &i_incy);
   }
 #else
-#  error gemv: Blas library not found in compile time.
+#  warning gemv: Blas library not found in compile time.
 #endif
 }
 
@@ -153,7 +153,7 @@ void aiablas__(ger)(long m, long n, T alpha, T *x, long incx, T *y, long incy, T
     ds_(ger_)(&i_m, &i_n, &alpha, x, &i_incx, y, &i_incy, a, &i_lda);
   }
 #else
-#  error ger: Blas library not found in compile time.
+#  warning ger: Blas library not found in compile time.
 #endif
 }
 
@@ -188,11 +188,12 @@ void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T alpha, 
     ds_(gemm_)(&transa, &transb, &i_m, &i_n, &i_k, &alpha, a, &i_lda, b, &i_ldb, &beta, c, &i_ldc);
   }
 #else
-#  error gemm: Blas library not found in compile time
+#  warning gemm: Blas library not found in compile time
 #endif
 }
 
 #endif
-#define ERASE_FLOAT
+
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/core/math/blas.c"
 #include <aianon/core/erasure.h>

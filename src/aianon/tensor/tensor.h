@@ -52,13 +52,16 @@ AIA_API int aiatensor__(isSameShape)(const AIATensor_ *this, int nDimension, lon
 /** Tensor constructors **/
 AIA_API AIATensor_ *aiatensor__(empty)(void);
 AIA_API AIATensor_ *aiatensor__(emptyAs)(AIATensor_ *other);
+
+AIA_API AIATensor_ *aiatensor__(emptyOfSize)(int nDimension, long *size, long *stride);
+AIA_API AIATensor_ *aiatensor__(emptyVector)(int size);
+
 AIA_API AIATensor_ *aiatensor__(new)(AIATensor_ *other);
-AIA_API AIATensor_ *aiatensor__(newVector)(int size);
+DEPRECATED AIA_API AIATensor_ *aiatensor__(newVector)(int size);
 AIA_API AIATensor_ *aiatensor__(newFromData)(T *data, int nDimension, long *size, long *stride);
 AIA_API AIATensor_ *aiatensor__(newCopy)(AIATensor_ *other);
 
 // AIA_API AIATensor_ *aiatensor__(newWithStorage)(AIAStorage_ *storage, long storageOffset, TensorShape shape);
-// AIA_API AIATensor_ *aiatensor__(newOfShape)(TensorShape shape);
 
 /** Referencing a tensor to an existing tensor or chunk of memory **/
 //-----------------------------------------------------------------//
@@ -108,7 +111,6 @@ AIA_API void aiatensor__(transpose)(AIATensor_ *this, AIATensor_ *from, int dim1
 
 /** copying and initializing methods */
 //-----------------------------------//
-// TODO: fill. zeros
 AIA_API void aiatensor__(copy)(AIATensor_ *to, AIATensor_ *from);
 AIA_API void aiatensor__(copyInt)(AIATensor_ *to, int *from);
 AIA_API void aiatensor__(copyLong)(AIATensor_ *to, long *from);
@@ -143,7 +145,7 @@ AIA_API char *aiatensor__(mat2str)(AIATensor_ *mat);
 #define aiatensor__(name) aiatensor_(T_, name)
 #endif
 
-#define ERASE_FLOAT
+#define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/tensor.h"
 #include <aianon/core/erasure.h>
 
