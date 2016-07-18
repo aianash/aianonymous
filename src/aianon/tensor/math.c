@@ -124,7 +124,7 @@ void aiatensor__(cadd)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *
       long i;
       #pragma omp parallel for if(sz > AIA_OMP_OVERHEAD_THRESHOLD) private(i)
       for(i = 0; i < sz; i++) {
-        dres[i] = alpha * dtnsr2[i] + dtnsr1[1];
+        dres[i] = dtnsr1[i] + alpha * dtnsr2[i];
       }
     }
   } else {
@@ -227,10 +227,8 @@ void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *den
   }
 }
 
-void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3)
-{
-  if(res != tnsr1)
-  {
+void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3) {
+  if(res != tnsr1) {
     aiatensor__(resizeAs)(res, tnsr1);
     aiatensor__(copy)(res, tnsr1);
   }
@@ -238,10 +236,8 @@ void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor
 }
 
 
-void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3)
-{
-  if(res != tnsr1)
-  {
+void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3) {
+  if(res != tnsr1) {
     aiatensor__(resizeAs)(res, tnsr1);
     aiatensor__(copy)(res, tnsr1);
   }
@@ -250,11 +246,11 @@ void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor
 
 /** res = (beta * bvec) + (alpha * (mat * vec)) */
 void aiatensor__(addmv)(AIATensor_ *res, T beta, AIATensor_ *bvec, T alpha, AIATensor_ *mat, AIATensor_ *vec) {
-  aia_argcheck(mat->nDimension != 2, 5, "matrix expected got %dD", mat->nDimension);
-  aia_argcheck(vec->nDimension != 1, 6, "vector expected got %dD", vec->nDimension);
-  aia_argcheck(bvec->nDimension != 1, 3, "vector expected got %dD", bvec->nDimension);
-  aia_argcheck(mat->size[1] != vec->size[0], 5, "size mismatch between matrix and vector");
-  aia_argcheck(mat->size[0] != bvec->size[0], 5, "size mismatch between matrix and bvector");
+  aia_argcheck(mat->nDimension == 2, 5, "matrix expected got %dD", mat->nDimension);
+  aia_argcheck(vec->nDimension == 1, 6, "vector expected got %dD", vec->nDimension);
+  aia_argcheck(bvec->nDimension == 1, 3, "vector expected got %dD", bvec->nDimension);
+  aia_argcheck(mat->size[1] == vec->size[0], 5, "size mismatch between matrix and vector");
+  aia_argcheck(mat->size[0] == bvec->size[0], 5, "size mismatch between matrix and bvector");
 
   if(res != bvec) {
     aiatensor__(resizeAs)(res, bvec);
@@ -504,13 +500,13 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
   } else {
 #ifdef T_IS_FLOAT
     AIA_TENSOR_APPLY2(T, a, T, b,
-                      if(equal && fabsf(a_data - b_data) > epsi) {
+                      if(equal && fabsf(*a_data - *b_data) > epsi) {
                         equal = 0;
                         tensor_apply_finished = 1; break;
                       })
 #elif defined(T_IS_DOUBLE)
     AIA_TENSOR_APPLY2(T, a, T, b,
-                      if(equal && fabs(a_data - b_data) > epsi) {
+                      if(equal && fabs(*a_data - *b_data) > epsi) {
                         equal = 0;
                         tensor_apply_finished = 1; break;
                       })
@@ -520,15 +516,15 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
 }
 #endif
 
-T aiatensor__(trace)(AIATensor_ *mat) {
-  aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be 2-dimensional");
+T aiatensor__(trace)(AIATensor_ *this) {
+  aia_argcheck(aiatensor__(isSquare)(this), 1, "A should be 2-dimensional");
 
-  T *mat_data = aiatensor__(data)(mat);
-  long stride = mat->stride[0] + mat->stride[1];
+  T *mat_data = aiatensor__(data)(this);
+  long stride = this->stride[0] + this->stride[1];
   long idx;
   T tr = 0;
 
-  for(idx = 0; idx < mat->size[0]; idx++) {
+  for(idx = 0; idx < this->size[0]; idx++) {
     tr += mat_data[idx * stride];
   }
 
@@ -584,24 +580,26 @@ void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride
   aiatensor__(fill)(res, (T)1.0);
 }
 
-/** det(mat) */
-T aiatensor__(detsymm)(AIATensor_ *mat) {
-  aia_argcheck(aiatensor__(isSquare)(mat), 1, "A should be square matrix");
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
+/** det(detpd) */
+T aiatensor__(detpd)(AIATensor_ *this) {
+  aia_argcheck(aiatensor__(isSquare)(this), 1, "A should be square matrix");
 
-  AIATensor_ *matchol = aiatensor__(new)(mat);
-  T *data = aiatensor__(data)(matchol);
-  long stride = matchol->stride[0] + matchol->stride[1];
+  AIATensor_ *chol = aiatensor__(new)(this);
+  T *data = aiatensor__(data)(chol);
+  long stride = chol->stride[0] + chol->stride[1];
   T det = 1;
   long idx;
 
-  aiatensor__(potrf)(matchol, matchol, "L");
-  for(idx = 0; idx < matchol->size[0]; idx++) {
+  aiatensor__(potrf)(chol, NULL, "L");
+  for(idx = 0; idx < chol->size[0]; idx++) {
     det *= data[idx * stride];
   }
   det = pow(det, 2);
-  aiatensor__(free)(matchol);
+  aiatensor__(free)(chol);
   return det;
 }
+#endif
 
 /** X + a * I */
 void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a) {
@@ -622,12 +620,12 @@ void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a) {
   }
 }
 
-/** x** * A * x */
+/** x.T * A * x */
 T aiatensor__(xTAx)(AIATensor_ *x, AIATensor_ *amat) {
   return aiatensor__(xTAy)(x, amat, x);
 }
 
-/** x** * A * y */
+/** x.T * A * y */
 T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
   aia_argcheck(aiatensor__(isMatrix)(amat), 2, "A should be a matrix");
@@ -637,7 +635,7 @@ T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
 
   long nrows = amat->size[0];
   long lda = nrows;
-  AIATensor_ *z = aiatensor__(newVector)(nrows);
+  AIATensor_ *z = aiatensor__(emptyVector)(nrows);
   T res;
 
   aiatensor__(mv)(z, amat, y);
@@ -646,37 +644,38 @@ T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   return res;
 }
 
-/** x** * A^-1 * x */
+/** x.T * A^-1 * x */
 T aiatensor__(xTAIx)(AIATensor_ *x, AIATensor_ *amat) {
   return aiatensor__(xTAIy)(x, amat, x);
 }
 
-/** x** * A^-1 * y */
+/** x.T * A^-1 * y */
 T aiatensor__(xTAIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   printf("ERR: function aiatensor__(xTAIy) is not implemented");
   exit(-1);
 }
 
-/** x** * Asymm * x */
+/** x.T * Asymm * x */
 T aiatensor__(xTAsymmx)(AIATensor_ *x, AIATensor_ *amat) {
   printf("ERR: function aiatensor__(xTAsymmx) is not implemented");
   exit(-1);
 }
 
-/** x** * Asymm * y */
+/** x.T * Asymm * y */
 T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   printf("ERR: function aiatensor__(xTAsymmy) is not implemented");
   exit(-1);
 }
 
-/** x** * Apd^-1 * x */
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
+/** x.T * Apd^-1 * x */
 T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
   aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
   aia_argcheck(x->size[0] == achol->size[0], 2, "inconsistent tensor size");
 
   AIATensor_ *L = aiatensor__(new)(achol);
-  AIATensor_ *LIx = aiatensor__(newVector)(achol->size[0]);
+  AIATensor_ *LIx = aiatensor__(emptyVector)(achol->size[0]);
   T res;
 
   aiatensor__(potrf)(L, achol, "L");
@@ -686,8 +685,10 @@ T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo) {
   aiatensor__(free)(LIx);
   return res;
 }
+#endif
 
-/** x** * Apd^-1 * y */
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
+/** x.T * Apd^-1 * y */
 T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y) {
   aia_argcheck(aiatensor__(isVector)(x), 1, "x should be 1-dimensional");
   aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
@@ -696,7 +697,7 @@ T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIA
   aia_argcheck(y->size[0] == achol->size[1], 2, "inconsistent tensor size");
 
   AIATensor_ *L = aiatensor__(new)(achol);
-  AIATensor_ *LIy = aiatensor__(newVector)(achol->size[0]);
+  AIATensor_ *LIy = aiatensor__(emptyVector)(achol->size[0]);
   T res;
 
   aiatensor__(potrf)(L, achol, "L");
@@ -704,15 +705,17 @@ T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIA
   res = aiatensor__(dot)(LIy, x);
   return res;
 }
+#endif
 
-/** X** * Asymm * X + a * Y */
+/** X.T * Asymm * X + a * Y */
 AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, T a, AIATensor_ *ymat) {
   printf("ERR: function aiatensor__(XTAsymmXpaY) is not implemented");
   exit(-1);
   return res;
 }
 
-/** X** * Apd^-1 * X + a * Y */
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
+/** X.T * Apd^-1 * X + a * Y */
 AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat) {
   aia_argcheck(aiatensor__(isSquare)(xmat), 2, "X should be square matrix");
   aia_argcheck(aiatensor__(isSquare)(achol), 3, "A should be square matrix");
@@ -731,6 +734,7 @@ AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor
   aiatensor__(free)(aIxT);
   return res;
 }
+#endif
 
 #endif
 

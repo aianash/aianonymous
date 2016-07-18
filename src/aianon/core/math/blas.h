@@ -102,7 +102,7 @@ AIA_API void aiablas__(gemv)(char trans, long m, long n, T alpha, T *a, long lda
  * Function: aiablas__(ger)
  * ---------------------------
  * Performs rank 1 operation
- *   a := alpha * x * y**T + A
+ *   a := alpha * x * y.T + A
  *
  * m     :
  * n     :
@@ -122,7 +122,7 @@ AIA_API void aiablas__(ger)(long m, long n, T alpha, T *x, long incx, T *y, long
  * Performs one of the matrix-matrix operation
  *   C := alpha * op(A) * op(B) + beta * C
  * where  op( X ) is one of
- *   op(X) = X   or   op(X) = X**T
+ *   op(X) = X   or   op(X) = X.T
  *
  * transa :
  * transb :

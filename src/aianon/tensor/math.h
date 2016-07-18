@@ -70,20 +70,22 @@ AIA_API void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T 
 AIA_API void aiatensor__(zeros)(AIATensor_ *res, int nDimension, long *size, long *stride);
 AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride);
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
- * Computes determinant of a symmetric matrix
+ * Computes determinant of a positive definite matrix
  *
  * Input
  * -----
- * mat : Symmetric matrix of size n x n
+ * mat : Positive definite matrix of size n x n
  *
  * Output
  * ------
  * Returns determinant of matrix
  */
-AIA_API T aiatensor__(detsymm)(AIATensor_ *mat);
+AIA_API T aiatensor__(detpd)(AIATensor_ *mat);
+#endif
 
 /**
  * Description
@@ -107,7 +109,7 @@ AIA_API void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a);
  * Description
  * -----------
  * Returns following product:
- *   x** * amat * y
+ *   x.T * amat * y
  *
  * Input
  * -----
@@ -125,7 +127,7 @@ AIA_API T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Description
  * -----------
  * Returns following product:
- *   x** * amat * x
+ *   x.T * amat * x
  *
  * Input
  * -----
@@ -142,7 +144,7 @@ AIA_API T aiatensor__(xTAx)(AIATensor_ *x, AIATensor_ *amat);
  * Description
  * -----------
  * Returns following product
- *   x** * A^-1 * x
+ *   x.T * A^-1 * x
  *
  * Input
  * -----
@@ -159,7 +161,7 @@ AIA_API T aiatensor__(xTAIx)(AIATensor_ *x, AIATensor_ *amat);
  * Description
  * -----------
  * Returns following product:
- *   x** * A^-1 * y
+ *   x.T * A^-1 * y
  *
  * Input
  * -----
@@ -177,7 +179,7 @@ AIA_API T aiatensor__(xTAIy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Description
  * -----------
  * Returns following product for a symmetric matrix A
- *   x** * A * x
+ *   x.T * A * x
  *
  * Input
  * -----
@@ -194,7 +196,7 @@ AIA_API T aiatensor__(xTAsymmx)(AIATensor_ *x, AIATensor_ *amat);
  * Description
  * -----------
  * Returns following product for a symmetric matrix A
- *   x** * A * y
+ *   x.T * A * y
  *
  * Input
  * -----
@@ -208,11 +210,12 @@ AIA_API T aiatensor__(xTAsymmx)(AIATensor_ *x, AIATensor_ *amat);
  */
 AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
  * Returns following product for a positive definite matrix A
- *   x** * A^-1 * x
+ *   x.T * A^-1 * x
  *
  * Input
  * -----
@@ -225,12 +228,14 @@ AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Returns a scalar
  */
 AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo);
+#endif
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
  * Returns following product for a positive definite matrix A
- *   x** * A^-1 * y
+ *   x.T * A^-1 * y
  *
  * Input
  * -----
@@ -244,12 +249,13 @@ AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *upl
  * Returns a scalar
  */
 AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y);
+#endif
 
 /**
  * Description
  * -----------
  * Computes following matrix-matrix multiplication
- *   X** * A * X + a * Y
+ *   X.T * A * X + a * Y
  *
  * Input
  * -----
@@ -266,11 +272,12 @@ AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, const char *upl
  */
 AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, T a, AIATensor_ *ymat);
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
  * Computes following matrix-matrix multiplication for positive definite matrix A
- *   X** * A^-1 * X + a * Y
+ *   X.T * A^-1 * X + a * Y
  *
  * Input
  * -----
@@ -287,6 +294,7 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  *
  */
 AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat);
+#endif
 
 #endif
 

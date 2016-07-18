@@ -117,19 +117,22 @@ void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo) {
 }
 
 //
-void aiatensor__(potrs)(AIATensor_ *x, AIATensor_ *b, AIATensor_ *amat,  const char *uplo) {
-  if(b = NULL) b = x;
-  aia_argcheck(aiatensor__(size)(amat, 0) == aiatensor__(size)(amat, 1), 3, "A should be a square matrix");
+void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, const char *uplo) {
+  if(b == NULL) b = res;
+  aia_argcheck(aiatensor__(isSquare)(achol), 3, "A should be a square matrix");
 
   int n, nrhs, lda, ldb, info;
-  AIATensor_ *a_ = aiatensor__(cloneColumnMajor)(NULL, amat);
-  AIATensor_ *b_ = aiatensor__(cloneColumnMajor)(x, b);
+
+  AIATensor_ *a_;
+  AIATensor_ *b_;
+
+  a_ = aiatensor__(cloneColumnMajor)(NULL, achol);
+  b_ = aiatensor__(cloneColumnMajor)(res, b);
 
   n = a_->size[0];
   nrhs = b_->size[1];
   lda = n;
   ldb = n;
-
   aialapack__(potrs)(uplo[0], n, nrhs, aiatensor__(data)(a_), lda, aiatensor__(data)(b_), ldb, &info);
   aia_lapackCheckWithCleanup("Lapack Error in %s : A(%d,%d) is zero, singular A",
                             aia_cleanup(
@@ -137,12 +140,38 @@ void aiatensor__(potrs)(AIATensor_ *x, AIATensor_ *b, AIATensor_ *amat,  const c
                               aiatensor__(free)(b_);
                             ), "potrs", info, info);
   aiatensor__(free)(a_);
-  aiatensor__(freeCopyTo)(b_, x);
+  aiatensor__(freeCopyTo)(b_, res);
 }
 
-void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *amat, const char *uplo, const char *trans, const char *diag) {
-  printf("ERR: function aiatensor__(trtrs) is not implemented");
-  exit(-1);
+void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATensor_ *amat, const char *uplo, const char *trans, const char *diag) {
+  if(amat == NULL) amat = resa;
+  if(b == NULL) b = resb;
+
+  aia_argcheck(aiatensor__(isSquare)(amat), 4, "A should be 2-dimensional");
+  aia_argcheck(aiatensor__(isMatrix)(b) || aiatensor__(isVector)(b), 3, "b should be either a matrix or a vector");
+  aia_argcheck(amat->size[0] == b->size[0], 3, "A, b size incomatible");
+
+  int n, nrhs, lda, ldb, info;
+  AIATensor_ *resa_, *resb_;
+
+  resa_ = aiatensor__(cloneColumnMajor)(resa, amat);
+  resb_ = aiatensor__(cloneColumnMajor)(resb, b);
+
+
+  n = (int) resa_->size[0];
+  nrhs = b->size[1];
+  lda = n;
+  ldb = n;
+
+  aialapack__(trtrs)(uplo[0], trans[0], diag[0], n, nrhs, aiatensor__(data)(resa_), lda,
+    aiatensor__(data)(resb_), ldb, &info);
+
+  aia_lapackCheckWithCleanup("Lapack Error in %s : A(%d, %d) is zero. singular A.",
+                             aia_cleanup(aiatensor__(free)(resa_); aiatensor__(free)(resb_);),
+                             "trtrs", info, info);
+
+  aiatensor__(freeCopyTo)(resa_, resa);
+  aiatensor__(freeCopyTo)(resb_, resb);
 }
 
 //
@@ -166,7 +195,7 @@ void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, cons
 
   lwork = (int)optLwork;
 
-  work = aiatensor__(newVector)(lwork);
+  work = aiatensor__(emptyVector)(lwork);
   aialapack__(syev)(jobz[0], uplo[0], n, aiatensor__(data)(resv_), lda,
                     aiatensor__(data)(rese), aiatensor__(data)(work), lwork, &info);
 
@@ -227,7 +256,7 @@ void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, A
     aiatensor__(data)(resv_), ldvt, &wkopt, -1, &info);
 
   lwork = (int) wkopt;
-  work = aiatensor__(newVector)(lwork);
+  work = aiatensor__(emptyVector)(lwork);
 
   aialapack__(gesvd)(jobu[0], jobu[0], m, n, aiatensor__(data)(rmat_),
     lda, aiatensor__(data)(ress_), aiatensor__(data)(resu_), ldu,
@@ -259,6 +288,7 @@ void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, A
 
 #endif
 
-#define ERASE_ALL
+#define ERASE_FLOAT
+#define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/tensor/linalg.c"
 #include <aianon/core/erasure.h>
