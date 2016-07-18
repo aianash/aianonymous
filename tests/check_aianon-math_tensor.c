@@ -83,7 +83,7 @@ START_TEST(test_tensor_create) {
     "Refcount of storage not increased after new operation");
   aiatensor_(float, free)(n);
 
-  AIATensor(float) *vec = aiatensor_(float, newVector)(4);
+  AIATensor(float) *vec = aiatensor_(float, emptyVector)(4);
   ck_assert_msg(vec->nDimension == 1 && vec->size[0] == 4 && vec->stride[0] == 1,
     "Vector creation failed");
   aiatensor_(float, free)(vec);

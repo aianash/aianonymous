@@ -14,7 +14,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   long m = Y->size[0];
   long d = X->size[1];
 
-  AIATensor_ *K_ = aiatensor__(newVector)(n * m);
+  AIATensor_ *K_ = aiatensor__(emptyVector)(n * m);
 
   long lambda_stride = lambda->stride[0];
   T *lambda_data = aiatensor__(data)(lambda);
@@ -30,8 +30,8 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
                               *K__data = exp(sum) * pow(alpha, 2);
                               );
   } else {
-    AIATensor_ *diff = aiatensor__(newVector)(d);
-    AIATensor_ *y = aiatensor__(newVector)(d);
+    AIATensor_ *diff = aiatensor__(emptyVector)(d);
+    AIATensor_ *y = aiatensor__(emptyVector)(d);
     T *diff_data = aiatensor__(data)(diff);
     long diff_stride = diff->stride[0];
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,

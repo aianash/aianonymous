@@ -195,7 +195,7 @@ void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, cons
 
   lwork = (int)optLwork;
 
-  work = aiatensor__(newVector)(lwork);
+  work = aiatensor__(emptyVector)(lwork);
   aialapack__(syev)(jobz[0], uplo[0], n, aiatensor__(data)(resv_), lda,
                     aiatensor__(data)(rese), aiatensor__(data)(work), lwork, &info);
 
@@ -256,7 +256,7 @@ void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, A
     aiatensor__(data)(resv_), ldvt, &wkopt, -1, &info);
 
   lwork = (int) wkopt;
-  work = aiatensor__(newVector)(lwork);
+  work = aiatensor__(emptyVector)(lwork);
 
   aialapack__(gesvd)(jobu[0], jobu[0], m, n, aiatensor__(data)(rmat_),
     lda, aiatensor__(data)(ress_), aiatensor__(data)(resu_), ldu,
@@ -288,6 +288,7 @@ void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, A
 
 #endif
 
-#define ERASE_ALL
+#define ERASE_FLOAT
+#define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/tensor/linalg.c"
 #include <aianon/core/erasure.h>

@@ -70,6 +70,7 @@ AIA_API void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T 
 AIA_API void aiatensor__(zeros)(AIATensor_ *res, int nDimension, long *size, long *stride);
 AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride);
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
@@ -84,6 +85,7 @@ AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long
  * Returns determinant of matrix
  */
 AIA_API T aiatensor__(detpd)(AIATensor_ *mat);
+#endif
 
 /**
  * Description
@@ -208,6 +210,7 @@ AIA_API T aiatensor__(xTAsymmx)(AIATensor_ *x, AIATensor_ *amat);
  */
 AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
@@ -225,7 +228,9 @@ AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * Returns a scalar
  */
 AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo);
+#endif
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
@@ -244,6 +249,7 @@ AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *upl
  * Returns a scalar
  */
 AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y);
+#endif
 
 /**
  * Description
@@ -266,6 +272,7 @@ AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, const char *upl
  */
 AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *amat, T a, AIATensor_ *ymat);
 
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description
  * -----------
@@ -287,6 +294,7 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  *
  */
 AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat);
+#endif
 
 #endif
 

@@ -119,7 +119,7 @@ void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, con
 void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
   long n = Kchol->size[0];
 
-  AIATensor_ *alpha = aiatensor__(newVector)(n);
+  AIATensor_ *alpha = aiatensor__(emptyVector)(n);
   AIATensor_ *KxT   = aiatensor__(empty)();
 
   // calculation of fmean

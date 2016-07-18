@@ -15,7 +15,8 @@ AIA_API void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *m
 
 #endif
 
-#define ERASE_ALL
+#define ERASE_FLOAT
+#define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/tensor/linalg.h"
 #include <aianon/core/erasure.h>
 
