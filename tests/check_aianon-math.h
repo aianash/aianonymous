@@ -3,5 +3,6 @@
 
 Suite *make_tensor_suite(void);
 Suite *make_tensormath_suite(void);
+Suite *make_tensorlinalg_suite(void);
 
 #endif

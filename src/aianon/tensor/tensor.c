@@ -280,7 +280,7 @@ void aiatensor__(transpose)(AIATensor_ *this, AIATensor_ *from, int dim1, int di
   if(dim1 == dim2) return;
 
   SWAP(long, this->stride[dim1], this->stride[dim2]);
-  SWAP(long, this->size[dim1], this->stride[dim2]);
+  SWAP(long, this->size[dim1], this->size[dim2]);
 }
 
 //

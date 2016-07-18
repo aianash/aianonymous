@@ -237,8 +237,7 @@ void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor
 
 
 void aiatensor__(addcdiv)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3) {
-  if(res != tnsr1)
-  {
+  if(res != tnsr1) {
     aiatensor__(resizeAs)(res, tnsr1);
     aiatensor__(copy)(res, tnsr1);
   }
@@ -501,13 +500,13 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
   } else {
 #ifdef T_IS_FLOAT
     AIA_TENSOR_APPLY2(T, a, T, b,
-                      if(equal && fabsf(a_data - b_data) > epsi) {
+                      if(equal && fabsf(*a_data - *b_data) > epsi) {
                         equal = 0;
                         tensor_apply_finished = 1; break;
                       })
 #elif defined(T_IS_DOUBLE)
     AIA_TENSOR_APPLY2(T, a, T, b,
-                      if(equal && fabs(a_data - b_data) > epsi) {
+                      if(equal && fabs(*a_data - *b_data) > epsi) {
                         equal = 0;
                         tensor_apply_finished = 1; break;
                       })
