@@ -25,7 +25,7 @@ AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, adag
 
   T fx;
   AIATensor_ *df_dx = aiatensor__(emptyAs)(x);
-  opfunc(x, &fx, df_dx);
+  opfunc(x, &fx, df_dx, F_N_GRAD);
 
   if(wd != 0.0)
     aiatensor__(cadd)(df_dx, df_dx, wd, x);

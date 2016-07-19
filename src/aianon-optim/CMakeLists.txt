@@ -17,6 +17,7 @@ set (HEADERS
 set (SOURCES
     sgd.c
     adagrad.c
+    linesearch.c
 )
 
 set (DIR_SRCS)

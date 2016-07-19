@@ -36,7 +36,7 @@ AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_conf
   // evaluate f(x) and df/dx
   T fx;
   AIATensor_ *df_dx = aiatensor__(emptyAs)(x);
-  opfunc(x, &fx, df_dx);
+  opfunc(x, &fx, df_dx, F_N_GRAD);
 
   // apply weight decay with single or individual parameters
   if(wd != 0.0)

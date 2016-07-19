@@ -6,6 +6,10 @@
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
 
+typedef enum { ONLY_F, ONLY_GRAD, F_N_GRAD } opfunc_ops;
+
+/** configs **/
+
 typedef struct sgd_config_ {
   float learningRate;
   float *learningRates;
@@ -41,10 +45,42 @@ typedef struct optim_state_(adagrad) {
   int evalCounter;
 } optim_state_(adagrad);
 
-typedef void (*optim__(opfunc))(AIATensor_ *x, T *fx, AIATensor_ *df_dx);
+typedef void (*optim__(opfunc))(AIATensor_ *x, T *fx, AIATensor_ *df_dx, opfunc_ops ops);
+
+/** Stochastic Gradient **/
 
 AIA_API AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_config *config, optim_state_(sgd) *state);
 AIA_API AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, adagrad_config *config, optim_state_(adagrad) *state);
+
+/** Linear search routines **/
+
+/**
+ * Description
+ * -----------
+ *
+ * Input
+ * -----
+ * a        :
+ * opfunc   :
+ * x        :
+ * p        :
+ * f        :
+ * gf       :
+ * c1       :
+ * c2       :
+ * amin     :
+ * amax     :
+ * xtol     :
+ * maxIter  :
+ *
+ * Output
+ * ------
+ * a    :
+ * f    :
+ * gf   :
+ * ////
+ */
+AIA_API int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter);
 
 #endif
 
@@ -55,7 +91,7 @@ AIA_API AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfu
 
 #ifndef optim_
 #define optim_(type, method) AIA_FN_ERASE_(optim, type, method)
-#define optim__(method) optim_(type, method)
+#define optim__(method) optim_(T_, method)
 #endif
 
 #define ERASE_FLOAT
