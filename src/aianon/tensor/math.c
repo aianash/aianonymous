@@ -821,15 +821,14 @@ T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo) {
   aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
   aia_argcheck(x->size[0] == achol->size[0], 2, "inconsistent tensor size");
 
-  AIATensor_ *L = aiatensor__(new)(achol);
-  AIATensor_ *LIx = aiatensor__(emptyVector)(achol->size[0]);
+  AIATensor_ *LIx = aiatensor__(newCopy)(x);
+  AIATensor_ *tmp = aiatensor__(newCopy)(achol);
   T res;
 
-  aiatensor__(potrf)(L, achol, "L");
-  aiatensor__(trtrs)(LIx, x, L, "L", "N", "N");
+  aiatensor__(trtrs)(tmp, LIx, x, achol, "L", "N", "N");
   res = aiatensor__(dot)(LIx, LIx);
-  aiatensor__(free)(L);
   aiatensor__(free)(LIx);
+  aiatensor__(free)(tmp);
   return res;
 }
 #endif
@@ -847,7 +846,6 @@ T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIA
   AIATensor_ *LIy = aiatensor__(emptyVector)(achol->size[0]);
   T res;
 
-  aiatensor__(potrf)(L, achol, "L");
   aiatensor__(potrs)(LIy, y, L, "L");
   res = aiatensor__(dot)(LIy, x);
   return res;

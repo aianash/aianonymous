@@ -155,11 +155,15 @@ void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATe
   AIATensor_ *resa_, *resb_;
 
   resa_ = aiatensor__(cloneColumnMajor)(resa, amat);
-  resb_ = aiatensor__(cloneColumnMajor)(resb, b);
-
+  if(aiatensor__(isVector)(b)) {
+    resb_ = aiatensor__(newCopy)(b);
+    nrhs = 1;
+  } else {
+    resb_ = aiatensor__(cloneColumnMajor)(resb, b);
+    nrhs = resb_->size[1];
+  }
 
   n = (int) resa_->size[0];
-  nrhs = b->size[1];
   lda = n;
   ldb = n;
 

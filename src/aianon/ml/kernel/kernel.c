@@ -14,6 +14,8 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   long m = Y->size[0];
   long d = X->size[1];
 
+
+  aiatensor__(resize2d)(K, X->size[0], Y->size[0]);
   AIATensor_ *K_ = aiatensor__(emptyVector)(n * m);
 
   long lambda_stride = lambda->stride[0];
@@ -31,13 +33,14 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
                               );
   } else {
     AIATensor_ *diff = aiatensor__(emptyVector)(d);
-    AIATensor_ *y = aiatensor__(emptyVector)(d);
-    T *diff_data = aiatensor__(data)(diff);
+    AIATensor_ *y    = aiatensor__(emptyVector)(d);
+    AIATensor_ *tmp  = aiatensor__(newCopy)(lambda);
+    T *diff_data     = aiatensor__(data)(diff);
     long diff_stride = diff->stride[0];
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,
                               aiablas__(copy)(d, Y_data, Y_stride, diff_data, diff_stride);
                               aiablas__(axpy)(d, -1, X_data, X_stride, diff_data, diff_stride);
-                              aiatensor__(trtrs)(y, diff, lambda, uplo, "N", "N");
+                              aiatensor__(trtrs)(tmp, y, diff, lambda, uplo, "N", "N");
                               *K__data = aiatensor__(dot)(y, y);
                               *K__data *= -0.5;
                               *K__data = exp(*K__data) * pow(alpha, 2);
@@ -46,7 +49,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
     aiatensor__(free)(y);
   }
   aiatensor__(resize2d)(K_, n, m);
-  aiatensor__(freeCopyTo)(K, K_);
+  aiatensor__(freeCopyTo)(K_, K);
   return K;
 }
 
@@ -55,7 +58,7 @@ T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambd
 
   aia_argcheck(aiatensor__(isVector)(x), 2, "function only works for vector inputs");
   aia_argcheck(aiatensor__(isVector)(y), 3, "function only works for vector inputs");
-  aia_argcheck(aiatensor__(isVector)(lambda), 4, "lambda should be 1-d tensor");
+  aia_argcheck(aiatensor__(isVector)(lambda) || aiatensor__(isSquare)(lambda), 4, "incorrect size of lambda");
   aia_argcheck(x->size[0] == y->size[0], 2, "incosistent tensor size");
   aia_argcheck(x->size[0] == lambda->size[0], 4, "incosistent tensor size for lambda");
 
