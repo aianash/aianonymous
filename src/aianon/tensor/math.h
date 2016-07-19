@@ -70,6 +70,8 @@ AIA_API void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T 
 AIA_API void aiatensor__(zeros)(AIATensor_ *res, int nDimension, long *size, long *stride);
 AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride);
 
+AIA_API void aiatensor__(sqrt)(AIATensor_ * res, AIATensor_ *tnsr);
+
 #if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
  * Description

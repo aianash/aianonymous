@@ -20,6 +20,8 @@ typedef int bool;
 #define TRUE 1
 #define FALSE 0
 
+#define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
+
 #define SWAP(T, x, y) \
 do {                  \
   T t = x;            \
