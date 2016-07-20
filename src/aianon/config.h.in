@@ -1,0 +1,6 @@
+#ifndef AIA_CONFIG_H
+#define AIA_CONFIG_H
+
+#include <stdlib.h>
+
+#endif
