@@ -7,6 +7,7 @@ set (HEADERS
     apply.h
     linalg.h
     diagmath.h
+    random.h
 )
 
 set (SOURCES
@@ -15,6 +16,7 @@ set (SOURCES
     math.c
     linalg.c
     diagmath.c
+    random.c
 )
 
 set (DIR_SRCS)

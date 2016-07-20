@@ -1,4 +1,4 @@
-#ifndef AIA_UTIL_ARRAY_H
+#ifndef AIA_CORE_UTIL_ARRAY_H
 
 #include <stdlib.h>
 #include <memory.h>
@@ -8,6 +8,8 @@
 T *arr__(clone)(T *arr, int size);
 void arr__(fill)(T *arr, const T c, const long n);
 void arr__(zero)(T *arr, const long n);
+T *arr__(new)(long size);
+
 
 #endif
 
@@ -20,5 +22,5 @@ void arr__(zero)(T *arr, const long n);
 #define ERASURE_FILE "aianon/core/util/array.h"
 #include <aianon/core/erasure.h>
 
-#define AIA_UTIL_ARRAY_H
+#define AIA_CORE_UTIL_ARRAY_H
 #endif
