@@ -821,15 +821,14 @@ T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo) {
   aia_argcheck(aiatensor__(isSquare)(achol), 2, "A should be square matrix");
   aia_argcheck(x->size[0] == achol->size[0], 2, "inconsistent tensor size");
 
-  AIATensor_ *L = aiatensor__(new)(achol);
-  AIATensor_ *LIx = aiatensor__(emptyVector)(achol->size[0]);
+  AIATensor_ *LIx = aiatensor__(newCopy)(x);
+  AIATensor_ *tmp = aiatensor__(newCopy)(achol);
   T res;
 
-  aiatensor__(potrf)(L, achol, "L");
-  aiatensor__(trtrs)(LIx, x, L, "L", "N", "N");
+  aiatensor__(trtrs)(tmp, LIx, x, achol, "L", "N", "N");
   res = aiatensor__(dot)(LIx, LIx);
-  aiatensor__(free)(L);
   aiatensor__(free)(LIx);
+  aiatensor__(free)(tmp);
   return res;
 }
 #endif
@@ -847,7 +846,6 @@ T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIA
   AIATensor_ *LIy = aiatensor__(emptyVector)(achol->size[0]);
   T res;
 
-  aiatensor__(potrf)(L, achol, "L");
   aiatensor__(potrs)(LIy, y, L, "L");
   res = aiatensor__(dot)(LIy, x);
   return res;
@@ -864,21 +862,23 @@ AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATenso
 #if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /** X.T * Apd^-1 * X + a * Y */
 AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat) {
-  aia_argcheck(aiatensor__(isSquare)(xmat), 2, "X should be square matrix");
+  aia_argcheck(aiatensor__(isMatrix)(xmat), 2, "X should be square matrix");
   aia_argcheck(aiatensor__(isSquare)(achol), 3, "A should be square matrix");
   aia_argcheck(aiatensor__(isSquare)(ymat), 6, "Y should be square matrix");
   aia_argcheck(xmat->size[0] == achol->size[0], 2, "inconsistent tensor size");
-  aia_argcheck(xmat->size[0] == ymat->size[0], 3, "inconsistent tensor size");
+  aia_argcheck(xmat->size[1] == ymat->size[0], 3, "inconsistent tensor size");
 
   AIATensor_ *aIx  = aiatensor__(empty)();
   AIATensor_ *aIxT = aiatensor__(empty)();
+  AIATensor_ *tmp  = aiatensor__(newCopy)(achol);
 
-  aiatensor__(trtrs)(aIx, xmat, achol, uplo, "N", "N");
+  aiatensor__(trtrs)(tmp, aIx, xmat, achol, uplo, "N", "N");
   aiatensor__(transpose)(aIxT, aIx, 0, 1);
   aiatensor__(addmm)(res, a, ymat, 1, aIx, aIxT);
 
   aiatensor__(free)(aIx);
   aiatensor__(free)(aIxT);
+  aiatensor__(free)(tmp);
   return res;
 }
 #endif
