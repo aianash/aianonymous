@@ -21,6 +21,7 @@ set(AIANON_MATH_TEST_SOURCES
     check_aianon-math_tensormath.c
     check_aianon-math_tensorlinalg.c
     check_aianon-kernel.c
+    check_aianon-gp.c
     check_aianon-math.c
 )
 

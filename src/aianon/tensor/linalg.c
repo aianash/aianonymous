@@ -120,6 +120,7 @@ void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo) {
 void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, const char *uplo) {
   if(b == NULL) b = res;
   aia_argcheck(aiatensor__(isSquare)(achol), 3, "A should be a square matrix");
+  aia_argcheck(aiatensor__(isMatrix)(b) || aiatensor__(isVector)(b), 2, "b should be a vector or a matrix");
 
   int n, nrhs, lda, ldb, info;
 
@@ -127,10 +128,15 @@ void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, const
   AIATensor_ *b_;
 
   a_ = aiatensor__(cloneColumnMajor)(NULL, achol);
-  b_ = aiatensor__(cloneColumnMajor)(res, b);
+  if(aiatensor__(isVector)(b)) {
+    b_ = aiatensor__(newCopy)(b);
+    nrhs = 1;
+  } else {
+    b_ = aiatensor__(cloneColumnMajor)(res, b);
+    nrhs = b_->size[1];
+  }
 
   n = a_->size[0];
-  nrhs = b_->size[1];
   lda = n;
   ldb = n;
   aialapack__(potrs)(uplo[0], n, nrhs, aiatensor__(data)(a_), lda, aiatensor__(data)(b_), ldb, &info);

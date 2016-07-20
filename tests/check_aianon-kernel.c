@@ -36,12 +36,12 @@ static float lamndiag4x4L[16] =
 
 static float alpha = 0.4f;
 
-static long size4x4[16] = {4l, 4l};
-static long size3x4[12] = {3l, 4l};
-static long size3x3[9]  = {3l, 3l};
-static long size2x4[9]  = {2l, 4l};
-static long size3x2[6]  = {3l, 2l};
-static long size4[1]    = {4l};
+static long size4x4[2] = {4l, 4l};
+static long size3x4[2] = {3l, 4l};
+static long size3x3[2] = {3l, 3l};
+static long size2x4[2] = {2l, 4l};
+static long size3x2[2] = {3l, 2l};
+static long size4[1]   = {4l};
 
 static float fepsi = 1e-5f;
 
@@ -98,7 +98,7 @@ START_TEST(test_sekernel_matrix_float) {
     "sekernel_matrix test 2 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
 
-  // x and y are different and lamnda is non-diagonal
+  // x and y are different and lambda is non-diagonal
   float exp3x2_2[6] =
     { 0.010669f, 0.000000f,
       0.001322f, 0.000000f,
@@ -140,7 +140,7 @@ START_TEST(test_sekernel_value_float) {
   res = aiakernel_se_(float, value)(fvec1, NULL, alpha, flamdiag, TRUE, NULL);
   ck_assert_msg(fabsf(res - exp) <= fepsi, "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 
-  // x and y are different and lamda is non-diagonal
+  // x and y are different and lambda is non-diagonal
   exp = 0.006109f;
   res = aiakernel_se_(float, value)(fvec1, fvec2, alpha, flamndiagL, FALSE, "L");
   ck_assert_msg(fabsf(res - exp) <= fepsi, "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);

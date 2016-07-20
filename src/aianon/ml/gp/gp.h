@@ -27,8 +27,26 @@
  * Output
  * ------
  * beta  : vector of size n
+ *         when NULL, a new vector is created
  */
-AIA_API void aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, const char* uplo, AIATensor_ *y);
+AIA_API AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, const char* uplo, AIATensor_ *y);
+
+/**
+ * Description
+ * -----------
+ * Computes K1 matrix where (i, j)th entry is given by
+ *   K1_ij = exp(-1/2 * (x_i - x_j).T * (2 * lambda)^-1 * (x_i - x_j))
+ *
+ * Input
+ * -----
+ * X      : Input data matrix of size n x d where n is number of samples
+ * lambda : Diagonal matrix of length scale
+ *
+ * Output
+ * ------
+ * K1     : n x n matrix
+ */
+AIA_API void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda);
 
 /**
  * Description
@@ -89,6 +107,7 @@ AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *u
  * alpha  : Signal variance of kernel
  * X      : Input data matrix of size n x d
  * beta   : As calculated using aiagp__(calcbeta) function
+ * K1     : As calculated using aiagp__(calcK1) function
  * Xxm    : Mean of test input
  * Xxcov  : Covariance matrix of test input
  *
@@ -97,7 +116,7 @@ AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *u
  * fmean  : Mean of output for test input
  * fcov   : Standard deviation of output for test input
  */
-AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *Xxm, AIATensor_ *Xxcov);
+AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *K1, AIATensor_ *Xxm, AIATensor_ *Xxcov);
 
 #endif
 
