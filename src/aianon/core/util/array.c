@@ -24,6 +24,12 @@ void arr__(zero)(T *arr, const long n) {
   memset(arr, 0, n);
 }
 
+T *arr__(new)(long size) {
+	T *res = malloc(sizeof(T) * size);
+  memset(res, 0, size);
+	return res;
+}
+
 #endif
 
 #define ERASE_ALL

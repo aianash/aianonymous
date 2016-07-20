@@ -2,6 +2,21 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
+#define IMPLEMENT_BASIC_MATH_FUNCTION(NAME, CFUNC)                       \
+  void aiatensor__(NAME)(AIATensor_ *res, AIATensor_ *tnsr) {            \
+    aiatensor__(resizeAs)(res, tnsr);                                    \
+    AIA_TENSOR_APPLY2(T, tnsr, T, res, *res_data = CFUNC(*tnsr_data););  \
+  }                                                                      \
+
+IMPLEMENT_BASIC_MATH_FUNCTION(log, log)
+IMPLEMENT_BASIC_MATH_FUNCTION(exp, exp)
+IMPLEMENT_BASIC_MATH_FUNCTION(sqrt, sqrt)
+IMPLEMENT_BASIC_MATH_FUNCTION(ceil, ceil)
+IMPLEMENT_BASIC_MATH_FUNCTION(floor, floor)
+IMPLEMENT_BASIC_MATH_FUNCTION(round, round)
+IMPLEMENT_BASIC_MATH_FUNCTION(abs, fabs)
+IMPLEMENT_BASIC_MATH_FUNCTION(trunc, trunc)
+
 void aiatensor__(add)(AIATensor_ *res, AIATensor_ *tnsr, T value) {
   aiatensor__(resizeAs)(res, tnsr);
   if (aiatensor__(isContiguous)(res) && aiatensor__(isContiguous)(tnsr) &&
@@ -108,6 +123,138 @@ void aiatensor__(clamp)(AIATensor_ *res, AIATensor_ *tnsr, T minValue, T maxValu
     AIA_TENSOR_APPLY2(T, res, T, tnsr, *res_data = (*tnsr_data < minValue) ? minValue :
       (*tnsr_data > maxValue ? maxValue : *tnsr_data););
   }
+}
+
+void aiatensor__(sum)(AIATensor_ *res, AIATensor_ *tnsr, int dimension) {
+  long *dim;
+
+  aia_argcheck(dimension >= 0 && dimension < aiatensor__(nDimension)(tnsr), 2,
+    "dimension %d is out of range", dim + 1);
+  dim = arr_(long, clone)(tnsr->size, tnsr->nDimension);
+  dim[dimension] = 1;
+  aiatensor__(resize)(res, tnsr->nDimension, dim, tnsr->stride);
+  free(dim);
+
+  AIA_TENSOR_DIM_APPLY2(T, tnsr, T, res, dimension,
+                           T sum = 0;
+                           long i;
+                           for(i = 0; i < tnsr_size; i++)
+                             sum += tnsr_data[i * tnsr_stride];
+                           *res_data = (T)sum;);
+}
+
+
+void aiatensor__(emulvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat) {
+  aia_argcheck(vec->nDimension == 1, 2, "vector should have single dimension");
+  aia_argcheck(mat->nDimension == 2, 3, "matrix should have two dimensions");
+  aia_argcheck(res->nDimension == 2, 1, "result matrix should have two dimensions");
+  aia_argcheck(mat->size[1] == vec->size[0], 2, "size mismatch between matrix and vector");
+  aia_argcheck(mat->size[0] == res->size[0], 1, "size mismatch between matrix and result");
+  aia_argcheck(mat->size[1] == res->size[1], 1, "size mismatch between matrix and result");
+
+  T *mat_data = aiatensor__(data)(mat);
+  T *vec_data = aiatensor__(data)(vec);
+  T *res_data = aiatensor__(data)(res);
+
+  long i, j; // for mat
+  long k; // for vec
+  long l, m; // for res
+  for (i = 0, l = 0; i < mat->size[0]; i++, l++) {
+    for (j = 0, k = 0, m = 0; j < mat->size[1]; j++, k++, m++) {
+      res_data[l * res->stride[0] + m * res->stride[1]] = 
+      mat_data[i * mat->stride[0] + j * mat->stride[1]] * 
+      vec_data[k * vec->stride[0]];
+    }
+  }
+}
+
+void aiatensor__(eaddvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat) {
+  aia_argcheck(vec->nDimension == 1, 2, "vector should have single dimension");
+  aia_argcheck(mat->nDimension == 2, 3, "matrix should have two dimensions");
+  aia_argcheck(res->nDimension == 2, 1, "result matrix should have two dimensions");
+  aia_argcheck(mat->size[1] == vec->size[0], 2, "size mismatch between matrix and vector");
+  aia_argcheck(mat->size[0] == res->size[0], 1, "size mismatch between matrix and result");
+  aia_argcheck(mat->size[1] == res->size[1], 1, "size mismatch between matrix and result");
+
+  T *mat_data = aiatensor__(data)(mat);
+  T *vec_data = aiatensor__(data)(vec);
+  T *res_data = aiatensor__(data)(res);
+
+  long i, j; // for mat
+  long k; // for vec
+  long l, m; // for res
+  for (i = 0, l = 0; i < mat->size[0]; i++, l++) {
+    for (j = 0, k = 0, m = 0; j < mat->size[1]; j++, k++, m++) {
+      res_data[l * res->stride[0] + m * res->stride[1]] = 
+      mat_data[i * mat->stride[0] + j * mat->stride[1]] + 
+      vec_data[k * vec->stride[0]];
+    }
+  }
+}
+
+void aiatensor__(mm)(AIATensor_ *res, AIATensor_ *mat1, AIATensor_ *mat2) {
+  /* call blas gemm with beta = 0 and alpha = 1, and pass C matrix as null */
+  aia_argcheck(mat1->nDimension == 2 && mat2->nDimension == 2, 1, "matrix should have 2 dimensions");
+  aia_argcheck(mat1->size[1] == mat2->size[0], 2, "matrix dimension mismatch");
+  aia_argcheck(res->size[0] == mat1->size[0] && res->size[1] == mat2->size[1], 1, "result matrix dimension mismatch");
+
+  char trans_res, trans_mat1, trans_mat2;
+  AIATensor_ *res_, *mat1_, *mat2_;
+
+  if(res->stride[0] == 1) {
+    trans_res = 'n';
+    res_ = res;
+  } else if(res->stride[1] == 1) {
+    trans_res = 't';
+    res_ = res;
+    SWAP(AIATensor_ *, mat1, mat2);
+  } else {
+    trans_res = 'n';
+    AIATensor_ *resT = aiatensor__(new)(res);
+    aiatensor__(transpose)(resT, NULL, 0, 1);
+    res_ = aiatensor__(clone)(resT);
+    aiatensor__(free)(resT);
+    aiatensor__(transpose)(res_, NULL, 0, 1);
+  }
+
+  if(mat1->stride[(trans_res == 'n' ? 0 : 1)] == 1) {
+    trans_mat1 = 'n';
+    mat1_ = mat1;
+  } else if(mat1->stride[(trans_res == 'n' ? 1 : 0)] == 1) {
+    trans_mat1 = 't';
+    mat1_ = mat1;
+  } else {
+    trans_mat1 = (trans_res == 'n' ? 't' : 'n');
+    mat1_ = aiatensor__(contiguous)(mat1);
+  }
+
+  if(mat2->stride[(trans_res == 'n' ? 0 : 1)] == 1) {
+    trans_mat2 = 'n';
+    mat2_ = mat2;
+  } else if(mat2->stride[(trans_res == 'n' ? 1 : 0)] == 1) {
+    trans_mat2 = 't';
+    mat2_ = mat2;
+  } else {
+    trans_mat2 = (trans_res == 'n' ? 't' : 'n');
+    mat2_ = aiatensor__(contiguous)(mat2);
+  }
+
+  aiablas__(gemm)(trans_mat1, trans_mat2,
+                  res_->size[(trans_res == 'n' ? 0 : 1)],
+                  res_->size[(trans_res == 'n' ? 1 : 0)],
+                  mat1_->size[(trans_res == 'n' ? 1 : 0)],
+                  1,
+                  aiatensor__(data)(mat1_),
+                  (trans_mat1 == 'n' ? mat1_->stride[(trans_res == 'n' ? 1 : 0)] : mat1_->stride[(trans_res == 'n' ? 0 : 1)]),
+                  aiatensor__(data)(mat2_),
+                  (trans_mat2 == 'n' ? mat2_->stride[(trans_res == 'n' ? 1 : 0)] : mat2_->stride[(trans_res == 'n' ? 0 : 1)]),
+                  0,
+                  aiatensor__(data)(res_),
+                  res_->stride[(trans_res == 'n' ? 1 : 0)]);
+
+  if(mat1_ != mat1) aiatensor__(free)(mat1_);
+  if(mat2_ != mat2) aiatensor__(free)(mat2_);
+  if(res_ != res) aiatensor__(freeCopyTo)(res_, res);
 }
 
 /** res := tnsr1 + alpha * tnsr2 */

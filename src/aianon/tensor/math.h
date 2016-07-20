@@ -24,6 +24,24 @@ AIA_API void aiatensor__(fmod)(AIATensor_ *res, AIATensor_ *tnsr, T value);
 AIA_API void aiatensor__(remainder)(AIATensor_ *res, AIATensor_ *tnsr, T value);
 // Clamp all elements in the Tensor into the range [min_value, max_value]
 AIA_API void aiatensor__(clamp)(AIATensor_ *res, AIATensor_ *tnsr, T minValue, T maxValue);
+// sum of elements of a tensor along dimension
+AIA_API void aiatensor__(sum)(AIATensor_ *res, AIATensor_ *tnsr, int dimension);
+// gives sqare root of tensor values
+AIA_API void aiatensor__(sqrt)(AIATensor_ *res, AIATensor_ *tnsr);
+// gives exponential root of tensor values
+AIA_API void aiatensor__(exp)(AIATensor_ *res, AIATensor_ *tnsr);
+// gives log of tensor values
+AIA_API void aiatensor__(log)(AIATensor_ *res, AIATensor_ *tnsr);
+// gives ceiling value of tensor values
+AIA_API void aiatensor__(ceil)(AIATensor_ *res, AIATensor_ *tnsr);
+// gives floor value of tensor values
+AIA_API void aiatensor__(floor)(AIATensor_ *res, AIATensor_ *tnsr);
+// gives round value of tensor values
+AIA_API void aiatensor__(round)(AIATensor_ *res, AIATensor_ *tnsr);
+// gives absolute value of tensor values
+AIA_API void aiatensor__(abs)(AIATensor_ *res, AIATensor_ *tnsr);
+// gives truncated value of tensor values
+AIA_API void aiatensor__(trunc)(AIATensor_ *res, AIATensor_ *tnsr);
 
 AIA_API void aiatensor__(cadd)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2);
 AIA_API void aiatensor__(csub)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2);
@@ -32,6 +50,11 @@ AIA_API void aiatensor__(cpow)(AIATensor_ *res, AIATensor_ *base, AIATensor_ *ex
 AIA_API void aiatensor__(cdiv)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
 AIA_API void aiatensor__(cfmod)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
 AIA_API void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
+
+// elementwise multiplication of a repeated vector and matrix along column of matrix
+AIA_API void aiatensor__(emulvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat);
+// elementwise addition of a repeated vector and matrix along column of matrix
+AIA_API void aiatensor__(eaddvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat);
 
 // res = tnsr1 + alpha * (tnsr2 * tnsr3)
 AIA_API void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3);
