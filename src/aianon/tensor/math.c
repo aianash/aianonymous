@@ -161,8 +161,8 @@ void aiatensor__(emulmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
   long l, m; // for res
   for (i = 0, l = 0; i < mat->size[0]; i++, l++) {
     for (j = 0, k = 0, m = 0; j < mat->size[1]; j++, k++, m++) {
-      res_data[l * res->stride[0] + m * res->stride[1]] = 
-      mat_data[i * mat->stride[0] + j * mat->stride[1]] * 
+      res_data[l * res->stride[0] + m * res->stride[1]] =
+      mat_data[i * mat->stride[0] + j * mat->stride[1]] *
       vec_data[k * vec->stride[0]];
     }
   }
@@ -185,8 +185,8 @@ void aiatensor__(eaddmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
   long l, m; // for res
   for (i = 0, l = 0; i < mat->size[0]; i++, l++) {
     for (j = 0, k = 0, m = 0; j < mat->size[1]; j++, k++, m++) {
-      res_data[l * res->stride[0] + m * res->stride[1]] = 
-      mat_data[i * mat->stride[0] + j * mat->stride[1]] + 
+      res_data[l * res->stride[0] + m * res->stride[1]] =
+      mat_data[i * mat->stride[0] + j * mat->stride[1]] +
       vec_data[k * vec->stride[0]];
     }
   }
@@ -598,10 +598,40 @@ void aiatensor__(baddbmm)(AIATensor_ *res, T beta, AIATensor_ *batch3, T alpha, 
   aiatensor__(free)(res_mat);
 }
 
-void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {}
+void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
+  aia_argcheck(mat->size[1] == vec->size[0], 2, "inconsistent tensor size");
 
-T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2) {
-  return 0;
+  aiatensor__(resize1d)(res, mat->size[0]);
+  if(mat->stride[0] == 1) {
+    aiablas__(gemv)('n', mat->size[0], mat->size[1],
+                    1, aiatensor__(data)(mat), mat->stride[1], aiatensor__(data)(vec), vec->stride[0],
+                    0, aiatensor__(data)(res), res->stride[0]);
+  } else if(mat->stride[1] == 1) {
+    aiablas__(gemv)('t', mat->size[1], mat->size[0],
+                      1, aiatensor__(data)(mat), mat->stride[0], aiatensor__(data)(vec), vec->stride[0],
+                      0, aiatensor__(data)(res), res->stride[0]);
+  } else {
+    AIATensor_ *cmat = aiatensor__(contiguous)(mat);
+    aiablas__(gemv)('t', mat->size[1], mat->size[0],
+                      1, aiatensor__(data)(mat), mat->stride[0], aiatensor__(data)(vec), vec->stride[0],
+                      0, aiatensor__(data)(res), res->stride[0]);
+    aiatensor__(free)(cmat);
+  }
+}
+
+T aiatensor__(dot)(AIATensor_ *tnsr1, AIATensor_ *tnsr2) {
+  aia_argcheck(aiatensor__(isSameSizeAs)(tnsr1, tnsr2), 1, "inconsistent tensor size");
+  T sum = 0;
+  AIA_TENSOR_APPLY2(T, tnsr1, T, tnsr2,
+                    long sz = (tnsr1_size - tnsr1_index < tnsr2_size - tnsr2_index ? tnsr1_size - tnsr1_index : tnsr2_size - tnsr2_index);
+                    sum += aiablas__(dot)(sz, tnsr1_data, tnsr1_stride, tnsr2_data, tnsr2_stride);
+                    tnsr1_index += sz;
+                    tnsr2_index += sz;
+                    tnsr1_data += sz * tnsr1_stride;
+                    tnsr2_data += sz * tnsr2_stride;
+                    break;
+                    );
+  return sum;
 }
 
 //
