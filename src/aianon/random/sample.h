@@ -47,8 +47,6 @@ AIA_API int aiarandom__(bernoulli)(AIARandGen *gen, T p);
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/random/sample.h"
-
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/random/sample.h"
 #include <aianon/core/erasure.h>

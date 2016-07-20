@@ -144,9 +144,9 @@ void aiatensor__(sum)(AIATensor_ *res, AIATensor_ *tnsr, int dimension) {
 }
 
 
-void aiatensor__(emulvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat) {
-  aia_argcheck(vec->nDimension == 1, 2, "vector should have single dimension");
-  aia_argcheck(mat->nDimension == 2, 3, "matrix should have two dimensions");
+void aiatensor__(emulmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
+  aia_argcheck(vec->nDimension == 1, 3, "vector should have single dimension");
+  aia_argcheck(mat->nDimension == 2, 2, "matrix should have two dimensions");
   aia_argcheck(res->nDimension == 2, 1, "result matrix should have two dimensions");
   aia_argcheck(mat->size[1] == vec->size[0], 2, "size mismatch between matrix and vector");
   aia_argcheck(mat->size[0] == res->size[0], 1, "size mismatch between matrix and result");
@@ -168,9 +168,9 @@ void aiatensor__(emulvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat) {
   }
 }
 
-void aiatensor__(eaddvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat) {
-  aia_argcheck(vec->nDimension == 1, 2, "vector should have single dimension");
-  aia_argcheck(mat->nDimension == 2, 3, "matrix should have two dimensions");
+void aiatensor__(eaddmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
+  aia_argcheck(vec->nDimension == 1, 3, "vector should have single dimension");
+  aia_argcheck(mat->nDimension == 2, 2, "matrix should have two dimensions");
   aia_argcheck(res->nDimension == 2, 1, "result matrix should have two dimensions");
   aia_argcheck(mat->size[1] == vec->size[0], 2, "size mismatch between matrix and vector");
   aia_argcheck(mat->size[0] == res->size[0], 1, "size mismatch between matrix and result");

@@ -1,4 +1,4 @@
-#include "sample.h"
+#include <aianon/random/sample.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -65,8 +65,6 @@ int aiarandom__(bernoulli)(AIARandGen *gen, T p) {
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/random/sample.c"
-
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/random/sample.c"
 #include <aianon/core/erasure.h>

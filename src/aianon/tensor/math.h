@@ -52,9 +52,9 @@ AIA_API void aiatensor__(cfmod)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *
 AIA_API void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
 
 // elementwise multiplication of a repeated vector and matrix along column of matrix
-AIA_API void aiatensor__(emulvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat);
+AIA_API void aiatensor__(emulmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
 // elementwise addition of a repeated vector and matrix along column of matrix
-AIA_API void aiatensor__(eaddvm)(AIATensor_ *res, AIATensor_ *vec, AIATensor_ *mat);
+AIA_API void aiatensor__(eaddmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
 
 // res = tnsr1 + alpha * (tnsr2 * tnsr3)
 AIA_API void aiatensor__(addcmul)(AIATensor_ *res, AIATensor_ *tnsr1, T alpha, AIATensor_ *tnsr2, AIATensor_ *tnsr3);

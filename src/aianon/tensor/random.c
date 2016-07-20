@@ -1,4 +1,4 @@
-#include "random.h"
+#include <aianon/tensor/random.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -49,9 +49,8 @@ void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ *mean, A
   aia_argcheck(cov->size[0] == cov->size[1], 4, "cov should be a square matrix");
   aia_argcheck(cov->size[0] == mean->size[0], 3, "mean and cov have different sizes");
 
-  /* create a tensor of size res rows * mean size */
-  long size[2] = {res->size[0], mean->size[0]};
-  AIATensor_ *tmp = aiatensor__(emptyOfSize)(2, size, NULL);
+  /* create a tensor of same dimensions as res */
+  AIATensor_ *tmp = aiatensor__(emptyAs)(res);
 
   /* generate a tensor of independent standard normally distributed random numbers */
   aiatensor__(normal)(tmp, gen, 0, 1);
@@ -66,16 +65,19 @@ void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ *mean, A
   AIA_TENSOR_APPLY(T, s, *s_data = (*s_data < 0 ? 0 : *s_data););
   
   aiatensor__(sqrt)(s, s);
-  aiatensor__(emulvm)(v, s, v);
+  aiatensor__(emulmv)(v, v, s);
   aiatensor__(mm)(res, tmp, v);
-  aiatensor__(eaddvm)(res, mean, res);
+  aiatensor__(eaddmv)(res, res, mean);
+
+  aiatensor__(free)(tmp);
+  aiatensor__(free)(u);
+  aiatensor__(free)(s);
+  aiatensor__(free)(v);
 }
 
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/tensor/random.c"
-
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/tensor/random.c"
 #include <aianon/core/erasure.h>

@@ -1,4 +1,4 @@
-#include "generator.h"
+#include <aianon/random/generator.h>
 
 #ifndef WIN32
 #include <fcntl.h>

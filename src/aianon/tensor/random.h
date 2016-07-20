@@ -22,8 +22,6 @@ AIA_API void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ 
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/tensor/random.h"
-
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/tensor/random.h"
 #include <aianon/core/erasure.h>
