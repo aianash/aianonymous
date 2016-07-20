@@ -80,10 +80,67 @@ AIA_API int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b);
 AIA_API int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi);
 #endif
 
+/**
+ * Description
+ * -----------
+ * Computes matrix-matrix multiplication
+ *
+ * Input
+ * -----
+ * mat : Matrix of size m x n
+ * vec : Matrix of size n x p
+ *
+ * Output
+ * ------
+ * res : Matrix of size m x p
+ */
 AIA_API void aiatensor__(mm)(AIATensor_ *res, AIATensor_ *mat1, AIATensor_ *mat2);
+
+/**
+ * Description
+ * -----------
+ * Computes matrix-vector multiplication
+ *
+ * Input
+ * -----
+ * mat : Matrix of size m x n
+ * vec : Vector of size n
+ *
+ * Output
+ * ------
+ * res : Vector of size m
+ */
 AIA_API void aiatensor__(mv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
+
+/**
+ * Description
+ * -----------
+ * Computes dot product of two tensors
+ *
+ * Input
+ * -----
+ * tnsr1 : Tensor of size m x n or vector of size n
+ * tnsr2 : Tensor of same size as tnsr1
+ *
+ * Output
+ * ------
+ * Returns the dot product of two tensors
+ */
 AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);
 
+/**
+ * Description
+ * -----------
+ * Computes trace of a matrix
+ *
+ * Input
+ * -----
+ * mat : Matrix of size n x n
+ *
+ * Output
+ * ------
+ * Returns trace of given matrix
+ */
 AIA_API T aiatensor__(trace)(AIATensor_ *mat);
 
 AIA_API void aiatensor__(fill)(AIATensor_ *res, T value);

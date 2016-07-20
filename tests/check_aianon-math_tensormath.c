@@ -609,6 +609,42 @@ START_TEST(test_aIpX_float) {
 }
 END_TEST
 
+START_TEST(test_dot_float) {
+  float res, exp;
+
+  // vector-vector dot product
+  exp = 1.707149f;
+  res = aiatensor_(float, dot)(fvec1, fvec2);
+  ck_assert_msg(fabsf(exp - res) <= fepsi, "dot test failed. expected output = %f and actual output = %f", exp, res);
+
+  // matrix-matrix dot product
+  exp = 5.094904f;
+  res = aiatensor_(float, dot)(ftnsr2c, ftnsr1nc);
+  ck_assert_msg(fabsf(exp - res) <= fepsi, "dot test failed. expected output = %f and actual output = %f", exp, res);
+}
+END_TEST
+
+START_TEST(test_mv_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4[4] = { 0.424800f,  1.266112f, 0.946628f, 1.487127f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4, 4), 1, size4, NULL);
+
+  // contiguous tensor
+  aiatensor_(float, mv)(frestnsr, ftnsr1c, fvec1);
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "mv test 1 failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, vec2str)(fexptnsr), aiatensor_(float, vec2str)(frestnsr));
+
+  // non-contiguous tensor
+  aiatensor_(float, mv)(frestnsr, ftnsr1nc, fvec1);
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "mv test 2 failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, vec2str)(fexptnsr), aiatensor_(float, vec2str)(frestnsr));
+
+  aiatensor_(float, free)(frestnsr);
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
 
 Suite *make_tensormath_suite(void) {
   Suite *s;
@@ -641,6 +677,8 @@ Suite *make_tensormath_suite(void) {
   tcase_add_test(tc, test_trace_float);
   tcase_add_test(tc, test_detpd_float);
   tcase_add_test(tc, test_aIpX_float);
+  tcase_add_test(tc, test_dot_float);
+  tcase_add_test(tc, test_mv_float);
 
   suite_add_tcase(s, tc);
   return s;
