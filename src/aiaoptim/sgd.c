@@ -1,4 +1,4 @@
-#include <aianon-optim/optim.h>
+#include <aiaoptim/optim.h>
 
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
@@ -83,5 +83,5 @@ AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_conf
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon-optim/sgd.c"
+#define ERASURE_FILE "aiaoptim/sgd.c"
 #include <aianon/core/erasure.h>

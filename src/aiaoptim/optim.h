@@ -95,7 +95,7 @@ AIA_API int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, AIATensor_ *x, 
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon-optim/optim.h"
+#define ERASURE_FILE "aiaoptim/optim.h"
 #include <aianon/core/erasure.h>
 
 #define AIANON_OPTIM_H

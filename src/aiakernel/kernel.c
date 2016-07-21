@@ -1,4 +1,4 @@
-#include <aianon/ml/kernel/kernel.h>
+#include <aiakernel/kernel.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -81,5 +81,5 @@ T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambd
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/ml/kernel/kernel.c"
+#define ERASURE_FILE "aiakernel/kernel.c"
 #include <aianon/core/erasure.h>

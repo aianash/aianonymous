@@ -1,4 +1,4 @@
-#include <aianon-optim/optim.h>
+#include <aiaoptim/optim.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -375,5 +375,5 @@ int optim__(zoom)(T *ax, T *fx, T *dgx, T *ay, T *fy, T *dgy, T *at, T *ft, T *d
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon-optim/linesearch.c"
+#define ERASURE_FILE "aiaoptim/linesearch.c"
 #include <aianon/core/erasure.h>

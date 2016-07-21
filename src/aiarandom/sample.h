@@ -1,6 +1,6 @@
 #ifndef AIA_RANDOM_SAMPLE_H
 
-#include <aianon/random/generator.h>
+#include <aiarandom/generator.h>
 #include <aianon/core/util.h>
 #include <aianon/tensor/tensor.h>
 
@@ -48,7 +48,7 @@ AIA_API int aiarandom__(bernoulli)(AIARandGen *gen, T p);
 
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/random/sample.h"
+#define ERASURE_FILE "aiarandom/sample.h"
 #include <aianon/core/erasure.h>
 
 #define AIA_RANDOM_SAMPLE_H

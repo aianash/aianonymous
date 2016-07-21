@@ -2,7 +2,7 @@
 #include <check.h>
 #include <stdlib.h>
 #include <aianon/tensor/tensor.h>
-#include <aianon/ml/kernel/kernel.h>
+#include <aiakernel/kernel.h>
 
 static float rndveca4[4] =
   {0.2f,  0.9f,  0.5f,  0.4f};

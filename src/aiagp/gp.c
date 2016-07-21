@@ -1,4 +1,4 @@
-#include <aianon/ml/gp/gp.h>
+#include <aiagp/gp.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -172,5 +172,5 @@ void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda) {
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/ml/gp/gp.c"
+#define ERASURE_FILE "aiagp/gp.c"
 #include <aianon/core/erasure.h>

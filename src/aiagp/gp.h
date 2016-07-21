@@ -6,7 +6,7 @@
 #include <aianon/tensor/math.h>
 #include <aianon/tensor/dimapply.h>
 #include <aianon/tensor/diagmath.h>
-#include <aianon/ml/kernel/kernel.h>
+#include <aiakernel/kernel.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -126,7 +126,7 @@ AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/ml/gp/gp.h"
+#define ERASURE_FILE "aiagp/gp.h"
 #include <aianon/core/erasure.h>
 
 #define AIA_ML_GP_H

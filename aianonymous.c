@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <aianon/tensor/tensor.h>
 #include <aianon/tensor/math.h>
-#include <aianon-optim/optim.h>
+#include <aiaoptim/optim.h>
+#include <aiagp/gp.h>
+#include <aiakernel/kernel.h>
+#include <aiarandom/random.h>
+
+
 
 int main(int argc, char *argv[]) {
   double a = 8;

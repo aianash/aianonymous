@@ -2,7 +2,7 @@
 #include <check.h>
 #include <stdlib.h>
 #include <aianon/tensor/tensor.h>
-#include <aianon/ml/gp/gp.h>
+#include <aiagp/gp.h>
 
 /**
  * Testcases not complete

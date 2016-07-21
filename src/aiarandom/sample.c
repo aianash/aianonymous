@@ -1,4 +1,4 @@
-#include <aianon/random/sample.h>
+#include <aiarandom/sample.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -6,7 +6,7 @@
 
 /* generates a random number between [0,1) */
 static T aiarandom__(uniform01)(AIARandGen *gen) {
-  #ifdef T_IS_DOUBLE  
+  #ifdef T_IS_DOUBLE
     return (T)aiarandgen_double(gen);
   #elif defined(T_IS_FLOAT)
     return (T)aiarandgen_float(gen);
@@ -66,5 +66,5 @@ int aiarandom__(bernoulli)(AIARandGen *gen, T p) {
 
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/random/sample.c"
+#define ERASURE_FILE "aiarandom/sample.c"
 #include <aianon/core/erasure.h>

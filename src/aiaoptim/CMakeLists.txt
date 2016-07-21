@@ -24,17 +24,17 @@ set (DIR_SRCS)
 add_curr_directory_name (DIR_SRCS "${HEADERS}")
 add_curr_directory_name (DIR_SRCS "${SOURCES}")
 
-set (AIANON_OPTIM_SRCS ${AIANON_OPTIM_SRCS} ${DIR_SRCS})
+set (AIAOPTIM_SRCS ${AIAOPTIM_SRCS} ${DIR_SRCS})
 
 # add all sources to this library
-add_library (aianon-optim SHARED ${AIANON_OPTIM_SRCS})
+add_library (aiaoptim SHARED ${AIAOPTIM_SRCS})
 if (BUILD_STATIC)
-  add_library (aianon_static STATIC ${AIANON_OPTIM_SRCS})
+  add_library (aianon_static STATIC ${AIAOPTIM_SRCS})
 endif ()
 
 ADD_DEFINITIONS(-DUSE_C11_ATOMICS=1)
 
-set_target_properties (aianon-optim
+set_target_properties (aiaoptim
   PROPERTIES
   VERSION 1.0  # build version
   SOVERSION 1  # API version
@@ -42,33 +42,27 @@ set_target_properties (aianon-optim
 
 file (GLOB_RECURSE INCLUDE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
 
-add_custom_target(aianon-optim_headers)
-add_custom_command(TARGET aianon-optim_headers POST_BUILD
+add_custom_target(aiaoptim_headers)
+add_custom_command(TARGET aiaoptim_headers POST_BUILD
   COMMENT "Moving header files to include/aianon"
   COMMAND ${CMAKE_COMMAND} ARGS -E
-    make_directory ${CMAKE_BINARY_DIR}/include/aianon-optim/
-  # COMMAND ${CMAKE_COMMAND} ARGS -E
-  #   copy ${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h
-  #        ${CMAKE_BINARY_DIR}/include/aianon/
+    make_directory ${CMAKE_BINARY_DIR}/include/aiaoptim/
 )
 
 foreach(inc_file ${INCLUDE_FILES})
-  add_custom_command(TARGET aianon-optim_headers POST_BUILD
+  add_custom_command(TARGET aiaoptim_headers POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E
       copy ${CMAKE_CURRENT_SOURCE_DIR}/${inc_file}
-           ${CMAKE_BINARY_DIR}/include/aianon-optim/${inc_file})
+           ${CMAKE_BINARY_DIR}/include/aiaoptim/${inc_file})
 endforeach()
 
-install (DIRECTORY ${CMAKE_BINARY_DIR}/include/aianon-optim DESTINATION include)
+install (DIRECTORY ${CMAKE_BINARY_DIR}/include/aiaoptim DESTINATION include)
 
-install (TARGETS aianon-optim
-  EXPORT aianon-optim-exports
+install (TARGETS aiaoptim
+  EXPORT aiaoptim-exports
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
 
-set (DEPS ${DEPS} aianon)
-target_link_libraries (aianon-optim ${DEPS})
-
-add_dependencies(aianon-optim aianon-optim_headers)
+add_dependencies(aiaoptim aiaoptim_headers)

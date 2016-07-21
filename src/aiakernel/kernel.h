@@ -69,7 +69,7 @@ AIA_API T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor
 #endif
 
 #define ERASE_FLOAT
-#define ERASURE_FILE "aianon/ml/kernel/kernel.h"
+#define ERASURE_FILE "aiakernel/kernel.h"
 #include <aianon/core/erasure.h>
 
 #define AIA_ML_KERNEL_H
