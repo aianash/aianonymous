@@ -1,4 +1,4 @@
-#include <aianon/tensor/diagmath.h>
+#include <aiatensor/diagmath.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -80,5 +80,5 @@ T aiatensor__(xTAdiagIy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y) {
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/tensor/diagmath.c"
+#define ERASURE_FILE "aiatensor/diagmath.c"
 #include <aiautil/erasure.h>

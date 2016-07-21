@@ -1,4 +1,4 @@
-#include <aianon/tensor/linalg.h>
+#include <aiatensor/linalg.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -300,5 +300,5 @@ void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, A
 
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/tensor/linalg.c"
+#define ERASURE_FILE "aiatensor/linalg.c"
 #include <aiautil/erasure.h>

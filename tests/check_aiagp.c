@@ -1,7 +1,7 @@
 #include <tests/config.h>
 #include <check.h>
 #include <stdlib.h>
-#include <aianon/tensor/tensor.h>
+#include <aiatensor/tensor.h>
 #include <aiagp/gp.h>
 
 /**

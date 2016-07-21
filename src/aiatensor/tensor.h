@@ -2,8 +2,8 @@
 
 #include <stdatomic.h>
 #include <aiautil/util.h>
-#include <aianon/tensor/storage.h>
-#include <aianon/tensor/apply.h>
+#include <aiatensor/storage.h>
+#include <aiatensor/apply.h>
 
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
@@ -147,7 +147,7 @@ AIA_API char *aiatensor__(vec2str)(AIATensor_ *vec);
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/tensor/tensor.h"
+#define ERASURE_FILE "aiatensor/tensor.h"
 #include <aiautil/erasure.h>
 
 #define AIA_TENSOR_H

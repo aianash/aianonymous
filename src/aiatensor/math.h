@@ -1,10 +1,10 @@
 #ifndef AIA_TENSOR_MATH_H
 
 #include <aiautil/util.h>
-#include <aianon/tensor/tensor.h>
+#include <aiatensor/tensor.h>
 #include <aianon/core/math/blas.h>
-#include <aianon/tensor/dimapply.h>
-#include <aianon/tensor/apply.h>
+#include <aiatensor/dimapply.h>
+#include <aiatensor/apply.h>
 
 #define AIA_OMP_OVERHEAD_THRESHOLD 100000
 
@@ -381,7 +381,7 @@ AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, A
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/tensor/math.h"
+#define ERASURE_FILE "aiatensor/math.h"
 #include <aiautil/erasure.h>
 
 #define AIA_TENSOR_MATH_H

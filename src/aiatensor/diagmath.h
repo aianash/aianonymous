@@ -2,8 +2,8 @@
 
 #include <aiautil/util.h>
 #include <aianon/core/math/blas.h>
-#include <aianon/tensor/tensor.h>
-#include <aianon/tensor/dimapply.h>
+#include <aiatensor/tensor.h>
+#include <aiatensor/dimapply.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -88,7 +88,7 @@ AIA_API T aiatensor__(xTAdiagIy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y)
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/tensor/diagmath.h"
+#define ERASURE_FILE "aiatensor/diagmath.h"
 #include <aiautil/erasure.h>
 
 #define AIA_TENSOR_DIAGMATH_H

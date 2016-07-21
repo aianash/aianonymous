@@ -1,7 +1,7 @@
 #ifndef AIANON_OPTIM_H
 
 #include <aiautil/util.h>
-#include <aianon/tensor/tensor.h>
+#include <aiatensor/tensor.h>
 
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK

@@ -1,8 +1,8 @@
 #include <tests/config.h>
 #include <check.h>
 #include <stdlib.h>
-#include <aianon/tensor/tensor.h>
-#include <aianon/tensor/math.h>
+#include <aiatensor/tensor.h>
+#include <aiatensor/math.h>
 
 static float rndpd4x4[16] =
   { 0.63392f,  0.92338f,  0.88542f,  1.07961f,

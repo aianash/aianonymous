@@ -2,10 +2,10 @@
 
 #include <aiautil/util.h>
 #include <aianon/core/math/blas.h>
-#include <aianon/tensor/tensor.h>
-#include <aianon/tensor/math.h>
-#include <aianon/tensor/dimapply.h>
-#include <aianon/tensor/diagmath.h>
+#include <aiatensor/tensor.h>
+#include <aiatensor/math.h>
+#include <aiatensor/dimapply.h>
+#include <aiatensor/diagmath.h>
 #include <aiakernel/kernel.h>
 
 #ifdef ERASED_TYPE_PRESENT

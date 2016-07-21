@@ -1,4 +1,4 @@
-#include <aianon/tensor/math.h>
+#include <aiatensor/math.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -916,5 +916,5 @@ AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/tensor/math.c"
+#define ERASURE_FILE "aiatensor/math.c"
 #include <aiautil/erasure.h>

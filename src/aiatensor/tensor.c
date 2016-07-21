@@ -1,4 +1,4 @@
-#include <aianon/tensor/tensor.h>
+#include <aiatensor/tensor.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -492,5 +492,5 @@ char *aiatensor__(vec2str)(AIATensor_ *vec) {
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/tensor/tensor.c"
+#define ERASURE_FILE "aiatensor/tensor.c"
 #include <aiautil/erasure.h>

@@ -3,8 +3,8 @@
 #include <aiarandom/generator.h>
 #include <aiarandom/sample.h>
 #include <aiautil/util.h>
-#include <aianon/tensor/tensor.h>
-#include <aianon/tensor/math.h>
+#include <aiatensor/tensor.h>
+#include <aiatensor/math.h>
 
 #ifdef ERASED_TYPE_PRESENT
 

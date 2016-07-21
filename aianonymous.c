@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <aianon/tensor/tensor.h>
-#include <aianon/tensor/math.h>
+#include <aiatensor/tensor.h>
+#include <aiatensor/math.h>
 #include <aiaoptim/optim.h>
 #include <aiagp/gp.h>
 #include <aiakernel/kernel.h>

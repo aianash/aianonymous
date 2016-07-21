@@ -2,7 +2,7 @@
 
 #include <aiarandom/generator.h>
 #include <aiautil/util.h>
-#include <aianon/tensor/tensor.h>
+#include <aiatensor/tensor.h>
 
 #ifndef PI
 # define PI 3.14159265358979323846

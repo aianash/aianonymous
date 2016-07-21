@@ -3,11 +3,11 @@
 #include <aiautil/util.h>
 #include <aiautil/memory.h>
 #include <aianon/core/math/blas.h>
-#include <aianon/tensor/tensor.h>
-#include <aianon/tensor/math.h>
-#include <aianon/tensor/diagmath.h>
-#include <aianon/tensor/linalg.h>
-#include <aianon/tensor/dimcrossapply.h>
+#include <aiatensor/tensor.h>
+#include <aiatensor/math.h>
+#include <aiatensor/diagmath.h>
+#include <aiatensor/linalg.h>
+#include <aiatensor/dimcrossapply.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
