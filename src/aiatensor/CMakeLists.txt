@@ -15,14 +15,14 @@ set(SOURCES
   aianon.h
 )
 
-set (AIANON_SRCS)
-add_curr_directory_name (AIANON_SRCS "${SOURCES}")
+set (AIATENSOR_SRCS)
+add_curr_directory_name (AIATENSOR_SRCS "${SOURCES}")
 
 # Add sub modules to this library
-set (SUBMODULES core tensor)
+set (SUBMODULES internal tensor)
 
 
-# AIANON_SRCS will be set by the subdirectories
+# AIATENSOR_SRCS will be set by the subdirectories
 foreach (module ${SUBMODULES})
   add_subdirectory (${module})
 endforeach ()
@@ -40,9 +40,9 @@ endif (BUILD_TESTS)
 # AVX
 
 # add all sources to this library
-add_library (aianon SHARED ${AIANON_SRCS})
+add_library (aianon SHARED ${AIATENSOR_SRCS})
 if (BUILD_STATIC)
-  add_library (aianon_static STATIC ${AIANON_SRCS})
+  add_library (aianon_static STATIC ${AIATENSOR_SRCS})
 endif ()
 
 # generate export headers
@@ -75,7 +75,7 @@ endif (LAPACK_FOUND)
 
 # # create config file where settings from cmake is inserted
 # configure_file ("config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
-# set(AIANON_SRCS ${AIANON_SRCS} "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
+# set(AIATENSOR_SRCS ${AIATENSOR_SRCS} "${CMAKE_CURRENT_BINARY_DIR}/aianon/config.h")
 
 set_target_properties (aianon
   PROPERTIES
