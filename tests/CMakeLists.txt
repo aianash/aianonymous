@@ -29,4 +29,4 @@ set(AIANON_MATH_TEST_HEADERS
     check_aianon-math.h)
 
 add_executable (check_aianon-math ${AIANON_MATH_TEST_HEADERS} ${AIANON_MATH_TEST_SOURCES})
-target_link_libraries (check_aianon-math aiaoptim aiagp aiakernel aiarandom aianon aiautil ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries (check_aianon-math aiaoptim aiagp aiakernel aiarandom aiatensor aiautil ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

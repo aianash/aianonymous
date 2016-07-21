@@ -2,7 +2,7 @@
 
 #include <aiautil/util.h>
 #include <aiautil/memory.h>
-#include <aianon/core/math/blas.h>
+#include <aiatensor/blas.h>
 #include <aiatensor/tensor.h>
 #include <aiatensor/math.h>
 #include <aiatensor/diagmath.h>

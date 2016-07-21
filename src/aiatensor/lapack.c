@@ -1,4 +1,4 @@
-#include <aianon/core/math/lapack.h>
+#include <aiatensor/lapack.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -187,5 +187,5 @@ void aialapack__(ormqr)(char side, char trans, int m, int n, int k, T *a, int ld
 
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/core/math/lapack.c"
+#define ERASURE_FILE "aiatensor/lapack.c"
 #include <aiautil/erasure.h>

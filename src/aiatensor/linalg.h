@@ -1,7 +1,7 @@
 #ifndef AIA_TENSOR_LINALG_H
 
 #include <aiautil/util.h>
-#include <aianon/core/math/lapack.h>
+#include <aiatensor/lapack.h>
 #include <aiatensor/tensor.h>
 
 #ifdef ERASED_TYPE_PRESENT

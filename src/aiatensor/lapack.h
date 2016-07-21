@@ -66,7 +66,7 @@ AIA_API void aialapack__(ormqr)(char side, char trans, int m, int n, int k, T *a
 
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/core/math/lapack.h"
+#define ERASURE_FILE "aiatensor/lapack.h"
 #include <aiautil/erasure.h>
 
 

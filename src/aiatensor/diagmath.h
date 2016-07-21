@@ -1,7 +1,7 @@
 #ifndef AIA_TENSOR_DIAGMATH_H
 
 #include <aiautil/util.h>
-#include <aianon/core/math/blas.h>
+#include <aiatensor/blas.h>
 #include <aiatensor/tensor.h>
 #include <aiatensor/dimapply.h>
 

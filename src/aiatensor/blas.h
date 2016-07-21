@@ -148,7 +148,7 @@ AIA_API void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/core/math/blas.h"
+#define ERASURE_FILE "aiatensor/blas.h"
 #include <aiautil/erasure.h>
 
 

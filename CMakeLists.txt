@@ -50,14 +50,14 @@ include_directories (BEFORE "${CMAKE_BINARY_DIR}")
 include_directories (BEFORE "${CMAKE_SOURCE_DIR}/src")
 
 add_subdirectory (src/aiautil)
-add_subdirectory (src/aianon)
+add_subdirectory (src/aiatensor)
 add_subdirectory (src/aiaoptim)
 add_subdirectory (src/aiarandom)
 add_subdirectory (src/aiagp)
 add_subdirectory (src/aiakernel)
 add_subdirectory (tests)
 
-set (DEPS ${DEPS} aiaoptim aiagp aiakernel aiarandom aianon aiautil)
+set (DEPS ${DEPS} aiaoptim aiagp aiakernel aiarandom aiatensor aiautil)
 
 add_executable (aianonymous aianonymous.c)
 target_link_libraries (aianonymous ${DEPS})

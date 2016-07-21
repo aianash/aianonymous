@@ -2,7 +2,7 @@
 
 #include <aiautil/util.h>
 #include <aiatensor/tensor.h>
-#include <aianon/core/math/blas.h>
+#include <aiatensor/blas.h>
 #include <aiatensor/dimapply.h>
 #include <aiatensor/apply.h>
 

@@ -1,4 +1,4 @@
-#include <aianon/core/math/blas.h>
+#include <aiatensor/blas.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -195,5 +195,5 @@ void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T alpha, 
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/core/math/blas.c"
+#define ERASURE_FILE "aiatensor/blas.c"
 #include <aiautil/erasure.h>
