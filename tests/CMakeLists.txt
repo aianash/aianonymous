@@ -28,5 +28,5 @@ set(AIA_TEST_SOURCES
 set(AIA_TEST_HEADERS
     check_aia.h)
 
-add_executable (check_aianon-math ${AIA_TEST_HEADERS} ${AIA_TEST_SOURCES})
-target_link_libraries (check_aianon-math aiaoptim aiagp aiakernel aiarandom aiatensor aiautil ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+add_executable (check_aia ${AIA_TEST_HEADERS} ${AIA_TEST_SOURCES})
+target_link_libraries (check_aia aiaoptim aiagp aiakernel aiarandom aiatensor aiautil ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

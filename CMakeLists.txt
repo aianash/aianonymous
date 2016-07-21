@@ -63,7 +63,7 @@ add_executable (aianonymous aianonymous.c)
 target_link_libraries (aianonymous ${DEPS})
 
 enable_testing ()
-add_test (NAME check_aianon-math COMMAND check_aianon-math)
+add_test (NAME check_aia COMMAND check_aia)
 
 # {TODO] not installing executables righ now
 # set(AIANONYMOUS_INSTALL_BIN_SUBDIR "bin" CACHE PATH "AIANONYMOUS install binary subdirectory")
