@@ -16,17 +16,17 @@ find_package (Threads)
 find_package (Check REQUIRED)
 include_directories(${CHECK_INCLUDE_DIRS})
 
-set(AIANON_MATH_TEST_SOURCES
-    check_aianon-math_tensor.c
-    check_aianon-math_tensormath.c
-    check_aianon-math_tensorlinalg.c
-    check_aianon-kernel.c
-    check_aianon-gp.c
-    check_aianon-math.c
+set(AIA_TEST_SOURCES
+    check_aiatensor.c
+    check_aiatensor_math.c
+    check_aiatensor_linalg.c
+    check_aiakernel.c
+    check_aiagp.c
+    check_aia.c
 )
 
-set(AIANON_MATH_TEST_HEADERS
-    check_aianon-math.h)
+set(AIA_TEST_HEADERS
+    check_aia.h)
 
-add_executable (check_aianon-math ${AIANON_MATH_TEST_HEADERS} ${AIANON_MATH_TEST_SOURCES})
-target_link_libraries (check_aianon-math aianon ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+add_executable (check_aia ${AIA_TEST_HEADERS} ${AIA_TEST_SOURCES})
+target_link_libraries (check_aia aiaoptim aiagp aiakernel aiarandom aiatensor aiautil ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
