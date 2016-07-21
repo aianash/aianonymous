@@ -27,7 +27,7 @@ set (AIAKERNEL_SRCS ${AIAKERNEL_SRCS} ${DIR_SRCS})
 # add all sources to this library
 add_library (aiakernel SHARED ${AIAKERNEL_SRCS})
 if (BUILD_STATIC)
-  add_library (aianon_static STATIC ${AIAKERNEL_SRCS})
+  add_library (aiakernel_static STATIC ${AIAKERNEL_SRCS})
 endif ()
 
 ADD_DEFINITIONS(-DUSE_C11_ATOMICS=1)

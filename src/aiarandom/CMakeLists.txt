@@ -31,7 +31,7 @@ set (AIANON_RANDOM_SRCS ${AIANON_RANDOM_SRCS} ${DIR_SRCS})
 # add all sources to this library
 add_library (aiarandom SHARED ${AIANON_RANDOM_SRCS})
 if (BUILD_STATIC)
-  add_library (aianon_static STATIC ${AIANON_RANDOM_SRCS})
+  add_library (aiarandom_static STATIC ${AIANON_RANDOM_SRCS})
 endif ()
 
 ADD_DEFINITIONS(-DUSE_C11_ATOMICS=1)

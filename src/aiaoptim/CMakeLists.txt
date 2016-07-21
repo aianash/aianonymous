@@ -29,7 +29,7 @@ set (AIAOPTIM_SRCS ${AIAOPTIM_SRCS} ${DIR_SRCS})
 # add all sources to this library
 add_library (aiaoptim SHARED ${AIAOPTIM_SRCS})
 if (BUILD_STATIC)
-  add_library (aianon_static STATIC ${AIAOPTIM_SRCS})
+  add_library (aiaoptim_static STATIC ${AIAOPTIM_SRCS})
 endif ()
 
 ADD_DEFINITIONS(-DUSE_C11_ATOMICS=1)
