@@ -11,15 +11,33 @@ endmacro(add_curr_directory_name)
 
 # Define the files we need to compile
 # Anything not in this list will not be compiled into aianon.
+set(HEADERS
+    aianon.h
+    storage.h
+    tensor.h
+    math.h
+    dimapply.h
+    dimcrossapply.h
+    apply.h
+    linalg.h
+    diagmath.h
+)
+
 set(SOURCES
-  aianon.h
+    storage.c
+    tensor.c
+    math.c
+    linalg.c
+    diagmath.c
 )
 
 set (AIATENSOR_SRCS)
+add_curr_directory_name (AIATENSOR_SRCS "${HEADERS}")
 add_curr_directory_name (AIATENSOR_SRCS "${SOURCES}")
 
+
 # Add sub modules to this library
-set (SUBMODULES internal tensor)
+set (SUBMODULES internal)
 
 
 # AIATENSOR_SRCS will be set by the subdirectories
