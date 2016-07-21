@@ -1,6 +1,6 @@
 #ifndef AIA_ML_GP_H
 
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 #include <aianon/core/math/blas.h>
 #include <aianon/tensor/tensor.h>
 #include <aianon/tensor/math.h>
@@ -127,7 +127,7 @@ AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiagp/gp.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIA_ML_GP_H
 #endif

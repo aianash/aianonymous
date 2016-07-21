@@ -49,8 +49,8 @@ do {                  \
 #define AIA_CONCAT_4_EXPAND(x,y,z,w) x ## y ## z ## w
 #define AIA_CONCAT_4(x,y,z,w) AIA_CONCAT_4_EXPAND(x,y,z,w)
 
-#include <aianon/core/util/memory.h>
-#include <aianon/core/util/check.h>
-#include <aianon/core/util/array.h>
+#include <aiautil/memory.h>
+#include <aiautil/check.h>
+#include <aiautil/array.h>
 
 #endif

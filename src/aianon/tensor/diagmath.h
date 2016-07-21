@@ -1,6 +1,6 @@
 #ifndef AIA_TENSOR_DIAGMATH_H
 
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 #include <aianon/core/math/blas.h>
 #include <aianon/tensor/tensor.h>
 #include <aianon/tensor/dimapply.h>
@@ -89,7 +89,7 @@ AIA_API T aiatensor__(xTAdiagIy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y)
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/diagmath.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIA_TENSOR_DIAGMATH_H
 #endif

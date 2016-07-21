@@ -1,4 +1,4 @@
-#include <aianon/core/util/array.h>
+#include <aiautil/array.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -33,5 +33,5 @@ T *arr__(new)(long size) {
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/core/util/array.c"
-#include <aianon/core/erasure.h>
+#define ERASURE_FILE "aiautil/array.c"
+#include <aiautil/erasure.h>

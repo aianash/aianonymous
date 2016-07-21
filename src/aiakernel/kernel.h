@@ -1,7 +1,7 @@
 #ifndef AIA_ML_KERNEL_H
 
-#include <aianon/core/util.h>
-#include <aianon/core/util/memory.h>
+#include <aiautil/util.h>
+#include <aiautil/memory.h>
 #include <aianon/core/math/blas.h>
 #include <aianon/tensor/tensor.h>
 #include <aianon/tensor/math.h>
@@ -70,7 +70,7 @@ AIA_API T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiakernel/kernel.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIA_ML_KERNEL_H
 #endif

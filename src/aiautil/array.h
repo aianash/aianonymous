@@ -19,8 +19,8 @@ T *arr__(new)(long size);
 #endif
 
 #define ERASE_ALL
-#define ERASURE_FILE "aianon/core/util/array.h"
-#include <aianon/core/erasure.h>
+#define ERASURE_FILE "aiautil/array.h"
+#include <aiautil/erasure.h>
 
 #define AIA_CORE_UTIL_ARRAY_H
 #endif

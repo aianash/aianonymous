@@ -301,4 +301,4 @@ void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ *resv, A
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/tensor/linalg.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

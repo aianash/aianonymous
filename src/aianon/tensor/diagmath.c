@@ -81,4 +81,4 @@ T aiatensor__(xTAdiagIy)(AIATensor_ *x, AIATensor_ *dmat, AIATensor_ *y) {
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/diagmath.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

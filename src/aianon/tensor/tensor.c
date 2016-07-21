@@ -493,4 +493,4 @@ char *aiatensor__(vec2str)(AIATensor_ *vec) {
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/tensor.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

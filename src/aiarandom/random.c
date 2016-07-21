@@ -80,4 +80,4 @@ void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ *mean, A
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aiarandom/random.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

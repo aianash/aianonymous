@@ -1,7 +1,7 @@
 #ifndef AIA_RANDOM_GENERATOR_H
 #define AIA_RANDOM_GENERATOR_H
 
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 
 #define MERSENNE_STATE_N 624 /* degree of recurrence */
 #define MERSENNE_STATE_M 397 /* middle word, an offset used in the recurrence relation defining the series x, 1 ≤ m < n */

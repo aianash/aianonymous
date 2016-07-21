@@ -67,4 +67,4 @@ int aiarandom__(bernoulli)(AIARandGen *gen, T p) {
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aiarandom/sample.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

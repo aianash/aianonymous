@@ -1,6 +1,6 @@
 #ifndef AIA_LAPACK_H
 
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 
 // [TODO] using CMAKE
 #ifndef USE_LAPACK
@@ -67,7 +67,7 @@ AIA_API void aialapack__(ormqr)(char side, char trans, int m, int n, int k, T *a
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/core/math/lapack.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 
 #define AIA_LAPACK_H

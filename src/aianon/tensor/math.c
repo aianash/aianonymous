@@ -917,4 +917,4 @@ AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/math.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

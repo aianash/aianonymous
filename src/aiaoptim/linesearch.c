@@ -376,4 +376,4 @@ int optim__(zoom)(T *ax, T *fx, T *dgx, T *ay, T *fy, T *dgy, T *at, T *ft, T *d
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiaoptim/linesearch.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

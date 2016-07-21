@@ -52,4 +52,4 @@ AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, adag
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiaoptim/adagrad.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

@@ -1,6 +1,6 @@
 #ifndef AIANON_OPTIM_H
 
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 #include <aianon/tensor/tensor.h>
 
 #ifndef NON_ERASED_BLOCK
@@ -96,7 +96,7 @@ AIA_API int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, AIATensor_ *x, 
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiaoptim/optim.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIANON_OPTIM_H
 #endif

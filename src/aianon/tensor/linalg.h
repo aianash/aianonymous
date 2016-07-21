@@ -1,6 +1,6 @@
 #ifndef AIA_TENSOR_LINALG_H
 
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 #include <aianon/core/math/lapack.h>
 #include <aianon/tensor/tensor.h>
 
@@ -18,7 +18,7 @@ AIA_API void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *m
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/tensor/linalg.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIA_TENSOR_LINALG_H
 #endif

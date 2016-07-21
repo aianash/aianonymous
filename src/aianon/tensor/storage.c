@@ -56,4 +56,4 @@ void aiastorage__(free)(AIAStorage_ *this) {
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/storage.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

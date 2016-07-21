@@ -1,6 +1,6 @@
 #ifndef AIA_TENSOR_MATH_H
 
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 #include <aianon/tensor/tensor.h>
 #include <aianon/core/math/blas.h>
 #include <aianon/tensor/dimapply.h>
@@ -382,7 +382,7 @@ AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, A
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/math.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIA_TENSOR_MATH_H
 #endif

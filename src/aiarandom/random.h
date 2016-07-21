@@ -2,7 +2,7 @@
 
 #include <aiarandom/generator.h>
 #include <aiarandom/sample.h>
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 #include <aianon/tensor/tensor.h>
 #include <aianon/tensor/math.h>
 
@@ -24,7 +24,7 @@ AIA_API void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ 
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aiarandom/random.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIA_TENSOR_RANDOM_H
 #endif

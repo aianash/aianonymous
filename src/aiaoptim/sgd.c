@@ -84,4 +84,4 @@ AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_conf
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiaoptim/sgd.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

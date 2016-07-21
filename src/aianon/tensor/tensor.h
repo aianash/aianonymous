@@ -1,7 +1,7 @@
 #ifndef AIA_TENSOR_H
 
 #include <stdatomic.h>
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 #include <aianon/tensor/storage.h>
 #include <aianon/tensor/apply.h>
 
@@ -148,7 +148,7 @@ AIA_API char *aiatensor__(vec2str)(AIATensor_ *vec);
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/tensor/tensor.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 #define AIA_TENSOR_H
 #endif

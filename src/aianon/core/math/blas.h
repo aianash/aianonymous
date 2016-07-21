@@ -1,7 +1,7 @@
 #ifndef AIA_BLAS_H
 
 #include <limits.h>
-#include <aianon/core/util.h>
+#include <aiautil/util.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -149,7 +149,7 @@ AIA_API void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/core/math/blas.h"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
 
 
 #define AIA_BLAS_H

@@ -188,4 +188,4 @@ void aialapack__(ormqr)(char side, char trans, int m, int n, int k, T *a, int ld
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
 #define ERASURE_FILE "aianon/core/math/lapack.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

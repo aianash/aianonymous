@@ -82,4 +82,4 @@ T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambd
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiakernel/kernel.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

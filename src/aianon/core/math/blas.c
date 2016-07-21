@@ -196,4 +196,4 @@ void aiablas__(gemm)(char transa, char transb, long m, long n, long k, T alpha, 
 
 #define ERASE_ALL
 #define ERASURE_FILE "aianon/core/math/blas.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>

@@ -173,4 +173,4 @@ void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda) {
 
 #define ERASE_FLOAT
 #define ERASURE_FILE "aiagp/gp.c"
-#include <aianon/core/erasure.h>
+#include <aiautil/erasure.h>
