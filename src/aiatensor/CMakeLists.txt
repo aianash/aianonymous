@@ -21,6 +21,8 @@ set(HEADERS
     apply.h
     linalg.h
     diagmath.h
+    blas.h
+    lapack.h
 )
 
 set(SOURCES
@@ -29,6 +31,8 @@ set(SOURCES
     math.c
     linalg.c
     diagmath.c
+    blas.c
+    lapack.c
 )
 
 set (AIATENSOR_SRCS)
