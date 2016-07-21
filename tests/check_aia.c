@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "check_aianon-math.h"
+#include "check_aia.h"
 
 int main(void) {
 
