@@ -1,4 +1,4 @@
-#include <aianon/tensor/random.h>
+#include <aiarandom/random.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -54,7 +54,7 @@ void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ *mean, A
 
   /* generate a tensor of independent standard normally distributed random numbers */
   aiatensor__(normal)(tmp, gen, 0, 1);
-   
+
   /* calculate svd decomposition of covariance matrix */
   AIATensor_ *u = aiatensor__(emptyAs)(cov);
   AIATensor_ *s = aiatensor__(emptyVector)(mean->size[0]);
@@ -63,7 +63,7 @@ void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ *mean, A
   /* set negative singular values to 0 */
   /* TODO: check for singularity and positive-semidefiniteness of cov */
   AIA_TENSOR_APPLY(T, s, *s_data = (*s_data < 0 ? 0 : *s_data););
-  
+
   aiatensor__(sqrt)(s, s);
   aiatensor__(emulmv)(v, v, s);
   aiatensor__(mm)(res, tmp, v);
@@ -79,5 +79,5 @@ void aiatensor__(mvnormal)(AIATensor_ *res, AIARandGen *gen, AIATensor_ *mean, A
 
 #define ERASE_FLOAT
 #define ERASE_DOUBLE
-#define ERASURE_FILE "aianon/tensor/random.c"
+#define ERASURE_FILE "aiarandom/random.c"
 #include <aianon/core/erasure.h>
