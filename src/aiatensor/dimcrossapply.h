@@ -18,6 +18,12 @@
   long tensor3##_stride = tensor3->stride[0], tensor3##_size = tensor3->size[0]; \
   long tensor1##_dim_i = 0, tensor2##_dim_i = 0; \
 \
+  for(tensor1##_dim_i = 0; tensor1##_dim_i < tensor1->nDimension; tensor1##_dim_i++) \
+    tensor1##_counter[tensor1##_dim_i] = 0; \
+\
+  for(tensor2##_dim_i = 0; tensor2##_dim_i < tensor2->nDimension; tensor2##_dim_i++) \
+    tensor2##_counter[tensor2##_dim_i] = 0; \
+\
   while(!th_cross_dim_apply_finished) { \
     code \
 \
@@ -34,7 +40,7 @@
       } \
 \
       if(tensor2##_finished) { \
-        for(tensor1##_dim_i == 0; tensor1##_dim_i < tensor1->nDimension; tensor1##_dim_i++) { \
+        for(tensor1##_dim_i = 0; tensor1##_dim_i < tensor1->nDimension; tensor1##_dim_i++) { \
           if(tensor1##_dim_i == dimension) { \
             if(tensor1##_dim_i == tensor1->nDimension - 1) { \
               tensor1##_finished = 1; \
@@ -85,6 +91,8 @@
       } \
     } \
   } \
+  aia_free(tensor1##_counter); \
+  aia_free(tensor2##_counter); \
 }
 
 #endif
