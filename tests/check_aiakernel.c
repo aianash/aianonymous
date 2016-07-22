@@ -85,6 +85,7 @@ START_TEST(test_sekernel_matrix_float) {
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 1 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+  aiatensor_(float, free)(fexptnsr);
 
   // y is NULL and lambda is diagonal
   float exp3x3_1[9] =
@@ -97,6 +98,7 @@ START_TEST(test_sekernel_matrix_float) {
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 2 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+  aiatensor_(float, free)(fexptnsr);
 
   // x and y are different and lambda is non-diagonal
   float exp3x2_2[6] =
@@ -109,6 +111,7 @@ START_TEST(test_sekernel_matrix_float) {
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 3 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+  aiatensor_(float, free)(fexptnsr);
 
   // y is NULL and lambda is non-diagonal
   float exp3x3_2[9] =
