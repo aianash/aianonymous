@@ -128,8 +128,8 @@ void aiatensor__(clamp)(AIATensor_ *res, AIATensor_ *tnsr, T minValue, T maxValu
 void aiatensor__(sum)(AIATensor_ *res, AIATensor_ *tnsr, int dimension) {
   long *dim;
 
-  aia_argcheck(dimension >= 0 && dimension < aiatensor__(nDimension)(tnsr), 2,
-    "dimension %d is out of range", dim + 1);
+  aia_argcheck(WITHIN_RANGE(dimension, 0, tnsr->nDimension), 2,
+    "dimension %d is out of range", dimension);
   dim = arr_(long, clone)(tnsr->size, tnsr->nDimension);
   dim[dimension] = 1;
   aiatensor__(resize)(res, tnsr->nDimension, dim, tnsr->stride);
@@ -147,11 +147,9 @@ void aiatensor__(sum)(AIATensor_ *res, AIATensor_ *tnsr, int dimension) {
 void aiatensor__(emulmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
   aia_argcheck(vec->nDimension == 1, 3, "vector should have single dimension");
   aia_argcheck(mat->nDimension == 2, 2, "matrix should have two dimensions");
-  aia_argcheck(res->nDimension == 2, 1, "result matrix should have two dimensions");
   aia_argcheck(mat->size[1] == vec->size[0], 2, "size mismatch between matrix and vector");
-  aia_argcheck(mat->size[0] == res->size[0], 1, "size mismatch between matrix and result");
-  aia_argcheck(mat->size[1] == res->size[1], 1, "size mismatch between matrix and result");
 
+  aiatensor__(resizeAs)(res, mat);
   T *mat_data = aiatensor__(data)(mat);
   T *vec_data = aiatensor__(data)(vec);
   T *res_data = aiatensor__(data)(res);
@@ -162,8 +160,8 @@ void aiatensor__(emulmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
   for (i = 0, l = 0; i < mat->size[0]; i++, l++) {
     for (j = 0, k = 0, m = 0; j < mat->size[1]; j++, k++, m++) {
       res_data[l * res->stride[0] + m * res->stride[1]] =
-      mat_data[i * mat->stride[0] + j * mat->stride[1]] *
-      vec_data[k * vec->stride[0]];
+        mat_data[i * mat->stride[0] + j * mat->stride[1]] *
+        vec_data[k * vec->stride[0]];
     }
   }
 }
@@ -171,11 +169,9 @@ void aiatensor__(emulmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
 void aiatensor__(eaddmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
   aia_argcheck(vec->nDimension == 1, 3, "vector should have single dimension");
   aia_argcheck(mat->nDimension == 2, 2, "matrix should have two dimensions");
-  aia_argcheck(res->nDimension == 2, 1, "result matrix should have two dimensions");
   aia_argcheck(mat->size[1] == vec->size[0], 2, "size mismatch between matrix and vector");
-  aia_argcheck(mat->size[0] == res->size[0], 1, "size mismatch between matrix and result");
-  aia_argcheck(mat->size[1] == res->size[1], 1, "size mismatch between matrix and result");
 
+  aiatensor__(resizeAs)(res, mat);
   T *mat_data = aiatensor__(data)(mat);
   T *vec_data = aiatensor__(data)(vec);
   T *res_data = aiatensor__(data)(res);
@@ -186,8 +182,8 @@ void aiatensor__(eaddmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec) {
   for (i = 0, l = 0; i < mat->size[0]; i++, l++) {
     for (j = 0, k = 0, m = 0; j < mat->size[1]; j++, k++, m++) {
       res_data[l * res->stride[0] + m * res->stride[1]] =
-      mat_data[i * mat->stride[0] + j * mat->stride[1]] +
-      vec_data[k * vec->stride[0]];
+        mat_data[i * mat->stride[0] + j * mat->stride[1]] +
+        vec_data[k * vec->stride[0]];
     }
   }
 }
@@ -196,11 +192,11 @@ void aiatensor__(mm)(AIATensor_ *res, AIATensor_ *mat1, AIATensor_ *mat2) {
   /* call blas gemm with beta = 0 and alpha = 1, and pass C matrix as null */
   aia_argcheck(mat1->nDimension == 2 && mat2->nDimension == 2, 1, "matrix should have 2 dimensions");
   aia_argcheck(mat1->size[1] == mat2->size[0], 2, "matrix dimension mismatch");
-  aia_argcheck(res->size[0] == mat1->size[0] && res->size[1] == mat2->size[1], 1, "result matrix dimension mismatch");
 
   char trans_res, trans_mat1, trans_mat2;
   AIATensor_ *res_, *mat1_, *mat2_;
 
+  aiatensor__(resize2d)(res, mat1->size[0], mat2->size[1]);
   if(res->stride[0] == 1) {
     trans_res = 'n';
     res_ = res;

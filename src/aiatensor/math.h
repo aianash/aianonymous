@@ -51,9 +51,9 @@ AIA_API void aiatensor__(cdiv)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *d
 AIA_API void aiatensor__(cfmod)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
 AIA_API void aiatensor__(cremainder)(AIATensor_ *res, AIATensor_ *numer, AIATensor_ *denom);
 
-// elementwise multiplication of a repeated vector and matrix along column of matrix
+// elementwise multiplication of a repeated vector and matrix along row of matrix
 AIA_API void aiatensor__(emulmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
-// elementwise addition of a repeated vector and matrix along column of matrix
+// elementwise addition of a repeated vector and matrix along row of matrix
 AIA_API void aiatensor__(eaddmv)(AIATensor_ *res, AIATensor_ *mat, AIATensor_ *vec);
 
 // res = tnsr1 + alpha * (tnsr2 * tnsr3)
@@ -78,6 +78,7 @@ AIA_API int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b);
 
 #if defined(T_IS_FLOAT) || defined(T_IS_DOUBLE)
 AIA_API int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi);
+AIA_API int aiatensor__(epsieqS)(T a, T b, T epsi);
 #endif
 
 /**
@@ -146,11 +147,11 @@ AIA_API T aiatensor__(trace)(AIATensor_ *mat);
 AIA_API void aiatensor__(fill)(AIATensor_ *res, T value);
 AIA_API void aiatensor__(zero)(AIATensor_ *res);
 AIA_API void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T value);
+AIA_API void aiatensor__(maskedCopy)(AIATensor_ *res, AIATensor(uchar) *mask, AIATensor_ *from);
 
 AIA_API void aiatensor__(zeros)(AIATensor_ *res, int nDimension, long *size, long *stride);
 AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long *stride);
 
-AIA_API void aiatensor__(sqrt)(AIATensor_ * res, AIATensor_ *tnsr);
 
 #if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
 /**
@@ -376,6 +377,27 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  *
  */
 AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat);
+#endif
+
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
+/**
+ * Description
+ * -----------
+ * Returns following product for a symmetric matrix A
+ *   x.T * A^-1 * y
+ *
+ * Input
+ * -----
+ * x     : Vector of size n
+ * achol : Cholesky factorization of a symmetric matrix of size n x n
+ * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
+ * y     : Vector of size n
+ *
+ * Output
+ * ------
+ * Returns a scalar
+ */
+AIA_API T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y);
 #endif
 
 #endif
