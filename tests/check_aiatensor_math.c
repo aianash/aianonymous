@@ -40,6 +40,12 @@ static float rndc4x4T[16] =
     0.3f,  0.9f,  0.6f,  0.9f,
     0.8f,  0.3f,  0.1f,  0.1f };
 
+static float rndd4x4[16] =
+  { 0.44783f,  0.06268f,  0.03410f,  0.65443f,
+    0.96924f,  0.85259f,  2.08037f,  0.66187f,
+    1.93053f,  0.21757f,  0.59805f,  -3.66421f,
+    0.95874f,  -1.55492f,  0.87603f,  0.89484f };
+
 static float rndpd4x4[16] =
   { 0.63392f,  0.92338f,  0.88542f,  1.07961f,
     0.92338f,  2.11086f,  1.57509f,  2.06504f,
@@ -60,6 +66,9 @@ static float rndvecb4[4] =
 
 static long size4x4[2] = {4l, 4l};
 static long size4[1]   = {4l};
+static long size4x1[2] = {4l, 1l};
+
+static long stride4x1[2] = {4l, 1l};
 
 static float fepsi = 1e-5f;
 
@@ -67,6 +76,7 @@ static float fepsi = 1e-5f;
 AIATensor(float) *ftnsr1c;    // contiguous float tensor 1
 AIATensor(float) *ftnsr2c;    // contiguous float tensor 2
 AIATensor(float) *ftnsr3c;    // contiguous float tensor 3
+AIATensor(float) *ftnsr4c;    // contiguous float tensor 4
 AIATensor(float) *fpdtnsrc;   // positive definite float tensor
 AIATensor(float) *fpdLtnsrc;  // cholesky decomposition (lower) of fpdtnsrc
 
@@ -89,6 +99,7 @@ void tensormath_setup(void) {
   ftnsr1c   = aiatensor_(float, newFromData)(arr_(float, clone)(rnda4x4, 16), 2, size4x4, NULL);
   ftnsr2c   = aiatensor_(float, newFromData)(arr_(float, clone)(rndb4x4, 16), 2, size4x4, NULL);
   ftnsr3c   = aiatensor_(float, newFromData)(arr_(float, clone)(rndc4x4, 16), 2, size4x4, NULL);
+  ftnsr4c   = aiatensor_(float, newFromData)(arr_(float, clone)(rndd4x4, 16), 2, size4x4, NULL);
   fpdtnsrc  = aiatensor_(float, newFromData)(arr_(float, clone)(rndpd4x4, 16), 2, size4x4, NULL);
   fpdLtnsrc = aiatensor_(float, newFromData)(arr_(float, clone)(rndpd4x4L, 16), 2, size4x4, NULL);
   ftnsr1cT  = aiatensor_(float, newFromData)(arr_(float, clone)(rnda4x4T, 16), 2, size4x4, NULL);
@@ -104,6 +115,7 @@ void tensormath_teardown(void) {
   aiatensor_(float, free)(ftnsr1c);
   aiatensor_(float, free)(ftnsr2c);
   aiatensor_(float, free)(ftnsr3c);
+  aiatensor_(float, free)(ftnsr4c);
   aiatensor_(float, free)(fpdtnsrc);
   aiatensor_(float, free)(fpdLtnsrc);
   aiatensor_(float, free)(ftnsr1cT);
@@ -646,6 +658,509 @@ START_TEST(test_mv_float) {
 }
 END_TEST
 
+START_TEST(test_sum_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x1[4] =
+    { 1.199040f,  2.564070f,  2.410360f,  3.284530f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x1, 4), 2, size4x1, NULL);
+
+  aiatensor_(float, sum)(frestnsr, ftnsr1c, 1); // sum along columns
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "sum test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_sqrt_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.66920f, 0.25036f, 0.18466f, 0.80896f,
+      0.98450f, 0.92335f, 0.28349f, 0.81355f,
+      0.96464f, 0.46644f, 0.77333f, 0.81499f,
+      0.97915f, 0.74493f, 0.93596f, 0.94596f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, sqrt)(frestnsr, ftnsr1c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "sqrt test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_exp_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 1.56491f, 1.06468f, 1.03468f, 1.92404f,
+      2.63594f, 2.34571f, 1.08368f, 1.93841f,
+      2.53585f, 1.24305f, 1.81856f, 1.94295f,
+      2.60840f, 1.74180f, 2.40134f, 2.44694f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, exp)(frestnsr, ftnsr1c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "exp test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_log_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { -0.80334f,  -2.76971f,  -3.37845f,  -0.42399f,
+      -0.03124f,  -0.15947f,  -2.52111f,  -0.41268f,
+      -0.07200f,  -1.52523f,  -0.51408f,  -0.40915f,
+      -0.04213f,  -0.58893f,  -0.13235f,  -0.11111f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, log)(frestnsr, ftnsr1c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "log test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_ceil_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 1.00000f, 1.00000f, 1.00000f, 1.00000f,
+      1.00000f, 1.00000f, 3.00000f, 1.00000f,
+      2.00000f, 1.00000f, 1.00000f, -3.00000f,
+      1.00000f, -1.00000f, 1.00000f, 1.00000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, ceil)(frestnsr, ftnsr4c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "ceil test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_floor_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 2.00000f, 0.00000f,
+      1.00000f, 0.00000f, 0.00000f, -4.00000f,
+      0.00000f, -2.00000f, 0.00000f, 0.00000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, floor)(frestnsr, ftnsr4c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "floor test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_round_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.00000f, 0.00000f, 0.00000f, 1.00000f,
+      1.00000f, 1.00000f, 2.00000f, 1.00000f,
+      2.00000f, 0.00000f, 1.00000f, -4.00000f,
+      1.00000f, -2.00000f, 1.00000f, 1.00000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, round)(frestnsr, ftnsr4c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "round test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_abs_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.44783f, 0.06268f, 0.03410f, 0.65443f,
+      0.96924f, 0.85259f, 2.08037f, 0.66187f,
+      1.93053f, 0.21757f, 0.59805f, 3.66421f,
+      0.95874f, 1.55492f, 0.87603f, 0.89484f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, abs)(frestnsr, ftnsr4c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "abs test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_trunc_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 2.00000f, 0.00000f,
+      1.00000f, 0.00000f, 0.00000f, -3.00000f,
+      0.00000f, -1.00000f,  0.00000f, 0.00000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, trunc)(frestnsr, ftnsr4c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "trunc test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_emulmv_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.09790f, 0.06105f, 0.02796f, 0.61638f,
+      0.21189f, 0.83043f, 0.06591f, 0.62339f,
+      0.20342f, 0.21191f, 0.49047f, 0.62559f,
+      0.20959f, 0.54050f, 0.71845f, 0.84282f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  // contiguous tensor
+  aiatensor_(float, emulmv)(frestnsr, ftnsr1c, fvec2);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "emulmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(frestnsr);
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
+
+START_TEST(test_eaddmv_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.66644f, 1.03669f, 0.85422f, 1.59629f,
+      1.18785f, 1.82660f, 0.90049f, 1.60373f,
+      1.14914f, 1.19158f, 1.41817f, 1.60607f,
+      1.17735f, 1.52893f, 1.69615f, 1.83670f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  // contiguous tensor
+  aiatensor_(float, eaddmv)(frestnsr, ftnsr1c, fvec2);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "eaddmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(frestnsr);
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
+
+START_TEST(test_mm_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.38482f, 1.08086f, 0.29282f, 0.53945f,
+      1.13104f, 2.13600f, 1.17877f, 1.61364f,
+      0.93393f, 1.83516f, 0.68607f, 1.53051f,
+      1.50370f, 2.38014f, 1.10426f, 2.03384f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  // TODO: result with different strides and non contiguous tensor
+
+  aiatensor_(float, mm)(frestnsr, ftnsr1c, ftnsr2c);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "mm test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_fill_float) {
+  frestnsr = aiatensor_(float, empty)();
+  aiatensor_(float, resize2d)(frestnsr, 4, 4);
+  float exp4x4[16] =
+    { 0.30000f, 0.30000f, 0.30000f, 0.30000f,
+      0.30000f, 0.30000f, 0.30000f, 0.30000f,
+      0.30000f, 0.30000f, 0.30000f, 0.30000f,
+      0.30000f, 0.30000f, 0.30000f, 0.30000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, fill)(frestnsr, 0.3f);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "fill test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_zero_float) {
+  frestnsr = aiatensor_(float, empty)();
+  aiatensor_(float, resize2d)(frestnsr, 4, 4);
+  float exp4x4[16] =
+    { 0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 0.00000f, 0.00000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, zero)(frestnsr);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "zero test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_maskedFill_float) {
+  frestnsr = aiatensor_(float, empty)();
+  aiatensor_(float, resize2d)(frestnsr, 4, 4);
+  aiatensor_(float, zero)(frestnsr);
+  float exp4x4[16] =
+    { 0.00000f, 0.30000f, 0.00000f, 0.30000f,
+      0.00000f, 0.30000f, 0.00000f, 0.30000f,
+      0.00000f, 0.30000f, 0.00000f, 0.30000f,
+      0.00000f, 0.30000f, 0.00000f, 0.30000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  unsigned char mask4x4[16] =
+    { 0, 1, 0, 1,
+      0, 1, 0, 1,
+      0, 1, 0, 1,
+      0, 1, 0, 1 };
+  AIATensor(uchar) *masktnsr = aiatensor_(uchar, newFromData)(arr_(uchar, clone)(mask4x4, 16),
+    2, size4x4, NULL);
+
+  aiatensor_(float, maskedFill)(frestnsr, masktnsr, 0.3f);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "maskedFill test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(uchar, free)(masktnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_maskedCopy_float) {
+  frestnsr = aiatensor_(float, empty)();
+  aiatensor_(float, resize2d)(frestnsr, 4, 4);
+  aiatensor_(float, zero)(frestnsr);
+  float exp4x4[16] =
+    { 0.00000f, 0.06268f, 0.00000f, 0.65443f,
+      0.00000f, 0.85259f, 0.00000f, 0.66187f,
+      0.00000f, 0.21757f, 0.00000f, 0.66421f,
+      0.00000f, 0.55492f, 0.00000f, 0.89484f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  unsigned char mask4x4[16] =
+    { 0, 1, 0, 1,
+      0, 1, 0, 1,
+      0, 1, 0, 1,
+      0, 1, 0, 1 };
+  AIATensor(uchar) *masktnsr = aiatensor_(uchar, newFromData)(arr_(uchar, clone)(mask4x4, 16),
+    2, size4x4, NULL);
+
+  aiatensor_(float, maskedCopy)(frestnsr, masktnsr, ftnsr1c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "maskedCopy test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(uchar, free)(masktnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_zeros_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 0.00000f, 0.00000f,
+      0.00000f, 0.00000f, 0.00000f, 0.00000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, zeros)(frestnsr, 2, size4x4, stride4x1);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "zeros test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_ones_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 1.00000f, 1.00000f, 1.00000f, 1.00000f,
+      1.00000f, 1.00000f, 1.00000f, 1.00000f,
+      1.00000f, 1.00000f, 1.00000f, 1.00000f,
+      1.00000f, 1.00000f, 1.00000f, 1.00000f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, ones)(frestnsr, 2, size4x4, stride4x1);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "ones test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+START_TEST(test_xTAy_float) {
+  float fres = 0.0f;
+  float fexpres = 3.40940f;
+
+  // TODO: x and y with different dimensions
+  fres = aiatensor_(float, xTAy)(fvec1, ftnsr1c, fvec2);
+  ck_assert_msg(aiatensor_(float, epsieqS)(fres, fexpres, fepsi),
+    "xTAy test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
+    fexpres, fres);
+}
+END_TEST
+
+START_TEST(test_xTAx_float) {
+  float fres = 0.0f;
+  float fexpres = 2.29263f;
+
+  fres = aiatensor_(float, xTAx)(fvec1, ftnsr1c);
+  ck_assert_msg(aiatensor_(float, epsieqS)(fres, fexpres, fepsi),
+    "xTAx test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
+    fexpres, fres);
+}
+END_TEST
+
+START_TEST(test_addbmm_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.27445f, 0.20270f, 0.32515f, 0.28704f,
+      0.41147f, 0.42014f, 0.36989f, 0.31580f,
+      0.45720f, 0.24477f, 0.56296f, 0.40146f,
+      0.36945f, 0.27815f, 0.48286f, 0.46528f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  long size2x4x2[3] = {2l, 4l, 2l};
+  AIATensor(float) *fbatch1 = aiatensor_(float, newFromData)(arr_(float, clone)(rndb4x4, 16), 3,
+    size2x4x2, NULL);
+
+  long size2x2x4[3] = {2l, 2l, 4l};
+  AIATensor(float) *fbatch2 = aiatensor_(float, newFromData)(arr_(float, clone)(rndc4x4, 16), 3,
+    size2x2x4, NULL);
+
+  aiatensor_(float, addbmm)(frestnsr, 0.3f, ftnsr1c, 0.2f, fbatch1, fbatch2);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "addbmm test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fbatch1);
+  aiatensor_(float, free)(fbatch2);
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+  aiatensor_(float, free)(fexptnsr);
+}
+END_TEST
+
+START_TEST(test_xTApdIx_float) {
+  float fres = 0.0f;
+  float fexpres = 1.45543f;
+
+  /* evaluate cholskey decomposition first */
+  AIATensor(float) *fachol = aiatensor_(float, emptyAs)(fpdtnsrc);
+  aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
+
+  fres = aiatensor_(float, xTApdIx)(fvec1, fachol, "L");
+  ck_assert_msg(aiatensor_(float, epsieqS)(fres, fexpres, fepsi),
+    "xTApdIx test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
+    fexpres, fres);
+
+  aiatensor_(float, free)(fachol);
+}
+END_TEST
+
+START_TEST(test_xTAsymmIy_float) {
+  float fres = 0.0f;
+  float fexpres = 1.07322f;
+
+  /* evaluate cholskey decomposition first */
+  AIATensor(float) *fachol = aiatensor_(float, emptyAs)(fpdtnsrc);
+  aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
+
+  fres = aiatensor_(float, xTAsymmIy)(fvec1, fachol, "L", fvec2);
+  ck_assert_msg(aiatensor_(float, epsieqS)(fres, fexpres, fepsi),
+    "xTAsymmIy test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
+    fexpres, fres);
+
+  aiatensor_(float, free)(fachol);
+}
+END_TEST
+
+START_TEST(test_xTApdIXpaY_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { -1.50968f,  0.77744f,  0.49722f,  1.93933f,
+      -1.10228f,  0.96439f, -0.38620f,  2.58435f,
+      -0.03669f, -0.65891f, -0.14718f,  1.90012f,
+       0.41561f, -0.43108f, -0.17620f,  1.37265f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  /* evaluate cholskey decomposition first */
+  AIATensor(float) *fachol = aiatensor_(float, emptyAs)(fpdtnsrc);
+  aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
+
+  aiatensor_(float, XTApdIXpaY)(frestnsr, ftnsr1c, fachol, "L", 0.3f, ftnsr2c);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "xTApdIXpaY test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+
+  aiatensor_(float, free)(fachol);
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
+
 Suite *make_tensormath_suite(void) {
   Suite *s;
   TCase *tc;
@@ -679,6 +1194,30 @@ Suite *make_tensormath_suite(void) {
   tcase_add_test(tc, test_aIpX_float);
   tcase_add_test(tc, test_dot_float);
   tcase_add_test(tc, test_mv_float);
+  tcase_add_test(tc, test_sum_float);
+  tcase_add_test(tc, test_sqrt_float);
+  tcase_add_test(tc, test_exp_float);
+  tcase_add_test(tc, test_log_float);
+  tcase_add_test(tc, test_ceil_float);
+  tcase_add_test(tc, test_floor_float);
+  tcase_add_test(tc, test_round_float);
+  tcase_add_test(tc, test_abs_float);
+  tcase_add_test(tc, test_trunc_float);
+  tcase_add_test(tc, test_emulmv_float);
+  tcase_add_test(tc, test_eaddmv_float);
+  tcase_add_test(tc, test_mm_float);
+  tcase_add_test(tc, test_fill_float);
+  tcase_add_test(tc, test_zero_float);
+  tcase_add_test(tc, test_maskedFill_float);
+  tcase_add_test(tc, test_maskedCopy_float);
+  tcase_add_test(tc, test_zeros_float);
+  tcase_add_test(tc, test_ones_float);
+  tcase_add_test(tc, test_xTAy_float);
+  tcase_add_test(tc, test_xTAx_float);
+  tcase_add_test(tc, test_addbmm_float);
+  tcase_add_test(tc, test_xTApdIx_float);
+  tcase_add_test(tc, test_xTAsymmIy_float);
+  //tcase_add_test(tc, test_xTApdIXpaY_float);
 
   suite_add_tcase(s, tc);
   return s;
