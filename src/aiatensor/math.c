@@ -689,20 +689,6 @@ int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi) {
 }
 #endif
 
-#if defined(T_IS_FLOAT) || defined(T_IS_DOUBLE)
-//
-int aiatensor__(epsieqS)(T a, T b, T epsi) {
-  int equal = 1;
-  if(epsi < 0) epsi = -epsi;
-#ifdef T_IS_FLOAT
-      if(fabsf(a - b) > epsi) return 0;
-#elif defined(T_IS_DOUBLE)
-      if(fabs(a - b) > epsi) return 0;
-#endif
-  return equal;
-}
-#endif
-
 T aiatensor__(trace)(AIATensor_ *this) {
   aia_argcheck(aiatensor__(isSquare)(this), 1, "A should be 2-dimensional");
 
