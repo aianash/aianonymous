@@ -1053,7 +1053,7 @@ START_TEST(test_xTAy_float) {
 
   // TODO: x and y with different dimensions
   fres = aiatensor_(float, xTAy)(fvec1, ftnsr1c, fvec2);
-  ck_assert_msg(EPSIEQF(fres, fexpres, fepsi),
+  ck_assert_msg(epsieqf(fres, fexpres, fepsi),
     "xTAy test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
     fexpres, fres);
 }
@@ -1064,7 +1064,7 @@ START_TEST(test_xTAx_float) {
   float fexpres = 2.29263f;
 
   fres = aiatensor_(float, xTAx)(fvec1, ftnsr1c);
-  ck_assert_msg(EPSIEQF(fres, fexpres, fepsi),
+  ck_assert_msg(epsieqf(fres, fexpres, fepsi),
     "xTAx test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
     fexpres, fres);
 }
@@ -1111,7 +1111,7 @@ START_TEST(test_xTApdIx_float) {
   aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
 
   fres = aiatensor_(float, xTApdIx)(fvec1, fachol, "L");
-  ck_assert_msg(EPSIEQF(fres, fexpres, fepsi),
+  ck_assert_msg(epsieqf(fres, fexpres, fepsi),
     "xTApdIx test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
     fexpres, fres);
 
@@ -1128,7 +1128,7 @@ START_TEST(test_xTAsymmIy_float) {
   aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
 
   fres = aiatensor_(float, xTAsymmIy)(fvec1, fachol, "L", fvec2);
-  ck_assert_msg(EPSIEQF(fres, fexpres, fepsi),
+  ck_assert_msg(epsieqf(fres, fexpres, fepsi),
     "xTAsymmIy test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
     fexpres, fres);
 
