@@ -76,7 +76,7 @@ START_TEST(test_potrf_float) {
   aiatensor_(float, potrf)(frestnsr, fpdtnsrc, "L");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fpdLtnsrc, fepsi),
     "potrf test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fpdLtnsrc), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fpdLtnsrc), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(frestnsr);
 }
@@ -97,7 +97,7 @@ START_TEST(test_potrs_float) {
       "wrong size for output %dx%d", frestnsr->size[0], frestnsr->size[1]);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "potrs test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);

@@ -84,7 +84,7 @@ START_TEST(test_sekernel_matrix_float) {
   aiakernel_se_(float, matrix)(frestnsr, fdatax, fdatay, 0.4f, flamdiag, TRUE, NULL);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 1 failed. actual result = \n%s and expected result = \n%s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
   aiatensor_(float, free)(fexptnsr);
 
   // y is NULL and lambda is diagonal
@@ -97,7 +97,7 @@ START_TEST(test_sekernel_matrix_float) {
   aiakernel_se_(float, matrix)(frestnsr, fdatax, NULL, 0.4f, flamdiag, TRUE, NULL);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 2 failed. actual result = \n%s and expected result = \n%s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
   aiatensor_(float, free)(fexptnsr);
 
   // x and y are different and lambda is non-diagonal
@@ -110,7 +110,7 @@ START_TEST(test_sekernel_matrix_float) {
   aiakernel_se_(float, matrix)(frestnsr, fdatax, fdatay, 0.4f, flamndiagL, FALSE, "L");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 3 failed. actual result = \n%s and expected result = \n%s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
   aiatensor_(float, free)(fexptnsr);
 
   // y is NULL and lambda is non-diagonal
@@ -123,7 +123,7 @@ START_TEST(test_sekernel_matrix_float) {
   aiakernel_se_(float, matrix)(frestnsr, fdatax, NULL, 0.4f, flamndiagL, FALSE, "L");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 4 failed. actual result = \n%s and expected result = \n%s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
 
   aiatensor_(float, free)(frestnsr);
   aiatensor_(float, free)(fexptnsr);

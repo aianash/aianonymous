@@ -138,7 +138,7 @@ START_TEST(test_add_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "add test failed. actual result = %s and expected result = %s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -158,7 +158,7 @@ START_TEST(test_sub_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sub test failed. actual result = %s and expected result = %s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -178,7 +178,7 @@ START_TEST(test_mul_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "mul test failed. actual result = %s and expected result = %s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -198,7 +198,7 @@ START_TEST(test_div_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "div test failed. actual result = %s and expected result = %s",
-    aiatensor_(float, mat2str)(frestnsr), aiatensor_(float, mat2str)(fexptnsr));
+    aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -274,21 +274,21 @@ START_TEST(test_cadd_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cadd test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when ftnsr1c and frestnsr are contiguous and same
   aiatensor_(float, copy)(frestnsr, ftnsr1c);
   aiatensor_(float, cadd)(frestnsr, frestnsr, 0.3f, ftnsr2c);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cadd test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when tensors are not contiguous
   aiatensor_(float, cadd)(frestnsr, ftnsr1nc, 0.3f, ftnsr2c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cadd test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -309,21 +309,21 @@ START_TEST(test_csub_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "csub test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when ftnsr1c and frestnsr are contiguous and same
   aiatensor_(float, copy)(frestnsr, ftnsr1c);
   aiatensor_(float, csub)(frestnsr, frestnsr, 0.3f, ftnsr2c);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "csub test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when tensors are not contiguous
   aiatensor_(float, csub)(frestnsr, ftnsr1nc, 0.3f, ftnsr2c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cadd test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -344,14 +344,14 @@ START_TEST(test_cmul_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cmul test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when tensors are not contiguous
   aiatensor_(float, cmul)(frestnsr, ftnsr1nc, ftnsr3c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cmul test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -372,14 +372,14 @@ START_TEST(test_cpow_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cpow test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when tensors are not contiguous
   aiatensor_(float, cpow)(frestnsr, ftnsr1nc, ftnsr3c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cpow test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -400,14 +400,14 @@ START_TEST(test_cdiv_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cdiv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when tensors are not contiguous
   aiatensor_(float, cdiv)(frestnsr, ftnsr1nc, ftnsr3c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cdiv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -428,14 +428,14 @@ START_TEST(test_cfmod_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cfmod test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when tensors are not contiguous
   aiatensor_(float, cfmod)(frestnsr, ftnsr1nc, ftnsr3c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cfmod test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -456,14 +456,14 @@ START_TEST(test_cremainder_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cremainder test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // when tensors are not contiguous
   aiatensor_(float, cremainder)(frestnsr, ftnsr1nc, ftnsr3c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "cremainder test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -483,7 +483,7 @@ START_TEST(test_addcmul_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "addcmul test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -503,7 +503,7 @@ START_TEST(test_addcdiv_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "addcdiv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -520,7 +520,7 @@ START_TEST(test_addmv_float) {
   ck_assert_msg(aiatensor_(float, isVector)(frestnsr), "result should be a vector");
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
     "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, vec2str)(fexptnsr), aiatensor_(float, vec2str)(frestnsr);
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr);
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -543,21 +543,21 @@ START_TEST(test_addmm_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // aiatensor_(float, addmm)(frestnsr, 0.2f, ftnsr1c, 0.3f, ftnsr2nc, ftnsr3c);
   // ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
   // ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   // ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
   //   "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-  //   aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+  //   aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // aiatensor_(float, addmm)(frestnsr, 0.2f, ftnsr1c, 0.3f, ftnsr2c, ftnsr3nc);
   // ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
   // ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   // ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
   //   "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-  //   aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+  //   aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -578,7 +578,7 @@ START_TEST(test_addr_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "addmv test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -615,7 +615,7 @@ START_TEST(test_aIpX_float) {
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "aIpX test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -646,13 +646,13 @@ START_TEST(test_mv_float) {
   aiatensor_(float, mv)(frestnsr, ftnsr1c, fvec1);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "mv test 1 failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, vec2str)(fexptnsr), aiatensor_(float, vec2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   // non-contiguous tensor
   aiatensor_(float, mv)(frestnsr, ftnsr1nc, fvec1);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "mv test 2 failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, vec2str)(fexptnsr), aiatensor_(float, vec2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(frestnsr);
   aiatensor_(float, free)(fexptnsr);
