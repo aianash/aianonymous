@@ -31,7 +31,7 @@ AIA_API void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *up
  * Input
  * -----
  * b    : Matrix of size n x p or vector of size n
- * a    : Cholesky factorization of ositive definite matrix of size n x n
+ * a    : Cholesky factorization of positive definite matrix of size n x n
  *        as obtained from portf
  * uplo : "U" or "L"
  *
