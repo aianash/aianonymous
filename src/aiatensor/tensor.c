@@ -495,7 +495,7 @@ static char *aiatensor__(mat2str)(AIATensor_ *mat) {
 
 /** print a tensor (nDimension > 2) */
 static char *aiatensor__(tnsr2str)(AIATensor_ *tnsr, char *idxstr, long dim) {
-  char *str, *tmpstr;
+  char *str;
   long sz, idx;
   AIATensor_ *tmptnsr = aiatensor__(empty)();
 
@@ -507,6 +507,7 @@ static char *aiatensor__(tnsr2str)(AIATensor_ *tnsr, char *idxstr, long dim) {
     strcat(str, ", :, :) =\n");
     strcat(str, matstr);
     strcat(str, "\n");
+    free(matstr);
   } else {
     str = (char*) calloc(1, sizeof(char));
     long sz = tnsr->size[0];
@@ -519,10 +520,12 @@ static char *aiatensor__(tnsr2str)(AIATensor_ *tnsr, char *idxstr, long dim) {
       else
         sprintf(newidxstr, "%ld", idx);
 
-      tmpstr = aiatensor__(tnsr2str)(tmptnsr, newidxstr, dim + 1);
+      char *tmpstr = aiatensor__(tnsr2str)(tmptnsr, newidxstr, dim + 1);
       str = realloc(str, (strlen(str) + strlen(tmpstr) + 2) * sizeof(char));
       strcat(str, tmpstr);
+      free(tmpstr);
     }
+    free(newidxstr);
   }
   aiatensor__(free)(tmptnsr);
   return str;
