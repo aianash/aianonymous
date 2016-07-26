@@ -32,7 +32,7 @@ AIA_API void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *up
  * -----
  * b    : Matrix of size n x p or vector of size n
  * a    : Cholesky factorization of ositive definite matrix of size n x n
- *    as obtained from portf
+ *        as obtained from portf
  * uplo : "U" or "L"
  *
  * Output
@@ -113,9 +113,9 @@ AIA_API void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ 
  * -----
  * mat  : Matrix of size n x n
  * jobz : "N" if only eignevalues are to be computed
- *       "L" if both eignevalues and eigenvectors are to be computed
+ *        "L" if both eignevalues and eigenvectors are to be computed
  * uplo : "U" if upper triangular part of A is stored
- *       "L" if lower triangular part of A is stored
+ *        "L" if lower triangular part of A is stored
  *
  * Output
  * ------
