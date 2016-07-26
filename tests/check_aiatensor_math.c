@@ -71,7 +71,7 @@ static long size4x1[2] = {4l, 1l};
 
 static long stride4x1[2] = {4l, 1l};
 
-static float fepsi = 1e-5f;
+static float fepsi = 1e-4f;
 
 /** contiguous tensors */
 AIATensor(float) *ftnsr1c;    // contiguous float tensor 1
@@ -1139,10 +1139,10 @@ END_TEST
 START_TEST(test_XTApdIXpaY_float) {
   frestnsr = aiatensor_(float, empty)();
   float exp4x4[16] =
-    { -1.50968f,  0.77744f,  0.49722f,  1.93933f,
-      -1.10228f,  0.96439f, -0.38620f,  2.58435f,
-      -0.03669f, -0.65891f, -0.14718f,  1.90012f,
-       0.41561f, -0.43108f, -0.17620f,  1.37265f };
+    { 1.023968f,  0.292746f,  0.080034f,  0.273763f ,
+      0.254709f,  1.199615f,  0.279474f,  0.213314f,
+      0.199434f,  0.091158f,  1.063052f,  0.233864f,
+      0.125236f,  0.271277f,  0.049421f,  1.027334f };
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
 
   /* evaluate cholskey decomposition first */
@@ -1218,7 +1218,7 @@ Suite *make_tensormath_suite(void) {
   tcase_add_test(tc, test_addbmm_float);
   tcase_add_test(tc, test_xTApdIx_float);
   tcase_add_test(tc, test_xTAsymmIy_float);
-  //tcase_add_test(tc, test_XTApdIXpaY_float);
+  tcase_add_test(tc, test_XTApdIXpaY_float);
 
   suite_add_tcase(s, tc);
   return s;
