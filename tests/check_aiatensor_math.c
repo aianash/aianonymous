@@ -71,7 +71,7 @@ static long size4x1[2] = {4l, 1l};
 
 static long stride4x1[2] = {4l, 1l};
 
-static float fepsi = 1e-4f;
+static float fepsi = 5e-5f;
 
 /** contiguous tensors */
 AIATensor(float) *ftnsr1c;    // contiguous float tensor 1
