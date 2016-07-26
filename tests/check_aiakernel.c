@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <aiatensor/tensor.h>
 #include <aiakernel/kernel.h>
+#include <aiautil/math.h>
 
 static float rndveca4[4] =
   {0.2f,  0.9f,  0.5f,  0.4f};
