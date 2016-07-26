@@ -589,7 +589,7 @@ START_TEST(test_trace_float) {
   frestnsr = aiatensor_(float, empty)();
   float exp = 1.399999f;
   float res = aiatensor_(float, trace)(ftnsr3c);
-  ck_assert_msg(exp - res <= fepsi, "trace test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(exp, res, fepsi), "trace test failed. expected output = %f and actual output = %f", exp, res);
 }
 END_TEST
 
@@ -597,7 +597,7 @@ START_TEST(test_detpd_float) {
   frestnsr = aiatensor_(float, empty)();
   float exp = 0.020788f;
   float res = aiatensor_(float, detpd)(fpdtnsrc);
-  ck_assert_msg(exp - res <= fepsi, "detpd test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(exp, res, fepsi), "detpd test failed. expected output = %f and actual output = %f", exp, res);
 }
 END_TEST
 
@@ -628,12 +628,12 @@ START_TEST(test_dot_float) {
   // vector-vector dot product
   exp = 1.707149f;
   res = aiatensor_(float, dot)(fvec1, fvec2);
-  ck_assert_msg(fabsf(exp - res) <= fepsi, "dot test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(exp, res, fepsi), "dot test failed. expected output = %f and actual output = %f", exp, res);
 
   // matrix-matrix dot product
   exp = 5.094904f;
   res = aiatensor_(float, dot)(ftnsr2c, ftnsr1nc);
-  ck_assert_msg(fabsf(exp - res) <= fepsi, "dot test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(exp, res, fepsi), "dot test failed. expected output = %f and actual output = %f", exp, res);
 }
 END_TEST
 

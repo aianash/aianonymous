@@ -136,22 +136,22 @@ START_TEST(test_sekernel_value_float) {
   // x and y are different and lambda is diagonal
   exp = 0.024090f;
   res = aiakernel_se_(float, value)(fvec1, fvec2, alpha, flamdiag, TRUE, NULL);
-  ck_assert_msg(fabsf(res - exp) <= fepsi, "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
+  ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 
   // y is NULL and lambda is diagonal
   exp = 0.16f;
   res = aiakernel_se_(float, value)(fvec1, NULL, alpha, flamdiag, TRUE, NULL);
-  ck_assert_msg(fabsf(res - exp) <= fepsi, "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
+  ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 
   // x and y are different and lambda is non-diagonal
   exp = 0.006109f;
   res = aiakernel_se_(float, value)(fvec1, fvec2, alpha, flamndiagL, FALSE, "L");
-  ck_assert_msg(fabsf(res - exp) <= fepsi, "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
+  ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 
   // y is NULL and lambda is non-diagonal
   exp = 0.16f;
   res = aiakernel_se_(float, value)(fvec1, NULL, alpha, flamndiagL, FALSE, "L");
-  ck_assert_msg(fabsf(res - exp) <= fepsi, "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
+  ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 }
 END_TEST
 
