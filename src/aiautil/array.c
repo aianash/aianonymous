@@ -21,7 +21,7 @@ void arr__(fill)(T *arr, const T c, const long n) {
 }
 
 void arr__(zero)(T *arr, const long n) {
-  memset(arr, 0, n);
+  memset(arr, 0, sizeof(T) * n);
 }
 
 T *arr__(new)(long size) {

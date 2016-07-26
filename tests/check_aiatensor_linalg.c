@@ -76,7 +76,7 @@ START_TEST(test_potrf_float) {
   aiatensor_(float, potrf)(frestnsr, fpdtnsrc, "L");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fpdLtnsrc, fepsi),
     "potrf test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fpdLtnsrc), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fpdLtnsrc), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(frestnsr);
 }
@@ -97,7 +97,7 @@ START_TEST(test_potrs_float) {
       "wrong size for output %dx%d", frestnsr->size[0], frestnsr->size[1]);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "potrs test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(frestnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(frestnsr);
@@ -121,7 +121,7 @@ START_TEST(test_trtrs_float) {
       "wrong size for output %dx%d", fresbtnsr->size[0], fresbtnsr->size[1]);
   ck_assert_msg(aiatensor_(float, epsieq)(fresbtnsr, fexptnsr, fepsi),
     "trtrs test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexptnsr), aiatensor_(float, mat2str)(fresbtnsr));
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(fresbtnsr));
 
   aiatensor_(float, free)(fexptnsr);
   aiatensor_(float, free)(fresatnsr);
@@ -162,19 +162,19 @@ START_TEST(test_svd_float) {
     "wrong size for output u %dx%d", fresutnsr->size[0], fresutnsr->size[1]);
   ck_assert_msg(aiatensor_(float, epsieq)(fresutnsr, fexputnsr, fepsi),
     "svd test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexputnsr), aiatensor_(float, mat2str)(fresutnsr));
+    aiatensor_(float, toString)(fexputnsr), aiatensor_(float, toString)(fresutnsr));
 
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(fresstnsr, fexpstnsr),
     "wrong size for output s %d", fresstnsr->size[0]);
   ck_assert_msg(aiatensor_(float, epsieq)(fresstnsr, fexpstnsr, fepsi),
     "svd test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, vec2str)(fexpstnsr), aiatensor_(float, vec2str)(fresstnsr));
+    aiatensor_(float, toString)(fexpstnsr), aiatensor_(float, toString)(fresstnsr));
 
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(fresvtnsr, fexpvtnsr),
     "wrong size for output v %dx%d", fresvtnsr->size[0], fresvtnsr->size[1]);
   ck_assert_msg(aiatensor_(float, epsieq)(fresvtnsr, fexpvtnsr, fepsi),
     "svd test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexpvtnsr), aiatensor_(float, mat2str)(fresvtnsr));
+    aiatensor_(float, toString)(fexpvtnsr), aiatensor_(float, toString)(fresvtnsr));
 
   aiatensor_(float, free)(fexputnsr);
   aiatensor_(float, free)(fexpstnsr);
@@ -209,13 +209,13 @@ START_TEST(test_syev_float) {
     "wrong size for output e %d", fresetnsr->size[0]);
   ck_assert_msg(aiatensor_(float, epsieq)(fresetnsr, fexpetnsr, fepsi),
     "syev test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, vec2str)(fexpetnsr), aiatensor_(float, vec2str)(fresetnsr));
+    aiatensor_(float, toString)(fexpetnsr), aiatensor_(float, toString)(fresetnsr));
 
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(fresvtnsr, fexpvtnsr),
     "wrong size for output v %dx%d", fresvtnsr->size[0], fresvtnsr->size[1]);
   ck_assert_msg(aiatensor_(float, epsieq)(fresvtnsr, fexpvtnsr, fepsi),
     "syev test failed.\nexpected output =\n%s\nactual output =\n%s\n",
-    aiatensor_(float, mat2str)(fexpvtnsr), aiatensor_(float, mat2str)(fresvtnsr));
+    aiatensor_(float, toString)(fexpvtnsr), aiatensor_(float, toString)(fresvtnsr));
 
   aiatensor_(float, free)(fexpetnsr);
   aiatensor_(float, free)(fexpvtnsr);
