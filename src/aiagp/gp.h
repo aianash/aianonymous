@@ -59,9 +59,9 @@ AIA_API void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda);
  *         where sigma is noise variance
  * uplo  : 'U' if Kchol contains the uppar triangular matrix
  *         'L' if Kchol contains the lower triangular matrix
- * Kx    : Kernel matrix of test datapoints
- * Kxx   : Cross kernel matrix size n x m where m is the number of test datapoints
- *          and n is number of training datapoints
+ * Kx    : Cross kernel matrix size n x m where m is the number of test datapoints
+ *         and n is number of training datapoints
+ * Kxx   : Kernel matrix of test datapoints
  * beta  : As calculated using aiagp__(calcbeta) function
  *
  * Output
