@@ -28,7 +28,7 @@
  * Output
  * ------
  * beta  : vector of size n
- *            when NULL, a new vector is created
+ *         when NULL, a new vector is created
  */
 AIA_API AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *y);
 
