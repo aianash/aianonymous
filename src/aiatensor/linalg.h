@@ -4,11 +4,6 @@
 #include <aiatensor/lapack.h>
 #include <aiatensor/tensor.h>
 
-#ifndef NON_ERASED_BLOCK
-#define NON_ERASED_BLOCK
-#define touplo(flag) isset(flag, UPPER_MAT) ? 'U' : 'L'
-#endif
-
 #ifdef ERASED_TYPE_PRESENT
 
 /**
