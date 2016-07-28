@@ -75,7 +75,7 @@ static AIATensor_ *aiatensor__(cloneColumnMajor)(AIATensor_ *this, AIATensor_ *s
   return aiatensor__(cloneColumnMajorNrows)(this, src, src->size[0]);
 }
 
-static void aiatensor__(clearUpLoTriangle)(AIATensor_ *mat, const char *uplo) {
+static void aiatensor__(clearUpLoTriangle)(AIATensor_ *mat, MatrixType mtype) {
   aia_argcheck(mat->nDimension == 2, 1, "Mat should be a 2 dimensional");
   aia_argcheck(mat->size[0] == mat->size[1], 1, "A should be a square");
 
@@ -84,11 +84,11 @@ static void aiatensor__(clearUpLoTriangle)(AIATensor_ *mat, const char *uplo) {
   T *p = aiatensor__(data)(mat);
   long i, j;
 
-  if(uplo[0] == 'U') {
+  if(isset(mtype, UPPER_MAT)) {
     for(i = 0; i < n; i++)
       for(j = i + 1; j < n; j++)
         p[n*i + j] = 0;
-  } else if(uplo[0] == 'L') {
+  } else if(isset(mtype, LOWER_MAT)) {
     for(i = 0; i < n; i++)
       for(j = 0; j < i; j++)
         p[n*i + j] = 0;
@@ -96,10 +96,11 @@ static void aiatensor__(clearUpLoTriangle)(AIATensor_ *mat, const char *uplo) {
 }
 
 //
-void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo) {
+void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, MatrixType mtype) {
   if(!mat) mat = res;
   aia_argcheck(res->nDimension == 2, 1, "mat or res should be a matrix");
   aia_argcheck(res->size[0] == res->size[1], 1, "mat or res should be a square matrix");
+  aia_argcheck(isset(mtype, (UPPER_MAT | LOWER_MAT)), 3, "incorrect matrix type");
 
   int n, lda, info;
   AIATensor_ *res_ = aiatensor__(cloneColumnMajor)(res, mat);
@@ -107,20 +108,22 @@ void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo) {
   n = res_->size[0];
   lda = n;
 
-  aialapack__(potrf)(uplo[0], n, aiatensor__(data)(res_), lda, &info);
+  aialapack__(potrf)(touplo(mtype), n, aiatensor__(data)(res_), lda, &info);
   aia_lapackCheckWithCleanup("Lapack Error %s : A(%d, %d) is 0, A cannot be factorized",
                              aia_cleanup(aiatensor__(free)(res_);),
                              "potrf", info, info);
 
-  aiatensor__(clearUpLoTriangle)(res_, uplo);
+  aiatensor__(clearUpLoTriangle)(res_, mtype);
+  printf("res_ = \n%s\n", aiatensor__(toString)(res_));
   aiatensor__(freeCopyTo)(res_, res);
 }
 
 //
-void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, const char *uplo) {
+void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, MatrixType mtype) {
   if(b == NULL) b = res;
   aia_argcheck(aiatensor__(isSquare)(achol), 3, "A should be a square matrix");
   aia_argcheck(aiatensor__(isMatrix)(b) || aiatensor__(isVector)(b), 2, "b should be a vector or a matrix");
+  aia_argcheck(isset(mtype, (UPPER_MAT | LOWER_MAT)), 3, "incorrect matrix type");
 
   int n, nrhs, lda, ldb, info;
 
@@ -139,7 +142,8 @@ void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, const
   n = a_->size[0];
   lda = n;
   ldb = n;
-  aialapack__(potrs)(uplo[0], n, nrhs, aiatensor__(data)(a_), lda, aiatensor__(data)(b_), ldb, &info);
+
+  aialapack__(potrs)(touplo(mtype), n, nrhs, aiatensor__(data)(a_), lda, aiatensor__(data)(b_), ldb, &info);
   aia_lapackCheckWithCleanup("Lapack Error in %s : A(%d,%d) is zero, singular A",
                             aia_cleanup(
                               aiatensor__(free)(a_);
@@ -149,13 +153,14 @@ void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, const
   aiatensor__(freeCopyTo)(b_, res);
 }
 
-void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATensor_ *amat, const char *uplo, const char *trans, const char *diag) {
+void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATensor_ *amat, MatrixType mtype, const char *trans, const char *diag) {
   if(amat == NULL) amat = resa;
   if(b == NULL) b = resb;
 
   aia_argcheck(aiatensor__(isSquare)(amat), 4, "A should be 2-dimensional");
   aia_argcheck(aiatensor__(isMatrix)(b) || aiatensor__(isVector)(b), 3, "b should be either a matrix or a vector");
   aia_argcheck(amat->size[0] == b->size[0], 3, "A, b size incomatible");
+  aia_argcheck(isset(mtype, (UPPER_MAT | LOWER_MAT)), 3, "incorrect matrix type");
 
   int n, nrhs, lda, ldb, info;
   AIATensor_ *resa_, *resb_;
@@ -173,7 +178,7 @@ void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATe
   lda = n;
   ldb = n;
 
-  aialapack__(trtrs)(uplo[0], trans[0], diag[0], n, nrhs, aiatensor__(data)(resa_), lda,
+  aialapack__(trtrs)(touplo(mtype), trans[0], diag[0], n, nrhs, aiatensor__(data)(resa_), lda,
     aiatensor__(data)(resb_), ldb, &info);
 
   aia_lapackCheckWithCleanup("Lapack Error in %s : A(%d, %d) is zero. singular A.",
@@ -185,9 +190,10 @@ void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATe
 }
 
 //
-void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, const char *jobz, const char *uplo) {
+void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, const char *jobz, MatrixType mtype) {
   if(!mat) mat = resv;
   aia_argcheck(mat->nDimension == 2, 1, "mat should be 2 dimensional");
+  aia_argcheck(isset(mtype, (UPPER_MAT | LOWER_MAT)), 3, "incorrect matrix type");
 
   int n, lda, lwork, info;
   AIATensor_ *work;
@@ -200,13 +206,13 @@ void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, cons
   aiatensor__(resize1d)(rese, n);
 
   T optLwork;
-  aialapack__(syev)(jobz[0], uplo[0], n, aiatensor__(data)(resv_), lda,
+  aialapack__(syev)(jobz[0], touplo(mtype), n, aiatensor__(data)(resv_), lda,
                     aiatensor__(data)(rese), &optLwork, -1, &info);
 
   lwork = (int)optLwork;
 
   work = aiatensor__(emptyVector)(lwork);
-  aialapack__(syev)(jobz[0], uplo[0], n, aiatensor__(data)(resv_), lda,
+  aialapack__(syev)(jobz[0], touplo(mtype), n, aiatensor__(data)(resv_), lda,
                     aiatensor__(data)(rese), aiatensor__(data)(work), lwork, &info);
 
   aia_lapackCheckWithCleanup("Lapack Error %s : %d off-diagonal elements didn't converge to zero",

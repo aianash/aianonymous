@@ -1108,9 +1108,9 @@ START_TEST(test_xTApdIx_float) {
 
   /* evaluate cholskey decomposition first */
   AIATensor(float) *fachol = aiatensor_(float, emptyAs)(fpdtnsrc);
-  aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
+  aiatensor_(float, potrf)(fachol, fpdtnsrc, LOWER_MAT);
 
-  fres = aiatensor_(float, xTApdIx)(fvec1, fachol, "L");
+  fres = aiatensor_(float, xTApdIx)(fvec1, fachol, LOWER_MAT);
   ck_assert_msg(epsieqf(fres, fexpres, fepsi),
     "xTApdIx test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
     fexpres, fres);
@@ -1125,9 +1125,9 @@ START_TEST(test_xTAsymmIy_float) {
 
   /* evaluate cholskey decomposition first */
   AIATensor(float) *fachol = aiatensor_(float, emptyAs)(fpdtnsrc);
-  aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
+  aiatensor_(float, potrf)(fachol, fpdtnsrc, LOWER_MAT);
 
-  fres = aiatensor_(float, xTAsymmIy)(fvec1, fachol, "L", fvec2);
+  fres = aiatensor_(float, xTAsymmIy)(fvec1, fachol, LOWER_MAT, fvec2);
   ck_assert_msg(epsieqf(fres, fexpres, fepsi),
     "xTAsymmIy test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
     fexpres, fres);
@@ -1147,12 +1147,12 @@ START_TEST(test_XTApdIXpaY_float) {
 
   /* evaluate cholskey decomposition first */
   AIATensor(float) *fachol = aiatensor_(float, emptyAs)(fpdtnsrc);
-  aiatensor_(float, potrf)(fachol, fpdtnsrc, "L");
+  aiatensor_(float, potrf)(fachol, fpdtnsrc, LOWER_MAT);
 
-  aiatensor_(float, XTApdIXpaY)(frestnsr, ftnsr1c, fachol, "L", 0.3f, ftnsr2c);
+  aiatensor_(float, XTApdIXpaY)(frestnsr, ftnsr1c, fachol, LOWER_MAT, 0.3f, ftnsr2c);
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
-    "xTApdIXpaY test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    "XTApdIXpaY test failed.\nexpected output =\n%s\nactual output =\n%s\n",
     aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fachol);

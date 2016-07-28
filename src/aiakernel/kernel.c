@@ -21,7 +21,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   long lambda_stride = lambda->stride[0];
   T *lambda_data = aiatensor__(data)(lambda);
 
-  if(mtype & DIAG_MAT != 0) {
+  if(isset(mtype, DIAG_MAT)) {
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,
                               T sum = 0;
                               int idx;
@@ -32,7 +32,6 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
                               *K__data = exp(sum) * pow(alpha, 2);
                               );
   } else {
-    char *uplo = (mtype & UPPER_MAT != 0) ? "U" : "L";
     AIATensor_ *diff = aiatensor__(emptyVector)(d);
     AIATensor_ *y    = aiatensor__(emptyVector)(d);
     AIATensor_ *tmp  = aiatensor__(newCopy)(lambda);
@@ -41,7 +40,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,
                               aiablas__(copy)(d, Y_data, Y_stride, diff_data, diff_stride);
                               aiablas__(axpy)(d, -1, X_data, X_stride, diff_data, diff_stride);
-                              aiatensor__(trtrs)(tmp, y, diff, lambda, uplo, "N", "N");
+                              aiatensor__(trtrs)(tmp, y, diff, lambda, mtype, "N", "N");
                               *K__data = aiatensor__(dot)(y, y);
                               *K__data *= -0.5;
                               *K__data = exp(*K__data) * pow(alpha, 2);
@@ -68,11 +67,10 @@ T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambd
   AIATensor_ *diff = aiatensor__(empty)();
   aiatensor__(csub)(diff, x, 1, y);
 
-  if(mtype & DIAG_MAT != 0) {
+  if(isset(mtype, DIAG_MAT)) {
     k = aiatensor__(xTAdiagIx)(diff, lambda);
   } else {
-    char *uplo = (mtype & UPPER_MAT != 0) ? "U" : "L";
-    k = aiatensor__(xTApdIx)(diff, lambda, uplo);
+    k = aiatensor__(xTApdIx)(diff, lambda, mtype);
   }
   k *= -0.5;
   k = exp(k) * pow(alpha, 2);

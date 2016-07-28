@@ -33,7 +33,7 @@ static void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T a
 
   // compute cholesky of Xxcov + lambda
   aiatensor__(cadd)(XxcovpL, Xxcov, 1, lambda);
-  aiatensor__(potrf)(XxcovpL, NULL, "L");
+  aiatensor__(potrf)(XxcovpL, NULL, LOWER_MAT);
 
   // compute exp part of q
   Kxmu = aiakernel_se__(matrix)(NULL, X, Xxm, alpha, XxcovpL, LOWER_MAT);
@@ -114,8 +114,7 @@ void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, Mat
   aiatensor__(mv)(fmean, KxT, beta);
 
   // calculation of fcov
-  char *uplo = (mtype & UPPER_MAT != 0) ? "U" : "L";
-  aiatensor__(XTApdIXpaY)(fcov, Kx, Kchol, uplo, -1, Kxx);
+  aiatensor__(XTApdIXpaY)(fcov, Kx, Kchol, mtype, -1, Kxx);
   aiatensor__(mul)(fcov, fcov, -1);
 
   aiatensor__(free)(KxT);
@@ -128,14 +127,12 @@ void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AIA
   *fmean = aiatensor__(dot)(Kx, beta);
 
   // calculation of fcov
-  char *uplo = (mtype & UPPER_MAT != 0) ? "U" : "L";
-  T KxTKKx = aiatensor__(xTApdIx)(Kx, Kchol, uplo);
+  T KxTKKx = aiatensor__(xTApdIx)(Kx, Kchol, mtype);
   *fcov = Kxx - KxTKKx;
 }
 
 void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *K1, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
   AIATensor_ *q = aiatensor__(empty)();
-  char *uplo = (mtype & UPPER_MAT != 0) ? "U" : "L";
 
   aiagp__(calcq)(q, X, lambda, alpha, Xxm, Xxcov);
   *fmean = aiatensor__(dot)(beta, q);
@@ -143,13 +140,12 @@ void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AI
   AIATensor_ *Q = aiatensor__(empty)();
   aiagp__(calcQ)(Q, X, lambda, K1, Xxm, Xxcov);
   AIATensor_ *KIQ = aiatensor__(empty)();
-  aiatensor__(potrs)(KIQ, Q, Kchol, uplo);
+  aiatensor__(potrs)(KIQ, Q, Kchol, mtype);
   *fcov = pow(alpha, 2) - aiatensor__(trace)(KIQ) + aiatensor__(xTAx)(beta, Q) - pow(*fmean, 2);
 }
 
 AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *y) {
   if(beta == NULL) beta = aiatensor__(newCopy)(y);
-  char *uplo = (mtype & UPPER_MAT != 0) ? "U" : "L";
 
   aia_argcheck(aiatensor__(isMatrix)(Kchol), 1, "Kchol should be 2-dimensional matrix");
   aia_argcheck(aiatensor__(isVector)(y), 2, "y should be a vector");
@@ -157,7 +153,7 @@ AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, MatrixType mt
 
   aiatensor__(resize1d)(beta, Kchol->size[0]);
   aiatensor__(copy)(beta, y);
-  aiatensor__(potrs)(beta, y, Kchol, uplo);
+  aiatensor__(potrs)(beta, y, Kchol, mtype);
   return beta;
 }
 
