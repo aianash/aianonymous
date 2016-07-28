@@ -7,6 +7,7 @@
 #include <aiatensor/math.h>
 #include <aiatensor/diagmath.h>
 #include <aiatensor/linalg.h>
+#include <aiatensor/flags.h>
 #include <aiatensor/dimcrossapply.h>
 
 #ifdef ERASED_TYPE_PRESENT

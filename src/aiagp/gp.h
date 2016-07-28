@@ -6,6 +6,7 @@
 #include <aiatensor/math.h>
 #include <aiatensor/dimapply.h>
 #include <aiatensor/diagmath.h>
+#include <aiatensor/flags.h>
 #include <aiakernel/kernel.h>
 
 #ifdef ERASED_TYPE_PRESENT

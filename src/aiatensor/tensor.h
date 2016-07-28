@@ -4,6 +4,7 @@
 #include <aiautil/util.h>
 #include <aiatensor/storage.h>
 #include <aiatensor/apply.h>
+#include <aiatensor/flags.h>
 
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
@@ -17,14 +18,6 @@
   this->stride = stride_;                                                                \
   this->nDimension = nDimension_;                                                        \
 }
-
-typedef enum {
-  UPPER_MAT,
-  LOWER_MAT,
-  DIAG_MAT,
-  SYMM_MAT,
-  PSD_MAT
-} MatrixType;
 
 #endif
 
