@@ -18,6 +18,14 @@
   this->nDimension = nDimension_;                                                        \
 }
 
+typedef enum {
+  UPPER_MAT,
+  LOWER_MAT,
+  DIAG_MAT,
+  SYMM_MAT,
+  PSD_MAT
+} MatrixType;
+
 #endif
 
 #ifdef ERASED_TYPE_PRESENT

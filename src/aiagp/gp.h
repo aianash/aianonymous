@@ -19,17 +19,17 @@
  * Input
  * -----
  * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
- *        where sigma is noise variance
- * uplo  : 'U' if Kchol contains the uppar triangular matrix
- *         'L' if Kchol contains the lower triangular matrix
+ *         where sigma is noise variance
+ * mtype : UPPER_MAT or LOWER_MAT
+ *
  * y     : vector of size n with training data
  *
  * Output
  * ------
  * beta  : vector of size n
- *         when NULL, a new vector is created
+ *            when NULL, a new vector is created
  */
-AIA_API AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, const char* uplo, AIATensor_ *y);
+AIA_API AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *y);
 
 /**
  * Description
@@ -57,8 +57,7 @@ AIA_API void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda);
  * -----
  * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
  *         where sigma is noise variance
- * uplo  : 'U' if Kchol contains the uppar triangular matrix
- *         'L' if Kchol contains the lower triangular matrix
+ * mtype : UPPER_MAT OR LOWER_MAT
  * Kx    : Cross kernel matrix size n x m where m is the number of test datapoints
  *         and n is number of training datapoints
  * Kxx   : Kernel matrix of test datapoints
@@ -69,7 +68,7 @@ AIA_API void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda);
  * fmean : Mean of predictive posterior distribution
  * fcov  : Covariance matrix of predictive posterior distribution
  */
-AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta);
+AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta);
 
 /**
  * Descriotion
@@ -80,8 +79,7 @@ AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kc
  * -----
  * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
  *         where sigma is noise variance
- * uplo  : 'U' if K contains the uppar triangular matrix
- *         'L' if K contains the lower triangular matrix
+ * mtype : UPPER_MAT OR LOWER_MAT
  * Kx    : Cross kernel Vector of size n
  * Kxx   : Kernel value for test input. Scalar of type T
  * beta  : As calculated using aiagp__(calcbeta) function
@@ -91,7 +89,7 @@ AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kc
  * fmean : Mean of predictive posterior distribution
  * fcov  : Standard deviation of predictive posterior distribution
  */
-AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta);
+AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, T Kxx, AIATensor_ *beta);
 
 /**
  * Desciption
@@ -101,8 +99,7 @@ AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *u
  * Input
  * -----
  * Kchol  : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
- * uplo   : 'U' if K contains the uppar triangular matrix
- *          'L' if K contains the lower triangular matrix
+ * mtype  : UPPER_MAT OR LOWER_MAT
  * lambda : Length scale factor
  * alpha  : Signal variance of kernel
  * X      : Input data matrix of size n x d
@@ -116,7 +113,7 @@ AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *u
  * fmean  : Mean of output for test input
  * fcov   : Standard deviation of output for test input
  */
-AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *K1, AIATensor_ *Xxm, AIATensor_ *Xxcov);
+AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *K1, AIATensor_ *Xxm, AIATensor_ *Xxcov);
 
 #endif
 

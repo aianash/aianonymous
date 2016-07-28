@@ -2,7 +2,7 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
-AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, bool isdiag, const char *uplo) {
+AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, MatrixType mtype) {
   if(K == NULL) K = aiatensor__(empty)();
   if(Y == NULL) Y = X;
 
@@ -21,7 +21,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   long lambda_stride = lambda->stride[0];
   T *lambda_data = aiatensor__(data)(lambda);
 
-  if(isdiag) {
+  if(mtype == DIAG_MAT) {
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,
                               T sum = 0;
                               int idx;
@@ -32,6 +32,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
                               *K__data = exp(sum) * pow(alpha, 2);
                               );
   } else {
+    char *uplo = (mtype == UPPER_MAT) ? "U" : "L";
     AIATensor_ *diff = aiatensor__(emptyVector)(d);
     AIATensor_ *y    = aiatensor__(emptyVector)(d);
     AIATensor_ *tmp  = aiatensor__(newCopy)(lambda);
@@ -53,7 +54,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   return K;
 }
 
-T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, int isdiag, const char *uplo) {
+T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, MatrixType mtype) {
   if(y == NULL) y = x;
 
   aia_argcheck(aiatensor__(isVector)(x), 2, "function only works for vector inputs");
@@ -67,9 +68,10 @@ T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambd
   AIATensor_ *diff = aiatensor__(empty)();
   aiatensor__(csub)(diff, x, 1, y);
 
-  if(isdiag) {
+  if(mtype == DIAG_MAT) {
     k = aiatensor__(xTAdiagIx)(diff, lambda);
   } else {
+    char *uplo = (mtype == UPPER_MAT) ? "U" : "L";
     k = aiatensor__(xTApdIx)(diff, lambda, uplo);
   }
   k *= -0.5;
