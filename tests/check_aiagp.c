@@ -47,11 +47,11 @@ void gp_teardown(void) {
 START_TEST(test_spredc_float) {
   float Kx6[6] = { 0.934517f,  0.992602f,  0.829340f,  0.692827f,  0.545079f,  0.403865f };
   AIATensor(float) *Kx = aiatensor_(float, newFromData)(arr_(float, clone)(Kx6, 6), 1, size6, NULL);
-  AIATensor(float) *beta = aiagp_(float, calcbeta)(NULL, fK6x6Ltnsr, "L", fytnsr);
+  AIATensor(float) *beta = aiagp_(float, calcbeta)(NULL, fK6x6Ltnsr, LOWER_MAT, fytnsr);
   float Kxx = 1;
   // printf("beta = %s\n", aiatensor_(float, toString)(beta));
   float fmean, fcov;
-  aiagp_(float, spredc)(&fmean, &fcov, fK6x6Ltnsr, "L", Kx, Kxx, beta);
+  aiagp_(float, spredc)(&fmean, &fcov, fK6x6Ltnsr, LOWER_MAT, Kx, Kxx, beta);
   // printf("fmean = %f\tfcov = %f\n", fmean, fcov);
   aiatensor_(float, free)(Kx);
   aiatensor_(float, free)(beta);
@@ -73,11 +73,11 @@ START_TEST(test_vpredc_float) {
       0.04978f,  0.26359f,  0.71653f,  1.00000f };
   AIATensor(float) *Kx  = aiatensor_(float, newFromData)(arr_(float, clone)(Kx6x4, 24), 2, size6x4, NULL);
   AIATensor(float) *Kxx = aiatensor_(float, newFromData)(arr_(float, clone)(Kxx4x4, 24), 2, size4x4, NULL);
-  AIATensor(float) *beta = aiagp_(float, calcbeta)(NULL, fK6x6Ltnsr, "L", fytnsr);
+  AIATensor(float) *beta = aiagp_(float, calcbeta)(NULL, fK6x6Ltnsr, LOWER_MAT, fytnsr);
   printf("beta = \n%s\n", aiatensor_(float, toString)(beta));
   AIATensor(float) *fmean = aiatensor_(float, empty)();
   AIATensor(float) *fcov  = aiatensor_(float, empty)();
-  aiagp_(float, vpredc)(fmean, fcov, fK6x6Ltnsr, "L", Kx, Kxx, beta);
+  aiagp_(float, vpredc)(fmean, fcov, fK6x6Ltnsr, LOWER_MAT, Kx, Kxx, beta);
   printf("fmean = \n%s\n", aiatensor_(float, toString)(fmean));
   printf("fcov = \n%s\n", aiatensor_(float, toString)(fcov));
 }

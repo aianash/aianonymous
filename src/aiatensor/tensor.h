@@ -4,6 +4,7 @@
 #include <aiautil/util.h>
 #include <aiatensor/storage.h>
 #include <aiatensor/apply.h>
+#include <aiatensor/types.h>
 
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK

@@ -82,7 +82,7 @@ START_TEST(test_sekernel_matrix_float) {
       0.080843f, 0.069893f };
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp3x2_1, 12), 2, size3x2, NULL);
 
-  aiakernel_se_(float, matrix)(frestnsr, fdatax, fdatay, 0.4f, flamdiag, TRUE, NULL);
+  aiakernel_se_(float, matrix)(frestnsr, fdatax, fdatay, 0.4f, flamdiag, DIAG_MAT);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 1 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
@@ -95,7 +95,7 @@ START_TEST(test_sekernel_matrix_float) {
       0.026991f, 0.034885f, 0.160000f };
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp3x3_1, 12), 2, size3x3, NULL);
 
-  aiakernel_se_(float, matrix)(frestnsr, fdatax, NULL, 0.4f, flamdiag, TRUE, NULL);
+  aiakernel_se_(float, matrix)(frestnsr, fdatax, NULL, 0.4f, flamdiag, DIAG_MAT);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 2 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
@@ -108,7 +108,7 @@ START_TEST(test_sekernel_matrix_float) {
       0.000000f, 0.0294814f };
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp3x2_2, 12), 2, size3x2, NULL);
 
-  aiakernel_se_(float, matrix)(frestnsr, fdatax, fdatay, 0.4f, flamndiagL, FALSE, "L");
+  aiakernel_se_(float, matrix)(frestnsr, fdatax, fdatay, 0.4f, flamndiagL, LOWER_MAT);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 3 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
@@ -121,7 +121,7 @@ START_TEST(test_sekernel_matrix_float) {
       0.000000f, 0.000000f, 0.160000f };
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp3x3_2, 12), 2, size3x3, NULL);
 
-  aiakernel_se_(float, matrix)(frestnsr, fdatax, NULL, 0.4f, flamndiagL, FALSE, "L");
+  aiakernel_se_(float, matrix)(frestnsr, fdatax, NULL, 0.4f, flamndiagL, LOWER_MAT);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "sekernel_matrix test 4 failed. actual result = \n%s and expected result = \n%s",
     aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
@@ -136,22 +136,22 @@ START_TEST(test_sekernel_value_float) {
 
   // x and y are different and lambda is diagonal
   exp = 0.024090f;
-  res = aiakernel_se_(float, value)(fvec1, fvec2, alpha, flamdiag, TRUE, NULL);
+  res = aiakernel_se_(float, value)(fvec1, fvec2, alpha, flamdiag, DIAG_MAT);
   ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 
   // y is NULL and lambda is diagonal
   exp = 0.16f;
-  res = aiakernel_se_(float, value)(fvec1, NULL, alpha, flamdiag, TRUE, NULL);
+  res = aiakernel_se_(float, value)(fvec1, NULL, alpha, flamdiag, DIAG_MAT);
   ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 
   // x and y are different and lambda is non-diagonal
   exp = 0.006109f;
-  res = aiakernel_se_(float, value)(fvec1, fvec2, alpha, flamndiagL, FALSE, "L");
+  res = aiakernel_se_(float, value)(fvec1, fvec2, alpha, flamndiagL, LOWER_MAT);
   ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 
   // y is NULL and lambda is non-diagonal
   exp = 0.16f;
-  res = aiakernel_se_(float, value)(fvec1, NULL, alpha, flamndiagL, FALSE, "L");
+  res = aiakernel_se_(float, value)(fvec1, NULL, alpha, flamndiagL, LOWER_MAT);
   ck_assert_msg(epsieqf(res, exp, fepsi), "sekernel_value test failed. expected value = %f and actual value = %f", exp, res);
 }
 END_TEST

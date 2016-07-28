@@ -23,6 +23,7 @@ set(HEADERS
     diagmath.h
     blas.h
     lapack.h
+    types.h
 )
 
 set(SOURCES

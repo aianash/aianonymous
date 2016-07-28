@@ -27,8 +27,7 @@
  *            - if isdiag is true, matrix should be diagonal
  *            - if isdiag is false, it should be cholesky decomposition of length scale matrix
  * isdiag : True if lambda is diagonal matrix, false otherwise
- * uplo   : "U" or "L" depending on whether lambda has upper or lower triangular matrix
- *          NULL if isdiad is TRUE
+ * mtype  : DIAG_MAT or UPPER_MAT or LOWER_MAT
  *
  * Output
  * ------
@@ -36,7 +35,7 @@
  * If K is NULL, it creates a matrix and returns it. Client has to free this memory.
  *
  */
-AIA_API AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, bool isdiag, const char *uplo);
+AIA_API AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, MatrixType mtype);
 
 /**
  * Description
@@ -53,13 +52,13 @@ AIA_API AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATens
  *            - if isdiag is true, matrix should be diagonal and should be length scale matrix
  *            - if isdiag is false, it should be cholesky decomposition of length scale matrix
  * isdiag : True if lambda is diagonal matrix, false otherwise
- * uplo   : "U" or "L" depending on whether lambda has upper or lower triangular matrix
- *          NULL if isdiad is TRUE
+ * mtype  : DIAG_MAT or UPPER_MAT or LOWER_MAT
+ *
  * Output
  * ------
  * Returns Scalar of type T
  */
-AIA_API T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, int isdiag, const char *uplo);
+AIA_API T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, MatrixType mtype);
 
 #endif
 

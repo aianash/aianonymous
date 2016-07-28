@@ -304,13 +304,13 @@ AIA_API T aiatensor__(xTAsymmy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y);
  * -----
  * x     : Vector of size n
  * achol : Cholesky factorization of a positive definite matrix of size n x n
- * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
+ * mtype : LOWER_MAT or UPPER_MAT
  *
  * Output
  * ------
  * Returns a scalar
  */
-AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *uplo);
+AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, MatrixType mtype);
 #endif
 
 #if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
@@ -325,13 +325,13 @@ AIA_API T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, const char *upl
  * x     : Vector of size n
  * achol : Cholesky factorization of a positive definite matrix of size n x n
  * y     : Vector of size n
- * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
+ * mtype : LOWER_MAT or UPPER_MAT
  *
  * Output
  * ------
  * Returns a scalar
  */
-AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y);
+AIA_API T aiatensor__(xTApdIy)(AIATensor_ *x, AIATensor_ *achol, MatrixType mtype, AIATensor_ *y);
 #endif
 
 /**
@@ -366,7 +366,7 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  * -----
  * xmat  : Matrix of size n x n
  * achol : Cholesky factorization of positive definite matrix of size n x n
- * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
+ * mtype : UPPER_MAT or LOWER_MAT
  * a     : Multiplication factor
  * ymat  : Matrix of size n x n
  *
@@ -376,7 +376,7 @@ AIA_API AIATensor_ *aiatensor__(XTAsymmXpaY)(AIATensor_ *res, AIATensor_ *xmat, 
  * If res is NULL, it creates a new matrix. Client has to delete the returned matrix.
  *
  */
-AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, const char *uplo, T a, AIATensor_ *ymat);
+AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor_ *achol, MatrixType mtype, T a, AIATensor_ *ymat);
 #endif
 
 #if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
@@ -390,14 +390,14 @@ AIA_API AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, A
  * -----
  * x     : Vector of size n
  * achol : Cholesky factorization of a symmetric matrix of size n x n
- * uplo  : "U" or "L" depending on whether achol has upper or lower triangular matrix
+ * mtype : LOWER_MAT or UPPER_MAT
  * y     : Vector of size n
  *
  * Output
  * ------
  * Returns a scalar
  */
-AIA_API T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, const char *uplo, AIATensor_ *y);
+AIA_API T aiatensor__(xTAsymmIy)(AIATensor_ *x, AIATensor_ *achol, MatrixType mtype, AIATensor_ *y);
 #endif
 
 #endif

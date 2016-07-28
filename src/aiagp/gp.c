@@ -26,7 +26,6 @@ static void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T a
   T const_;
   AIATensor_ *constmat = aiatensor__(empty)();
   AIATensor_ *XxcovpL = aiatensor__(empty)();
-  char *uplo = "L";
 
   aiatensor__(diagmm)(constmat, Xxcov, lambda, TRUE);
   aiatensor__(aIpX)(constmat, NULL, 1);
@@ -34,10 +33,10 @@ static void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T a
 
   // compute cholesky of Xxcov + lambda
   aiatensor__(cadd)(XxcovpL, Xxcov, 1, lambda);
-  aiatensor__(potrf)(XxcovpL, NULL, uplo);
+  aiatensor__(potrf)(XxcovpL, NULL, LOWER_MAT);
 
   // compute exp part of q
-  Kxmu = aiakernel_se__(matrix)(NULL, X, Xxm, alpha, XxcovpL, FALSE, uplo);
+  Kxmu = aiakernel_se__(matrix)(NULL, X, Xxm, alpha, XxcovpL, LOWER_MAT);
   aiatensor__(mul)(q, Kxmu, const_);
 
   aiatensor__(free)(constmat);
@@ -86,7 +85,7 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
                               );
 
   aiatensor__(cadddiag)(lenscal, Xxcov, 0.5, lambda);
-  K2 = aiakernel_se__(matrix)(NULL, Z, Xxm, 1, lenscal, TRUE, NULL);
+  K2 = aiakernel_se__(matrix)(NULL, Z, Xxm, 1, lenscal, DIAG_MAT);
   aiatensor__(resize2d)(K2, n, n);
 
   AIA_TENSOR_APPLY3(T, K1, T, K2, T, Q, *Q_data = const_ * *K1_data * *K2_data;);
@@ -102,7 +101,7 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
 ////////////////////////////////////////////////// PUBLIC FUNCTIONS /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
+void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
   long n = Kchol->size[0];
   AIATensor_ *KxT = aiatensor__(empty)();
 
@@ -115,36 +114,37 @@ void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, con
   aiatensor__(mv)(fmean, KxT, beta);
 
   // calculation of fcov
-  aiatensor__(XTApdIXpaY)(fcov, Kx, Kchol, uplo, -1, Kxx);
+  aiatensor__(XTApdIXpaY)(fcov, Kx, Kchol, mtype, -1, Kxx);
   aiatensor__(mul)(fcov, fcov, -1);
 
   aiatensor__(free)(KxT);
 }
 
-void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
+void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, T Kxx, AIATensor_ *beta) {
   long n = Kchol->size[0];
 
   // calculation of fmean
   *fmean = aiatensor__(dot)(Kx, beta);
 
   // calculation of fcov
-  T KxTKKx = aiatensor__(xTApdIx)(Kx, Kchol, uplo);
+  T KxTKKx = aiatensor__(xTApdIx)(Kx, Kchol, mtype);
   *fcov = Kxx - KxTKKx;
 }
 
-void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, const char *uplo, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *K1, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
+void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *K1, AIATensor_ *Xxm, AIATensor_ *Xxcov) {
   AIATensor_ *q = aiatensor__(empty)();
+
   aiagp__(calcq)(q, X, lambda, alpha, Xxm, Xxcov);
   *fmean = aiatensor__(dot)(beta, q);
 
   AIATensor_ *Q = aiatensor__(empty)();
   aiagp__(calcQ)(Q, X, lambda, K1, Xxm, Xxcov);
   AIATensor_ *KIQ = aiatensor__(empty)();
-  aiatensor__(potrs)(KIQ, Q, Kchol, uplo);
+  aiatensor__(potrs)(KIQ, Q, Kchol, mtype);
   *fcov = pow(alpha, 2) - aiatensor__(trace)(KIQ) + aiatensor__(xTAx)(beta, Q) - pow(*fmean, 2);
 }
 
-AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, const char* uplo, AIATensor_ *y) {
+AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *y) {
   if(beta == NULL) beta = aiatensor__(newCopy)(y);
 
   aia_argcheck(aiatensor__(isMatrix)(Kchol), 1, "Kchol should be 2-dimensional matrix");
@@ -153,7 +153,7 @@ AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, const char* u
 
   aiatensor__(resize1d)(beta, Kchol->size[0]);
   aiatensor__(copy)(beta, y);
-  aiatensor__(potrs)(beta, y, Kchol, uplo);
+  aiatensor__(potrs)(beta, y, Kchol, mtype);
   return beta;
 }
 
@@ -164,7 +164,7 @@ void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda) {
   AIATensor_ *lam2 = aiatensor__(newCopy)(lambda);
 
   aiatensor__(mul)(lam2, lambda, 2);
-  aiakernel_se__(matrix)(K1, X, NULL, 1, lam2, TRUE, NULL);
+  aiakernel_se__(matrix)(K1, X, NULL, 1, lam2, DIAG_MAT);
 
   aiatensor__(free)(lam2);
 }

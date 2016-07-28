@@ -2,7 +2,7 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
-AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, bool isdiag, const char *uplo) {
+AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, T alpha, AIATensor_ *lambda, MatrixType mtype) {
   if(K == NULL) K = aiatensor__(empty)();
   if(Y == NULL) Y = X;
 
@@ -21,7 +21,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   long lambda_stride = lambda->stride[0];
   T *lambda_data = aiatensor__(data)(lambda);
 
-  if(isdiag) {
+  if(isset(mtype, DIAG_MAT)) {
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,
                               T sum = 0;
                               int idx;
@@ -40,7 +40,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,
                               aiablas__(copy)(d, Y_data, Y_stride, diff_data, diff_stride);
                               aiablas__(axpy)(d, -1, X_data, X_stride, diff_data, diff_stride);
-                              aiatensor__(trtrs)(tmp, y, diff, lambda, uplo, "N", "N");
+                              aiatensor__(trtrs)(tmp, y, diff, lambda, mtype, "N", "N");
                               *K__data = aiatensor__(dot)(y, y);
                               *K__data *= -0.5;
                               *K__data = exp(*K__data) * pow(alpha, 2);
@@ -53,7 +53,7 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   return K;
 }
 
-T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, int isdiag, const char *uplo) {
+T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambda, MatrixType mtype) {
   if(y == NULL) y = x;
 
   aia_argcheck(aiatensor__(isVector)(x), 2, "function only works for vector inputs");
@@ -67,10 +67,10 @@ T aiakernel_se__(value)(AIATensor_ *x, AIATensor_ *y, T alpha, AIATensor_ *lambd
   AIATensor_ *diff = aiatensor__(empty)();
   aiatensor__(csub)(diff, x, 1, y);
 
-  if(isdiag) {
+  if(isset(mtype, DIAG_MAT)) {
     k = aiatensor__(xTAdiagIx)(diff, lambda);
   } else {
-    k = aiatensor__(xTApdIx)(diff, lambda, uplo);
+    k = aiatensor__(xTApdIx)(diff, lambda, mtype);
   }
   k *= -0.5;
   k = exp(k) * pow(alpha, 2);

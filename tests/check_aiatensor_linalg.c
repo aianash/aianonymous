@@ -73,7 +73,7 @@ void tensorlinalg_teardown(void) {
 START_TEST(test_potrf_float) {
   frestnsr = aiatensor_(float, new)(fpdtnsrc);
 
-  aiatensor_(float, potrf)(frestnsr, fpdtnsrc, "L");
+  aiatensor_(float, potrf)(frestnsr, fpdtnsrc, LOWER_MAT);
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fpdLtnsrc, fepsi),
     "potrf test failed.\nexpected output =\n%s\nactual output =\n%s\n",
     aiatensor_(float, toString)(fpdLtnsrc), aiatensor_(float, toString)(frestnsr));
@@ -91,7 +91,7 @@ START_TEST(test_potrs_float) {
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x2, 8), 2, size4x2, NULL);
   frestnsr = aiatensor_(float, newCopy)(ftnsrb);
 
-  aiatensor_(float, potrs)(frestnsr, ftnsrb, fpdLtnsrc, "L");
+  aiatensor_(float, potrs)(frestnsr, ftnsrb, fpdLtnsrc, LOWER_MAT);
   ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "wrong size for output");
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr),
       "wrong size for output %dx%d", frestnsr->size[0], frestnsr->size[1]);
@@ -115,7 +115,7 @@ START_TEST(test_trtrs_float) {
   AIATensor(float) *fresatnsr = aiatensor_(float, newCopy)(fUtnsrc);
   AIATensor(float) *fresbtnsr = aiatensor_(float, newCopy)(ftnsrcc);
 
-  aiatensor_(float, trtrs)(fresatnsr, fresbtnsr, NULL, NULL, "U", "N", "N");
+  aiatensor_(float, trtrs)(fresatnsr, fresbtnsr, NULL, NULL, UPPER_MAT, "N", "N");
   ck_assert_msg(aiatensor_(float, isMatrix)(fresbtnsr), "wrong size for output");
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(fresbtnsr, fexptnsr),
       "wrong size for output %dx%d", fresbtnsr->size[0], fresbtnsr->size[1]);
@@ -201,7 +201,7 @@ START_TEST(test_syev_float) {
   AIATensor(float) *fresetnsr = aiatensor_(float, emptyVector)(size4[0]);
   AIATensor(float) *fresvtnsr = aiatensor_(float, emptyAs)(fexpvtnsr);
 
-  aiatensor_(float, syev)(fresetnsr, fresvtnsr, fpdtnsrc, "V", "U");
+  aiatensor_(float, syev)(fresetnsr, fresvtnsr, fpdtnsrc, "V", UPPER_MAT);
   ck_assert_msg(aiatensor_(float, isVector)(fresetnsr), "wrong size for output e");
   ck_assert_msg(aiatensor_(float, isMatrix)(fresvtnsr), "wrong size for output v");
 

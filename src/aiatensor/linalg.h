@@ -13,14 +13,14 @@
  *
  * Input
  * -----
- * mat  : Positive definite matrix of size n x n
- * uplo : "U" or "L"
+ * mat   : Positive definite matrix of size n x n
+ * mtype : UPPER_MAT or LOWER_MAT
  *
  * Output
  * ------
- * res  : Cholesky factorization
+ * res   : Cholesky factorization
  */
-AIA_API void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *uplo);
+AIA_API void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, MatrixType mtype);
 
 /**
  * Description
@@ -33,13 +33,13 @@ AIA_API void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, const char *up
  * b    : Matrix of size n x p or vector of size n
  * a    : Cholesky factorization of positive definite matrix of size n x n
  *        as obtained from portf
- * uplo : "U" or "L"
+ * mtype : UPPER_MAT or LOWER_MAT
  *
  * Output
  * ------
  * res  : Matrix of size n x p or vector of size n
  */
-AIA_API void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *a, const char *uplo);
+AIA_API void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *a, MatrixType mtype);
 
 /**
  * Description
@@ -50,7 +50,7 @@ AIA_API void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *a, c
  * -----
  * b     : Matrix of size n x p or vector of size n
  * amat  : Triangular matrix of size n x n
- * uplo  : "U" or "L"
+ * mtype : UPPER_MAT or LOWER_MAT
  * trans : "N" for A * x = B
  *         "T" for A.T * x = B
  * diag  : "N" if A is non-unit triangular
@@ -61,7 +61,7 @@ AIA_API void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *a, c
  * resa  : Matrix of size n x n for temporary storage
  * resb  : Matrix of size n x p or vector of size n
  */
-AIA_API void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATensor_ *amat, const char *uplo, const char *trans, const char *diag);
+AIA_API void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATensor_ *amat, MatrixType mtype, const char *trans, const char *diag);
 
 /**
  * Description
@@ -111,18 +111,17 @@ AIA_API void aiatensor__(gesvd2)(AIATensor_ *resu, AIATensor_ *ress, AIATensor_ 
  *
  * Input
  * -----
- * mat  : Matrix of size n x n
- * jobz : "N" if only eignevalues are to be computed
+ * mat   : Matrix of size n x n
+ * jobz  : "N" if only eignevalues are to be computed
  *        "L" if both eignevalues and eigenvectors are to be computed
- * uplo : "U" if upper triangular part of A is stored
- *        "L" if lower triangular part of A is stored
+ * mtype : UPPER_MAT or LOWER_MAT
  *
  * Output
  * ------
- * rese : Vector of size n containing eigenvalies
- * resv : Matrix of size n x n with columns as eigenvectors
+ * rese  : Vector of size n containing eigenvalies
+ * resv  : Matrix of size n x n with columns as eigenvectors
  */
-AIA_API void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, const char *jobz, const char *uplo);
+AIA_API void aiatensor__(syev)(AIATensor_ *rese, AIATensor_ *resv, AIATensor_ *mat, const char *jobz, MatrixType mtype);
 
 #endif
 

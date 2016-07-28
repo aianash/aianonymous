@@ -16,6 +16,7 @@ set (HEADERS
     erasure.h
     memory.h
     util.h
+    bits.h
 )
 
 set (SOURCES

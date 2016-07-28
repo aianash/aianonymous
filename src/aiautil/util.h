@@ -9,6 +9,7 @@
 #include <float.h>
 #include <time.h>
 #include <string.h>
+#include <aiautil/bits.h>
 
 #define AIA_EXTERNC extern
 #define AIA_API AIA_EXTERNC
