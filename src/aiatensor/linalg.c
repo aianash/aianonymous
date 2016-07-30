@@ -165,7 +165,7 @@ void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *amat, Matrix
   aia_argcheck(aiatensor__(isMatrix)(b) || aiatensor__(isVector)(b), 3, "b should be either a matrix or a vector");
   aia_argcheck(amat->size[0] == b->size[0], 3, "A, b size incomatible");
   aia_argcheck(isset(mtype, (UPPER_MAT | LOWER_MAT)), 3, "incorrect matrix type");
-  // return;
+
   int n, nrhs, lda, ldb, info;
   AIATensor_ *resa_, *resb_;
 
