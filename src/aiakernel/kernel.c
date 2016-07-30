@@ -34,13 +34,12 @@ AIATensor_ *aiakernel_se__(matrix)(AIATensor_ *K, AIATensor_ *X, AIATensor_ *Y, 
   } else {
     AIATensor_ *diff = aiatensor__(emptyVector)(d);
     AIATensor_ *y    = aiatensor__(emptyVector)(d);
-    AIATensor_ *tmp  = aiatensor__(newCopy)(lambda);
     T *diff_data     = aiatensor__(data)(diff);
     long diff_stride = diff->stride[0];
     AIA_TENSOR_CROSS_DIM_APPLY3(T, X, T, Y, T, K_, 1,
                               aiablas__(copy)(d, Y_data, Y_stride, diff_data, diff_stride);
                               aiablas__(axpy)(d, -1, X_data, X_stride, diff_data, diff_stride);
-                              aiatensor__(trtrs)(tmp, y, diff, lambda, mtype, "N", "N");
+                              aiatensor__(trtrs)(y, diff, lambda, mtype, "N", "N");
                               *K__data = aiatensor__(dot)(y, y);
                               *K__data *= -0.5;
                               *K__data = exp(*K__data) * pow(alpha, 2);
