@@ -848,13 +848,11 @@ T aiatensor__(xTApdIx)(AIATensor_ *x, AIATensor_ *achol, MatrixType mtype) {
   aia_argcheck(x->size[0] == achol->size[0], 2, "inconsistent tensor size");
 
   AIATensor_ *LIx = aiatensor__(newCopy)(x);
-  AIATensor_ *tmp = aiatensor__(newCopy)(achol);
   T res;
 
-  aiatensor__(trtrs)(tmp, LIx, x, achol, mtype, "N", "N");
+  aiatensor__(trtrs)(LIx, x, achol, mtype, "N", "N");
   res = aiatensor__(dot)(LIx, LIx);
   aiatensor__(free)(LIx);
-  aiatensor__(free)(tmp);
   return res;
 }
 #endif
@@ -896,15 +894,13 @@ AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor
 
   AIATensor_ *aIx  = aiatensor__(empty)();
   AIATensor_ *aIxT = aiatensor__(empty)();
-  AIATensor_ *tmp  = aiatensor__(newCopy)(achol);
 
-  aiatensor__(trtrs)(tmp, aIx, xmat, achol, mtype, "N", "N");
+  aiatensor__(trtrs)(aIx, xmat, achol, mtype, "N", "N");
   aiatensor__(transpose)(aIxT, aIx, 0, 1);
   aiatensor__(addmm)(res, a, ymat, 1, aIx, aIxT);
 
   aiatensor__(free)(aIx);
   aiatensor__(free)(aIxT);
-  aiatensor__(free)(tmp);
   return res;
 }
 #endif

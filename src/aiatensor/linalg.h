@@ -58,10 +58,9 @@ AIA_API void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *a, M
  *
  * Output
  * ------
- * resa  : Matrix of size n x n for temporary storage
- * resb  : Matrix of size n x p or vector of size n
+ * res   : Matrix of size n x p or vector of size n
  */
-AIA_API void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATensor_ *amat, MatrixType mtype, const char *trans, const char *diag);
+AIA_API void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *amat, MatrixType mtype, const char *trans, const char *diag);
 
 /**
  * Description

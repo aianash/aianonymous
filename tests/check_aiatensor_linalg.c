@@ -112,10 +112,9 @@ START_TEST(test_trtrs_float) {
        1.18740f, -0.36830f,  0.81030f,
        0.44100f, -0.41630f, -1.30860f };
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp5x3, 15), 2, size5x3, NULL);
-  AIATensor(float) *fresatnsr = aiatensor_(float, newCopy)(fUtnsrc);
   AIATensor(float) *fresbtnsr = aiatensor_(float, newCopy)(ftnsrcc);
 
-  aiatensor_(float, trtrs)(fresatnsr, fresbtnsr, NULL, NULL, UPPER_MAT, "N", "N");
+  aiatensor_(float, trtrs)(fresbtnsr, ftnsrcc, fUtnsrc, UPPER_MAT, "N", "N");
   ck_assert_msg(aiatensor_(float, isMatrix)(fresbtnsr), "wrong size for output");
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(fresbtnsr, fexptnsr),
       "wrong size for output %dx%d", fresbtnsr->size[0], fresbtnsr->size[1]);
@@ -124,7 +123,6 @@ START_TEST(test_trtrs_float) {
     aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(fresbtnsr));
 
   aiatensor_(float, free)(fexptnsr);
-  aiatensor_(float, free)(fresatnsr);
   aiatensor_(float, free)(fresbtnsr);
 }
 END_TEST

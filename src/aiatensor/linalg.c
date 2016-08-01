@@ -158,9 +158,8 @@ void aiatensor__(potrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *achol, Matri
   aiatensor__(freeCopyTo)(b_, res);
 }
 
-void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATensor_ *amat, MatrixType mtype, const char *trans, const char *diag) {
-  if(amat == NULL) amat = resa;
-  if(b == NULL) b = resb;
+void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *amat, MatrixType mtype, const char *trans, const char *diag) {
+  if(b == NULL) b = res;
 
   aia_argcheck(aiatensor__(isSquare)(amat), 4, "A should be 2-dimensional");
   aia_argcheck(aiatensor__(isMatrix)(b) || aiatensor__(isVector)(b), 3, "b should be either a matrix or a vector");
@@ -170,12 +169,12 @@ void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATe
   int n, nrhs, lda, ldb, info;
   AIATensor_ *resa_, *resb_;
 
-  resa_ = aiatensor__(cloneColumnMajor)(resa, amat);
+  resa_ = aiatensor__(cloneColumnMajor)(NULL, amat);
   if(aiatensor__(isVector)(b)) {
     resb_ = aiatensor__(newCopy)(b);
     nrhs = 1;
   } else {
-    resb_ = aiatensor__(cloneColumnMajor)(resb, b);
+    resb_ = aiatensor__(cloneColumnMajor)(res, b);
     nrhs = resb_->size[1];
   }
 
@@ -190,8 +189,8 @@ void aiatensor__(trtrs)(AIATensor_ *resa, AIATensor_ *resb, AIATensor_ *b, AIATe
                              aia_cleanup(aiatensor__(free)(resa_); aiatensor__(free)(resb_);),
                              "trtrs", info, info);
 
-  aiatensor__(freeCopyTo)(resa_, resa);
-  aiatensor__(freeCopyTo)(resb_, resb);
+  aiatensor__(free)(resa_);
+  aiatensor__(freeCopyTo)(resb_, res);
 }
 
 //
