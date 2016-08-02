@@ -13,7 +13,7 @@ adagrad_config default_adagrad_config = {
 
 #ifdef ERASED_TYPE_PRESENT
 
-AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, adagrad_config *config, optim_state_(adagrad) *state) {
+AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, adagrad_config *config, optim_state_(adagrad) *state) {
   aia_argcheck(state == NULL, 5, "state parameter expected got null");
   if(!config) config = &default_adagrad_config;
 
@@ -25,7 +25,7 @@ AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, adag
 
   T fx;
   AIATensor_ *df_dx = aiatensor__(emptyAs)(x);
-  opfunc(x, &fx, df_dx, F_N_GRAD);
+  opfunc(x, &fx, df_dx, F_N_GRAD, opstate);
 
   if(wd != 0.0)
     aiatensor__(cadd)(df_dx, df_dx, wd, x);

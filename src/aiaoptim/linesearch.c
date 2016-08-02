@@ -6,7 +6,7 @@
 static int optim__(zoom)(T *ax, T *fxm, T *dgxm, T *ay, T *fym, T *dgym, T *ac, T *fcm, T *dgcm, int *brackt, T acmin, T acmax);
 
 // TODO : Major recoding required
-int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter) {
+int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter) {
   int fcount;
   int iter;
   int brackt; // = 1 means minimizer has been bracketed
@@ -78,7 +78,7 @@ int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, AIATensor_ *x, AIATenso
     aiatensor__(cadd)(xc, x, ac, p);
 
     // Evaluate function and gradients at current x
-    opfunc(xc, &fc, gfc, F_N_GRAD);
+    opfunc(xc, &fc, gfc, F_N_GRAD, opstate);
     dgc = aiatensor__(dot)(p, gfc);
     fcount++;
 

@@ -18,7 +18,7 @@ sgd_config default_sgd_config = {
 
 #ifdef ERASED_TYPE_PRESENT
 
-AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_config *config, optim_state_(sgd) *state) {
+AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, sgd_config *config, optim_state_(sgd) *state) {
   aia_argcheck(state == NULL, 5, "state parameter expected got null");
   if(!config) config = &default_sgd_config;
 
@@ -36,7 +36,7 @@ AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, sgd_conf
   // evaluate f(x) and df/dx
   T fx;
   AIATensor_ *df_dx = aiatensor__(emptyAs)(x);
-  opfunc(x, &fx, df_dx, F_N_GRAD);
+  opfunc(x, &fx, df_dx, F_N_GRAD, opstate);
 
   // apply weight decay with single or individual parameters
   if(wd != 0.0)
