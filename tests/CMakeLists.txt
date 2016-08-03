@@ -22,6 +22,7 @@ set(AIA_TEST_SOURCES
     check_aiatensor_linalg.c
     check_aiakernel.c
     check_aiagp.c
+    check_aiaoptim_cg.c
     check_aia.c
 )
 

@@ -2,6 +2,7 @@
 
 #include <aiautil/util.h>
 #include <aiatensor/tensor.h>
+#include <aiatensor/math.h>
 
 #ifndef NON_ERASED_BLOCK
 #define NON_ERASED_BLOCK
@@ -27,8 +28,14 @@ typedef struct adagrad_config_ {
   float weightDecay;
 } adagrad_config;
 
+typedef struct cg_config_ {
+  float gradtol;
+  long maxiter;
+} cg_config;
+
 extern sgd_config default_sgd_config;
 extern adagrad_config default_adagrad_config;
+extern cg_config default_cg_config;
 
 #endif
 
@@ -51,6 +58,27 @@ typedef void (*optim__(opfunc))(AIATensor_ *x, T *fx, AIATensor_ *df_dx, opfunc_
 
 AIA_API AIATensor_ *optim__(sgd)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, sgd_config *config, optim_state_(sgd) *state);
 AIA_API AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, adagrad_config *config, optim_state_(adagrad) *state);
+
+/**
+ * Description
+ * -----------
+ * Conjugate Gradient algorithm to solve minima of function of form
+ *   f(x) = x.T * A * x + b.T * x
+ *   where A is symmetric positive definite matrix
+ *
+ * Input
+ * -----
+ * x       : Initial guess of mimina
+ * opfunc  : Function to optimize
+ * H       : Hessian matrix of f(x)
+ * opstate : State of opfunc
+ * config  : cg_config
+ *
+ * Output
+ * ------
+ * x       : Minima of f(x)
+ */
+AIA_API void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *opstate, cg_config *config);
 
 /** Linear search routines **/
 

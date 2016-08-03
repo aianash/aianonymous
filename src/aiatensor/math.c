@@ -806,9 +806,7 @@ T aiatensor__(xTAy)(AIATensor_ *x, AIATensor_ *amat, AIATensor_ *y) {
   aia_argcheck(x->size[0] == amat->size[0], 2, "inconsistent tensor size");
   aia_argcheck(y->size[0] == amat->size[1], 2, "inconsistent tensor size");
 
-  long nrows = amat->size[0];
-  long lda = nrows;
-  AIATensor_ *z = aiatensor__(emptyVector)(nrows);
+  AIATensor_ *z = aiatensor__(emptyVector)(amat->size[0]);
   T res;
 
   aiatensor__(mv)(z, amat, y);
