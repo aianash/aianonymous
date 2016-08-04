@@ -22,12 +22,13 @@ set(AIA_TEST_SOURCES
     check_aiatensor_linalg.c
     check_aiakernel.c
     check_aiagp.c
-    check_aiaoptim_cg.c
+    check_aiaoptim.c
     check_aia.c
 )
 
 set(AIA_TEST_HEADERS
-    check_aia.h)
+    check_aia.h
+)
 
 add_executable (check_aia ${AIA_TEST_HEADERS} ${AIA_TEST_SOURCES})
 target_link_libraries (check_aia aiaoptim aiagp aiakernel aiarandom aiatensor aiautil ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

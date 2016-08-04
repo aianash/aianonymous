@@ -1,5 +1,21 @@
 #include <aiaoptim/optim.h>
 
+#ifndef NON_ERASED_BLOCK
+#define NON_ERASED_BLOCK
+
+ls_config default_ls_config = {
+  .maxiter = 20,
+  .c1      = 0.05,
+  .c2      = 0.1,
+  .dec     = 0.5,
+  .inc     = 2.1,
+  .amax    = 1e+20,
+  .amin    = 1e-20,
+  .wolfe   = LS_WOLFE_STRONG_CURVATURE
+};
+
+#endif
+
 #ifdef ERASED_TYPE_PRESENT
 
 //
@@ -369,6 +385,65 @@ int optim__(zoom)(T *ax, T *fx, T *dgx, T *ay, T *fy, T *dgy, T *at, T *ft, T *d
 
   *at = atn;
   return 0;
+}
+
+int optim__(lsbacktrack)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *fx, AIATensor_ *df_dx, ls_config *config) {
+  if(!config) config = &default_ls_config;
+
+  T width, finit, dg, dginit;
+  int count = 0;
+  AIATensor_ *xc = aiatensor__(newCopy)(x);
+
+  // check for errors
+  if(*a <= 0) return -1;
+
+  // check initial gradient in direction of p
+  dginit = aiatensor__(dot)(df_dx, p);
+  if(dginit > 0) return -1;
+
+  finit = *fx;
+  while(count <= config->maxiter) {
+    // x = xc + a * p (new x)
+    aiatensor__(cadd)(x, xc, *a, p);
+
+    // compute function value and gradient at new x
+    opfunc(x, fx, df_dx, F_N_GRAD, opstate);
+    count++;
+
+    if(*fx > finit + *a * config->c1 * dginit) {
+      width = config->dec;
+    } else {
+      // if Armijo condition to be used
+      if(config->wolfe == LS_WOLFE_ARMIJO) {
+        return count;
+      }
+      // check for wolfe condition
+      dg = aiatensor__(dot)(df_dx, p);
+      if(dg < config->c2 * dginit) {
+        width = config->inc;
+      } else {
+        // if wolfe condition to be used
+        if(config->wolfe == LS_WOLFE_WEAK_CURVATURE) {
+          return count;
+        }
+        // check for strong wolfe condition
+        if(dg > - config->c2 * dginit) {
+          width = config->dec;
+        } else {
+          return count;
+        }
+      }
+    }
+
+    if(*a < config->amin) {
+      return -1;
+    }
+    if(*a > config->amax) {
+      return -1;
+    }
+
+    (*a) *= width;
+  }
 }
 
 

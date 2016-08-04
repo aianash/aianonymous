@@ -7,4 +7,8 @@
 /* epsilon equality comaparision for float */
 #define epsieqf(a, b, epsi) (epsi > 0 ? (fabsf(a - b) < epsi) : (fabsf(a - b) < -epsi))
 
+#define max2(a, b) ((a > b) ? a : b)
+#define max3(a, b, c) max2(a, max2(b, c))
+#define min2(a, b) ((a < b) ? a : b)
+
 #endif

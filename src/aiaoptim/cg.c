@@ -15,6 +15,8 @@ cg_config default_cg_config = {
 #ifdef ERASED_TYPE_PRESENT
 
 void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *opstate, cg_config *config) {
+  if(!config) config = &default_cg_config;
+
   AIATensor_ *rk  = aiatensor__(emptyVector)(H->size[0]);
   AIATensor_ *pk  = aiatensor__(emptyVector)(x->size[0]);
   AIATensor_ *Hpk = aiatensor__(empty)();
@@ -47,12 +49,52 @@ void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *ops
     aiatensor__(csub)(pk, pk, 1, rk);
     // r_k+1.T * r_k+1
     rkTrk = aiatensor__(dot)(rk, rk);
-    k += 1;
+    k++;
   }
 
   aiatensor__(free)(rk);
   aiatensor__(free)(pk);
   aiatensor__(free)(Hpk);
+}
+
+void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_config *config) {
+  if(!config) config = &default_cg_config;
+
+  AIATensor_ *df_dx     = aiatensor__(emptyAs)(x);
+  AIATensor_ *df_dx_old = aiatensor__(emptyAs)(x);
+  AIATensor_ *pk        = aiatensor__(emptyAs)(x);
+
+  T f, grad, gradold, alpha, beta;
+  long k = 0;
+
+  opfunc(x, &f, df_dx, F_N_GRAD, opstate);
+  // initialization
+  aiatensor__(copy)(pk, df_dx);
+  aiatensor__(mul)(pk, pk, -1);
+
+  // df_dx.T * df_dx
+  grad = aiatensor__(dot)(df_dx, df_dx);
+
+  while((grad > config->gradtol) && (k < config->maxiter)) {
+    // copy old values
+    gradold = grad;
+    aiatensor__(copy)(df_dx_old, df_dx);
+    // compute alpha_k
+    alpha = 1 / (1 + grad);
+    optim__(lsbacktrack)(&alpha, opfunc, opstate, x, pk, &f, df_dx, NULL);
+    // compute new grad
+    grad = aiatensor__(dot)(df_dx, df_dx);
+    // beta_k+1 = fprime_k+1.T * (fprime_k+1 - fprime_k) / fprime_k * fprime_k
+    beta = (grad - aiatensor__(dot)(df_dx, df_dx_old)) / gradold;
+    // p_k+1 = - fprime_k+1 + beta_k+1 * p_k
+    aiatensor__(mul)(pk, pk, beta);
+    aiatensor__(csub)(pk, pk, 1, df_dx);
+    k++;
+  }
+
+  aiatensor__(free)(df_dx);
+  aiatensor__(free)(df_dx_old);
+  aiatensor__(free)(pk);
 }
 
 #endif
