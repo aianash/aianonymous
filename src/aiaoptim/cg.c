@@ -21,7 +21,7 @@ void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *ops
   AIATensor_ *pk  = aiatensor__(emptyVector)(x->size[0]);
   AIATensor_ *Hpk = aiatensor__(empty)();
 
-  T beta, alpha, rkTrk, pkTHpk;
+  T beta, alpha, rkTrk, rkTrkold, pkTHpk;
   long k = 0;
 
   opfunc(x, NULL, rk, ONLY_GRAD, opstate);
@@ -42,13 +42,14 @@ void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *ops
     aiatensor__(cadd)(x, x, alpha, pk);
     // r_k+1 = r_k + alpha_k * H * p_k
     aiatensor__(cadd)(rk, rk, alpha, Hpk);
+    // copy r_k.T * r_k to rkTrkold and recompute r_k.T * r_k
+    rkTrkold = rkTrk;
+    rkTrk = aiatensor__(dot)(rk, rk);
     // beta_k+1 = r_k+1.T * r_k+1 / r_k.T * r_k
-    beta = aiatensor__(dot)(rk, rk)/ rkTrk;
+    beta = rkTrk/ rkTrkold;
     // p_k+1 = - r_k+1 + beta_k+1 * p_k
     aiatensor__(mul)(pk, pk, beta);
     aiatensor__(csub)(pk, pk, 1, rk);
-    // r_k+1.T * r_k+1
-    rkTrk = aiatensor__(dot)(rk, rk);
     k++;
   }
 
@@ -64,8 +65,9 @@ void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_confi
   AIATensor_ *df_dx_old = aiatensor__(emptyAs)(x);
   AIATensor_ *pk        = aiatensor__(emptyAs)(x);
 
-  T f, grad, gradold, alpha, beta;
+  T f, grad, gradold, gradc, alpha, beta;
   long k = 0;
+  int lsresp;
 
   opfunc(x, &f, df_dx, F_N_GRAD, opstate);
   // initialization
@@ -81,12 +83,18 @@ void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_confi
     aiatensor__(copy)(df_dx_old, df_dx);
     // compute alpha_k
     alpha = 1 / (1 + grad);
-    optim__(lsbacktrack)(&alpha, opfunc, opstate, x, pk, &f, df_dx, NULL);
-    // compute new grad
-    grad = aiatensor__(dot)(df_dx, df_dx);
-    // beta_k+1 = fprime_k+1.T * (fprime_k+1 - fprime_k) / fprime_k * fprime_k
-    beta = (grad - aiatensor__(dot)(df_dx, df_dx_old)) / gradold;
-    // p_k+1 = - fprime_k+1 + beta_k+1 * p_k
+    lsresp = optim__(lsbacktrack)(&alpha, opfunc, opstate, x, pk, &f, df_dx, NULL);
+    if(lsresp == -1) break;
+    // compute new grad df_dx.T * df_dx and gradc df_dx.T * df_dx_old
+    grad = 0;
+    gradc = 0;
+    AIA_TENSOR_APPLY2(T, df_dx, T, df_dx_old,
+                      grad += *df_dx_data * *df_dx_data;
+                      gradc += *df_dx_data * *df_dx_old_data;
+                      );
+    // compute beta_k+1 = fprime_k+1.T * (fprime_k+1 - fprime_k) / fprime_k * fprime_k
+    beta = (grad - gradc) / gradold;
+    // compute p_k+1 = - fprime_k+1 + beta_k+1 * p_k
     aiatensor__(mul)(pk, pk, beta);
     aiatensor__(csub)(pk, pk, 1, df_dx);
     k++;

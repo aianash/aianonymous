@@ -55,7 +55,7 @@ static float fy6[6] =
 static float randx[2] =
   { 0.f,  0.f};
 
-static float fepsi = 5e-4f;
+static float fepsi = 0.1f;
 
 static long size6x6[2] = {6l, 6l};
 static long size6[1]   = {6l};
