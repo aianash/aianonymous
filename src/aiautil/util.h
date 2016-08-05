@@ -53,5 +53,6 @@ do {                  \
 #include <aiautil/memory.h>
 #include <aiautil/check.h>
 #include <aiautil/array.h>
+#include <aiautil/math.h>
 
 #endif

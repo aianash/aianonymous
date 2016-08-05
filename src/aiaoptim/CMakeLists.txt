@@ -18,6 +18,7 @@ set (SOURCES
     sgd.c
     adagrad.c
     linesearch.c
+    cg.c
 )
 
 set (DIR_SRCS)

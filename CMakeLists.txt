@@ -7,6 +7,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 ###############################################################################
 # Set build features
 set(CMAKE_BUILD_TYPE Debug)
+# add_definitions("-Dg")
 
 ###############################################################################
 include(CheckCSourceCompiles)

@@ -15,6 +15,7 @@ int main(void) {
   srunner_add_suite(sr, make_tensorlinalg_suite());
   srunner_add_suite(sr, make_kernel_suite());
   srunner_add_suite(sr, make_gp_suite());
+  srunner_add_suite(sr, make_cg_suite());
   srunner_run_all(sr, CK_NORMAL);
 
   int sub_ntests = srunner_ntests_run(sr);

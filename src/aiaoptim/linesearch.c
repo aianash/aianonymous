@@ -1,12 +1,28 @@
 #include <aiaoptim/optim.h>
 
+#ifndef NON_ERASED_BLOCK
+#define NON_ERASED_BLOCK
+
+ls_config default_ls_config = {
+  .maxiter = 20,
+  .c1      = 0.05,
+  .c2      = 0.1,
+  .dec     = 0.5,
+  .inc     = 2.1,
+  .amax    = 1e+20,
+  .amin    = 1e-20,
+  .wolfe   = LS_WOLFE_STRONG_CURVATURE
+};
+
+#endif
+
 #ifdef ERASED_TYPE_PRESENT
 
 //
 static int optim__(zoom)(T *ax, T *fxm, T *dgxm, T *ay, T *fym, T *dgym, T *ac, T *fcm, T *dgcm, int *brackt, T acmin, T acmax);
 
 // TODO : Major recoding required
-int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter) {
+int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter) {
   int fcount;
   int iter;
   int brackt; // = 1 means minimizer has been bracketed
@@ -78,7 +94,7 @@ int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, AIATensor_ *x, AIATenso
     aiatensor__(cadd)(xc, x, ac, p);
 
     // Evaluate function and gradients at current x
-    opfunc(xc, &fc, gfc, F_N_GRAD);
+    opfunc(xc, &fc, gfc, F_N_GRAD, opstate);
     dgc = aiatensor__(dot)(p, gfc);
     fcount++;
 
@@ -369,6 +385,72 @@ int optim__(zoom)(T *ax, T *fx, T *dgx, T *ay, T *fy, T *dgy, T *at, T *ft, T *d
 
   *at = atn;
   return 0;
+}
+
+int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(opfunc) opfunc, void *opstate, AIATensor_ *p, AIATensor_ *x, T *fx, AIATensor_ *gfx, ls_config *config) {
+  if(!config) config = &default_ls_config;
+  if(!x) x = xa;
+  if(!fx) fx = fa;
+  if(!gfx) gfx = gfa;
+
+  T width, dga, dgx;
+  T finit = *fx;
+  T ap = 0;
+  int count = 0;
+
+  // check for errors
+  if(*a <= 0) return -1;
+
+  // check initial gradient in direction of p
+  dgx = aiatensor__(dot)(gfx, p);
+  if(dgx > 0) return -1;
+
+  if(x != xa)
+    aiatensor__(copy)(xa, x);
+
+  while(count <= config->maxiter) {
+    // x_i+1 = x_i + (a_i+1 - a_i) * p
+    AIA_TENSOR_APPLY2(T, xa, T, p, *xa_data += - ap * *p_data + *a * *p_data; );
+
+    // compute function value and gradient at new xa
+    opfunc(xa, fa, gfa, F_N_GRAD, opstate);
+    count++;
+
+    if(*fa > finit + *a * config->c1 * dgx) {
+      width = config->dec;
+    } else {
+      // if Armijo condition to be used
+      if(config->wolfe == LS_WOLFE_ARMIJO) {
+        return count;
+      }
+      // check for wolfe condition
+      dga = aiatensor__(dot)(gfa, p);
+      if(dga < config->c2 * dgx) {
+        width = config->inc;
+      } else {
+        // if wolfe condition to be used
+        if(config->wolfe == LS_WOLFE_WEAK_CURVATURE) {
+          return count;
+        }
+        // check for strong wolfe condition
+        if(dga > - config->c2 * dgx) {
+          width = config->dec;
+        } else {
+          return count;
+        }
+      }
+    }
+
+    if(*a < config->amin) {
+      return -1;
+    }
+    if(*a > config->amax) {
+      return -1;
+    }
+
+    ap = *a;
+    (*a) *= width;
+  }
 }
 
 
