@@ -92,6 +92,25 @@ AIA_API AIATensor_ *optim__(adagrad)(T *fx_, AIATensor_ *x, optim__(opfunc) opfu
  */
 AIA_API void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *opstate, cg_config *config);
 
+/**
+ * Description
+ * -----------
+ * Non-linear Conjugate Gradient algorithm to find local minima of a function.
+ * This algorithm uses Polak-Ribiere variant.
+ *
+ * Input
+ * -----
+ * x       : Initial guess of mimina
+ * opfunc  : Function to optimize
+ * opstate : State of opfunc
+ * config  : cg_config
+ *
+ * Output
+ * ------
+ * x       : Minima of f(x)
+ */
+AIA_API void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_config *config);
+
 /** Linear search routines **/
 
 /**
