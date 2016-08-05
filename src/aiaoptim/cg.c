@@ -69,14 +69,14 @@ void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_confi
   long k = 0;
   int lsresp;
 
-  opfunc(x, &f, gfc, F_N_GRAD, opstate);
-  // initialization
-  aiatensor__(copy)(pk, gfc);
-  aiatensor__(mul)(pk, pk, -1);
+  opfunc(x, &f, gfx, F_N_GRAD, opstate);
+  aiatensor__(copy)(gfc, gfx);
+
+  // pk = - gfc
+  AIA_TENSOR_APPLY2(T, pk, T, gfc, *pk_data = - *gfc_data;);
 
   // gfc.T * gfc
   dgc = aiatensor__(dot)(gfc, gfc);
-  aiatensor__(copy)(gfx, gfc);
 
   while((dgc > config->gradtol) && (k < config->maxiter)) {
     // copy old values
@@ -96,8 +96,7 @@ void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_confi
     // compute beta_k+1 = fprime_k+1.T * (fprime_k+1 - fprime_k) / fprime_k * fprime_k
     beta = (dgc - dgxc) / dgx;
     // compute p_k+1 = - fprime_k+1 + beta_k+1 * p_k
-    aiatensor__(mul)(pk, pk, beta);
-    aiatensor__(csub)(pk, pk, 1, gfc);
+    AIA_TENSOR_APPLY2(T, pk, T, gfc, *pk_data = - *gfc_data + beta * *pk_data;);
     k++;
   }
   aiatensor__(free)(gfc);

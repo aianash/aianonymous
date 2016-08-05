@@ -122,6 +122,37 @@ AIA_API void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, v
  */
 AIA_API int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter);
 
+/**
+ * Description
+ * -----------
+ * Backtracking line search algorithm
+ *
+ * Input
+ * -----
+ * a       : Initial estimate of step length
+ * opfunc  : Function to optimize
+ * opstate : Function state
+ * p       : Search direction
+ * x       : Initial value of x. xa is used as initial value if NULL.
+ * fx      : Function value at x. fa is used as initial function value if NULL.
+ * gfx     : Gradient at x. gfa is used as initial function value if NULL.
+ * config  : Line search config. Default config is used if NULL.
+ *
+ * Output
+ * ------
+ * a       : Step length
+ * xa      : xa = x + a * p
+ * fa      : Function value at xa
+ * gfa     : Gradient at xa
+ *
+ * Returns
+ * -------
+ * -1 in case of error, positive value otherwise.
+ *
+ * References
+ * ----------
+ * 1. Numerical Optimization, J. Nocedal and S. Wright
+ */
 AIA_API int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(opfunc) opfunc, void *opstate, AIATensor_ *p, AIATensor_ *x, T *fx, AIATensor_ *gfx, ls_config *config);
 
 #endif
