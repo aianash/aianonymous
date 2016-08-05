@@ -387,30 +387,36 @@ int optim__(zoom)(T *ax, T *fx, T *dgx, T *ay, T *fy, T *dgy, T *at, T *ft, T *d
   return 0;
 }
 
-int optim__(lsbacktrack)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *fx, AIATensor_ *df_dx, ls_config *config) {
+int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(opfunc) opfunc, void *opstate, AIATensor_ *p, AIATensor_ *x, T *fx, AIATensor_ *gfx, ls_config *config) {
   if(!config) config = &default_ls_config;
+  if(!x) x = xa;
+  if(!fx) fx = fa;
+  if(!gfx) gfx = gfa;
 
-  T width, finit, dg, dginit;
+  T width, dga, dgx;
+  T finit = *fx;
+  T ap = 0;
   int count = 0;
-  AIATensor_ *xc = aiatensor__(newCopy)(x);
 
   // check for errors
   if(*a <= 0) return -1;
 
   // check initial gradient in direction of p
-  dginit = aiatensor__(dot)(df_dx, p);
-  if(dginit > 0) return -1;
+  dgx = aiatensor__(dot)(gfx, p);
+  if(dgx > 0) return -1;
 
-  finit = *fx;
+  if(x != xa)
+    aiatensor__(copy)(xa, x);
+
   while(count <= config->maxiter) {
-    // x = xc + a * p (new x)
-    aiatensor__(cadd)(x, xc, *a, p);
+    // x_i+1 = x_i + (a_i+1 - a_i) * p
+    AIA_TENSOR_APPLY2(T, xa, T, p, *xa_data += - ap * *p_data + *a * *p_data; );
 
-    // compute function value and gradient at new x
-    opfunc(x, fx, df_dx, F_N_GRAD, opstate);
+    // compute function value and gradient at new xa
+    opfunc(xa, fa, gfa, F_N_GRAD, opstate);
     count++;
 
-    if(*fx > finit + *a * config->c1 * dginit) {
+    if(*fa > finit + *a * config->c1 * dgx) {
       width = config->dec;
     } else {
       // if Armijo condition to be used
@@ -418,8 +424,8 @@ int optim__(lsbacktrack)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_
         return count;
       }
       // check for wolfe condition
-      dg = aiatensor__(dot)(df_dx, p);
-      if(dg < config->c2 * dginit) {
+      dga = aiatensor__(dot)(gfa, p);
+      if(dga < config->c2 * dgx) {
         width = config->inc;
       } else {
         // if wolfe condition to be used
@@ -427,7 +433,7 @@ int optim__(lsbacktrack)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_
           return count;
         }
         // check for strong wolfe condition
-        if(dg > - config->c2 * dginit) {
+        if(dga > - config->c2 * dgx) {
           width = config->dec;
         } else {
           return count;
@@ -442,6 +448,7 @@ int optim__(lsbacktrack)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_
       return -1;
     }
 
+    ap = *a;
     (*a) *= width;
   }
 }

@@ -122,7 +122,7 @@ AIA_API void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, v
  */
 AIA_API int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter);
 
-AIA_API int optim__(lsbacktrack)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gradf, ls_config *config);
+AIA_API int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(opfunc) opfunc, void *opstate, AIATensor_ *p, AIATensor_ *x, T *fx, AIATensor_ *gfx, ls_config *config);
 
 #endif
 

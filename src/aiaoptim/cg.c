@@ -61,47 +61,47 @@ void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *ops
 void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_config *config) {
   if(!config) config = &default_cg_config;
 
-  AIATensor_ *df_dx     = aiatensor__(emptyAs)(x);
-  AIATensor_ *df_dx_old = aiatensor__(emptyAs)(x);
-  AIATensor_ *pk        = aiatensor__(emptyAs)(x);
+  AIATensor_ *gfc = aiatensor__(emptyAs)(x);
+  AIATensor_ *gfx = aiatensor__(emptyAs)(x);
+  AIATensor_ *pk  = aiatensor__(emptyAs)(x);
 
-  T f, grad, gradold, gradc, alpha, beta;
+  T f, dgc, dgx, dgxc, alpha, beta;
   long k = 0;
   int lsresp;
 
-  opfunc(x, &f, df_dx, F_N_GRAD, opstate);
+  opfunc(x, &f, gfc, F_N_GRAD, opstate);
   // initialization
-  aiatensor__(copy)(pk, df_dx);
+  aiatensor__(copy)(pk, gfc);
   aiatensor__(mul)(pk, pk, -1);
 
-  // df_dx.T * df_dx
-  grad = aiatensor__(dot)(df_dx, df_dx);
+  // gfc.T * gfc
+  dgc = aiatensor__(dot)(gfc, gfc);
+  aiatensor__(copy)(gfx, gfc);
 
-  while((grad > config->gradtol) && (k < config->maxiter)) {
+  while((dgc > config->gradtol) && (k < config->maxiter)) {
     // copy old values
-    gradold = grad;
-    aiatensor__(copy)(df_dx_old, df_dx);
+    dgx = dgc;
+    SWAP(AIATensor_*, gfc, gfx);
     // compute alpha_k
-    alpha = 1 / (1 + grad);
-    lsresp = optim__(lsbacktrack)(&alpha, opfunc, opstate, x, pk, &f, df_dx, NULL);
+    alpha = 1 / (1 + dgc);
+    lsresp = optim__(lsbacktrack)(&alpha, x, &f, gfc, opfunc, opstate, pk, NULL, NULL, gfx, NULL);
     if(lsresp == -1) break;
-    // compute new grad df_dx.T * df_dx and gradc df_dx.T * df_dx_old
-    grad = 0;
-    gradc = 0;
-    AIA_TENSOR_APPLY2(T, df_dx, T, df_dx_old,
-                      grad += *df_dx_data * *df_dx_data;
-                      gradc += *df_dx_data * *df_dx_old_data;
+    // compute new dgc gfc.T * gfc and dgxc gfc.T * gfx
+    dgc = 0;
+    dgxc = 0;
+    AIA_TENSOR_APPLY2(T, gfc, T, gfx,
+                      dgc += *gfc_data * *gfc_data;
+                      dgxc += *gfc_data * *gfx_data;
                       );
     // compute beta_k+1 = fprime_k+1.T * (fprime_k+1 - fprime_k) / fprime_k * fprime_k
-    beta = (grad - gradc) / gradold;
+    beta = (dgc - dgxc) / dgx;
     // compute p_k+1 = - fprime_k+1 + beta_k+1 * p_k
     aiatensor__(mul)(pk, pk, beta);
-    aiatensor__(csub)(pk, pk, 1, df_dx);
+    aiatensor__(csub)(pk, pk, 1, gfc);
     k++;
   }
-
-  aiatensor__(free)(df_dx);
-  aiatensor__(free)(df_dx_old);
+  aiatensor__(free)(gfc);
+  aiatensor__(free)(gfx);
   aiatensor__(free)(pk);
 }
 
