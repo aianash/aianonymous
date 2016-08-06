@@ -24,6 +24,7 @@ set(HEADERS
     blas.h
     lapack.h
     types.h
+    functional.h
 )
 
 set(SOURCES
