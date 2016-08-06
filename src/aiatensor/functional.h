@@ -446,6 +446,7 @@
  * vector2 : Vector to iterate
  */
 #define vfor(ele1, vector1, ele2, vector2) { \
+  int fbreak = 0; \
   long ele1##_index = -1; \
   long ele1##_stride = vector1->stride[0]; \
   long vector1##_size = vector1->size[0]; \
@@ -461,7 +462,8 @@
     ele1##_index++; \
     if(ele1##_index == vector1##_size) break; \
     ele1 += ele1##_stride; \
-    for(; ele2##_index < vector2##_size; ele2##_index++, ele2 += vector2##_stride) {
+    ele2##_index = 0; \
+    for(; ele2##_index < vector2##_size; ele2##_index++, ele2 += ele2##_stride) {
 
 #define endvfor }}}
 

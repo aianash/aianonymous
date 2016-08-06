@@ -12,6 +12,7 @@ int main(void) {
 
   sr = srunner_create(make_tensor_suite());
   srunner_add_suite(sr, make_tensormath_suite());
+  srunner_add_suite(sr, make_functional_suite());
   srunner_add_suite(sr, make_tensorlinalg_suite());
   srunner_add_suite(sr, make_kernel_suite());
   srunner_add_suite(sr, make_gp_suite());

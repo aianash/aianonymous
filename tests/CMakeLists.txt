@@ -20,6 +20,7 @@ set(AIA_TEST_SOURCES
     check_aiatensor.c
     check_aiatensor_math.c
     check_aiatensor_linalg.c
+    check_aiatensor_functional.c
     check_aiakernel.c
     check_aiagp.c
     check_aiaoptim.c
