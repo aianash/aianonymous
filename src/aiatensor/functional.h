@@ -14,7 +14,7 @@
  * mforeach(ele, matrix) {
  *  // code
  * }
- * endmforeach
+ * endmforeach(optional code)
  *
  * Input
  * -----
@@ -48,7 +48,11 @@
     for(ele##_index = 0; ele##_index < matrix##_contsz; \
       ele##_index++, ele += ele##_stride) {
 
-#define endmforeach }}}
+#define endmforeach(code) \
+    } \
+    code \
+  } \
+}
 
 /**
  * Description
@@ -60,7 +64,7 @@
  * vforeach(ele, matrix) {
  *  // code
  * }
- * endvforeach
+ * endvforeach(optional code)
  *
  * Input
  * -----
@@ -75,7 +79,10 @@
   ele = vector->storage->data + vector->storageOffset; \
   for(; ele##_index < vector##_size; ele##_index++, ele += ele##_stride) {
 
-#define endvforeach }}
+#define endvforeach(code) \
+  } \
+  code \
+}
 
 
 /**************** ZIP *****************/
@@ -341,6 +348,111 @@
 
 #define endvzip3 }}
 
+/**
+ * Description
+ * -----------
+ * Zip matrix and vector row wise,
+ * matrix->size[1] == vector->size[0]
+ *
+ * Usage
+ * -----
+ * mvrzip(ele1, matrix, ele2, vector) {
+ *  // code
+ * }
+ * endmvrzip(optional code)
+ *
+ * Input
+ * -----
+ * ele1   : Pointer to each entry of matrix
+ * matrix : Matrix to iterate
+ * ele2   : Pointer to each entry of vector
+ * vector : Vector to iterate
+ */
+#define mvrzip(ele1, matrix, ele2, vector) { \
+  int fbreak = 0; \
+  long ele1##_rindex = -1; \
+  long ele1##_cindex = 0; \
+  long ele1##_stride = matrix->stride[1]; \
+  long matrix##_csize = matrix->size[1]; \
+\
+  long ele2##_index = 0; \
+  long ele2##_stride = vector->stride[0]; \
+  long vector##_size = vector->size[0]; \
+\
+  ele1 = matrix->storage->data + matrix->storageOffset - matrix->stride[0]; \
+\
+  while(!fbreak) { \
+    ele1##_rindex++; \
+    if(ele1##_rindex == matrix->size[0]) break; \
+    ele1 -= ele1##_cindex * ele1##_stride; \
+    ele1 += matrix->stride[0]; \
+    ele1##_cindex = 0; \
+\
+    ele2 = vector->storage->data + vector->storageOffset; \
+    ele2##_index = 0; \
+\
+    for(; ele2##_index < vector##_size && ele1##_cindex < matrix##_csize; \
+        ele1##_cindex++, ele2##_index++, \
+        ele1 += ele1##_stride, ele2 += ele2##_stride) {
+
+#define endmvrzip(code) \
+    } \
+    code \
+  } \
+}
+
+/**
+ * Description
+ * -----------
+ * Zip matrix and vector column wise,
+ * matrix->size[0] == vector->size[0]
+ *
+ * Usage
+ * -----
+ * mvczip(ele1, matrix, ele2, vector) {
+ *  // code
+ * }
+ * endmvczip(optional code)
+ *
+ * Input
+ * -----
+ * ele1   : Pointer to each entry of matrix
+ * matrix : Matrix to iterate
+ * ele2   : Pointer to each entry of vector
+ * vector : Vector to iterate
+ */
+#define mvczip(ele1, matrix, ele2, vector) { \
+  int fbreak = 0; \
+  long ele1##_rindex = 0; \
+  long ele1##_cindex = -1; \
+  long ele1##_stride = matrix->stride[0]; \
+  long matrix##_rsize = matrix->size[0]; \
+\
+  long ele2##_index = 0; \
+  long ele2##_stride = vector->stride[0]; \
+  long vector##_size = vector->size[0]; \
+\
+  ele1 = matrix->storage->data + matrix->storageOffset - matrix->stride[1]; \
+\
+  while(!fbreak) { \
+    ele1##_cindex++; \
+    if(ele1##_cindex == matrix->size[1]) break; \
+    ele1 -= ele1##_rindex * ele1##_stride; \
+    ele1 += matrix->stride[1]; \
+    ele1##_rindex = 0; \
+\
+    ele2 = vector->storage->data + vector->storageOffset; \
+    ele2##_index = 0; \
+\
+    for(; ele2##_index < vector##_size && ele1##_rindex < matrix##_rsize; \
+        ele1##_rindex++, ele2##_index++, \
+        ele1 += ele1##_stride, ele2 += ele2##_stride) {
+
+#define endmvczip(code) \
+    } \
+    code \
+  } \
+}
 
 /**************** FOR *****************/
 
@@ -354,7 +466,7 @@
  * mfor(ele1, matrix1, ele2, matrix2) {
  *  // code
  * }
- * endmfor
+ * endmfor(optional code)
  *
  * Input
  * -----
@@ -424,7 +536,11 @@
 \
     for(; ele2##_index < matrix2##_contsz; ele2##_index++, ele2 += ele2##_stride) {
 
-#define endmfor }}}
+#define endmfor(code) \
+    } \
+    code \
+  } \
+}
 
 /**
  * Description
@@ -436,7 +552,7 @@
  * vfor(ele1, vector1, ele2, vector2) {
  *  // code
  * }
- * endvfor
+ * endvfor(optional code)
  *
  * Input
  * -----
@@ -465,6 +581,10 @@
     ele2##_index = 0; \
     for(; ele2##_index < vector2##_size; ele2##_index++, ele2 += ele2##_stride) {
 
-#define endvfor }}}
+#define endvfor(code) \
+    } \
+    code \
+  } \
+}
 
 #endif
