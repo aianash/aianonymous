@@ -101,7 +101,7 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
 ////////////////////////////////////////////////// PUBLIC FUNCTIONS /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
+void aiagp__(npredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta) {
   long n = Kchol->size[0];
   AIATensor_ *KxT = aiatensor__(empty)();
 

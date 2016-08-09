@@ -68,7 +68,7 @@ AIA_API void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda);
  * fmean : Mean of predictive posterior distribution
  * fcov  : Covariance matrix of predictive posterior distribution
  */
-AIA_API void aiagp__(vpredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta);
+AIA_API void aiagp__(npredc)(AIATensor_ *fmean, AIATensor_ *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *Kx, AIATensor_ *Kxx, AIATensor_ *beta);
 
 /**
  * Descriotion

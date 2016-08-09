@@ -58,7 +58,7 @@ START_TEST(test_spredc_float) {
 }
 END_TEST
 
-START_TEST(test_vpredc_float) {
+START_TEST(test_npredc_float) {
   float Kx6x4[24] =
     { 0.97044f,  0.84930f,  0.38161f,  0.08803f,
       0.76337f,  0.99667f,  0.66808f,  0.22992f,
@@ -77,7 +77,7 @@ START_TEST(test_vpredc_float) {
   printf("beta = \n%s\n", aiatensor_(float, toString)(beta));
   AIATensor(float) *fmean = aiatensor_(float, empty)();
   AIATensor(float) *fcov  = aiatensor_(float, empty)();
-  aiagp_(float, vpredc)(fmean, fcov, fK6x6Ltnsr, LOWER_MAT, Kx, Kxx, beta);
+  aiagp_(float, npredc)(fmean, fcov, fK6x6Ltnsr, LOWER_MAT, Kx, Kxx, beta);
   printf("fmean = \n%s\n", aiatensor_(float, toString)(fmean));
   printf("fcov = \n%s\n", aiatensor_(float, toString)(fcov));
 }
@@ -93,7 +93,7 @@ Suite *make_gp_suite(void) {
   tcase_add_checked_fixture(tc, gp_setup, gp_teardown);
 
   tcase_add_test(tc, test_spredc_float);
-  tcase_add_test(tc, test_vpredc_float);
+  tcase_add_test(tc, test_npredc_float);
 
   suite_add_tcase(s, tc);
   return s;
