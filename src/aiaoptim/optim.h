@@ -152,10 +152,10 @@ AIA_API int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, 
  * opfunc  : Function to optimize
  * opstate : Function state
  * p       : Search direction
- * x       : Initial value of x. xa is used as initial value if NULL.
- * fx      : Function value at x. fa is used as initial function value if NULL.
- * gfx     : Gradient at x. gfa is used as initial function value if NULL.
- * config  : Line search config. Default config is used if NULL.
+ * x       : Initial value of x. xa is used as initial value if NULL
+ * fx      : Function value at x. fa is used as initial function value if NULL
+ * gfx     : Gradient at x. gfa is used as initial function value if NULL
+ * config  : Line search config. Default config is used if NULL
  *
  * Output
  * ------
@@ -166,7 +166,7 @@ AIA_API int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, 
  *
  * Returns
  * -------
- * -1 in case of error, positive value otherwise.
+ * -1 in case of error, positive value otherwise
  *
  * References
  * ----------

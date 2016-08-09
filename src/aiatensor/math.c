@@ -895,7 +895,7 @@ AIATensor_ *aiatensor__(XTApdIXpaY)(AIATensor_ *res, AIATensor_ *xmat, AIATensor
 
   aiatensor__(trtrs)(aIx, xmat, achol, mtype, "N", "N");
   aiatensor__(transpose)(aIxT, aIx, 0, 1);
-  aiatensor__(addmm)(res, a, ymat, 1, aIx, aIxT);
+  aiatensor__(addmm)(res, a, ymat, 1, aIxT, aIx);
 
   aiatensor__(free)(aIx);
   aiatensor__(free)(aIxT);
