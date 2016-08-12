@@ -28,7 +28,7 @@ static void aiagp__(calcq)(AIATensor_ *q, AIATensor_ *X, AIATensor_ *lambda, T a
   AIATensor_ *XxcovpL = aiatensor__(empty)();
 
   aiatensor__(diagmm)(constmat, Xxcov, lambda, TRUE);
-  aiatensor__(aIpX)(constmat, NULL, 1);
+  aiatensor__(aEyepX)(constmat, NULL, 1);
   const_ = pow(aiatensor__(detpd)(constmat), -0.5);
 
   // compute cholesky of Xxcov + lambda
@@ -73,7 +73,7 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
 
   aiatensor__(resize2d)(Z, n * n, d);
   aiatensor__(diagmm)(constmat, Xxcov, lambda, TRUE);
-  aiatensor__(aIpX)(constmat, NULL, 1);
+  aiatensor__(aEyepX)(constmat, NULL, 1);
   aiatensor__(mul)(constmat, constmat, 2);
   const_ = pow(aiatensor__(detpd)(constmat), -0.5);
 
@@ -95,6 +95,193 @@ static void aiagp__(calcQ)(AIATensor_ *Q, AIATensor_ *X, AIATensor_ *lambda, AIA
   aiatensor__(free)(Y);
   aiatensor__(free)(Z);
   aiatensor__(free)(lenscal);
+}
+
+/**
+ * Description
+ * -----------
+ * Performs following computation
+ *   gamma = (K + sigma^2 * I)^-1 -  (K + sigma^2 * I)^-1 * y * yT * (K + sigma^2 * I)^-1
+ *
+ * Input
+ * -----
+ * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
+ *         where sigma is noise variance
+ * uplo  : 'U' if Kchol contains the uppar triangular matrix
+ *         'L' if Kchol contains the lower triangular matrix
+ * beta  : As calculated using aiagp__(calcbeta) function (K + sigma^2 * I)^-1 * y)
+ *
+ * Output
+ * ------
+ * gamma   : matrix of size n x n
+ */
+static void aiagp__(calcgamma)(AIATensor_ *gamma, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *beta) {
+  aiatensor__(resizeAs)(gamma, Kchol);
+  // calculate beta * betaT
+  aiatensor__(xxT)(gamma, beta);
+  //printf("bbT = %s\n", aiatensor_(float, toString)(gamma));
+  // calculate (K + sigma ^ 2 * I) ^ -1
+  AIATensor_ *inv = aiatensor__(empty)();
+  AIATensor_ *eye = aiatensor__(empty)();
+  aiatensor__(zeros)(eye, 2, Kchol->size, NULL);
+  aiatensor__(aEyepX)(eye, NULL, 1);
+  //printf("eye = %s\n", aiatensor_(float, toString)(eye));
+  aiatensor__(potrs)(inv, eye, Kchol, mtype);
+  //printf("inv = %s\n", aiatensor_(float, toString)(inv));
+  // calculate gamma
+  aiatensor__(csub)(gamma, inv, 1, gamma);
+
+  aiatensor__(free)(inv);
+  aiatensor__(free)(eye);
+}
+
+/**
+ * Description
+ * -----------
+ * Calculate negative log evidence
+ *
+ * Input
+ * -----
+ * d     : number of dimensions in multivariate gaussian
+ * detkps: determinant value of (K + sigma^2 * I)
+ * y     : vector of size n with training data
+ * beta  : As calculated using aiagp__(calcbeta) function (K + sigma^2 * I)^-1 * y)
+ *
+ * Output
+ * ------
+ * res   : negative log evidence for given parameters
+ */
+static void aiagp__(calcnle)(T *res, long d, AIATensor_ *KPSchol, AIATensor_ *y, AIATensor_ *beta) {
+  T *KPSchol_data;
+  T detkps;
+  long idx;
+
+  // calculate determinant of (K + sigma ^ 2 * I)
+  // not using tensor detpd as chol is already calculated
+  KPSchol_data = aiatensor__(data)(KPSchol);
+  detkps = 1;
+  for(idx = 0; idx < KPSchol->size[0]; idx++) {
+    detkps *= KPSchol_data[idx * (KPSchol->stride[0] + KPSchol->stride[1])];
+  }
+  detkps = pow(detkps, 2);
+  //printf("detkps = %0.5f\n", detkps);
+
+  // calculate nle
+
+  *res = 0.5 * aiatensor__(dot)(beta, y) + 0.5 * log(detkps) + 0.5 * d * log(2 * PI);
+}
+
+/**
+ * Description
+ * -----------
+ * Calculate gradient of negative log evidence
+ *
+ * Input
+ * -----
+ * K       : covariance matrix of inputs
+ * KPSchol : cholskey decomposition of (K + sigma ^ 2 * I)
+ * beta    : As calculated using aiagp__(calcbeta) function (K + sigma^2 * I)^-1 * y)
+ * X       : training input
+ * lambda  : length scale vector
+ * sigma   : value of parameter sigma
+ * alpha   : value of parameter alpha
+ * iskeriso: boolean which tells kernel length scale is isotropic or not
+ * x       : vector of parameters [sigma, alpha, lambda1, lambda2, ...]
+ *
+ * Output
+ * ------
+ * res   : vector of gradient values of nle
+ */
+static void aiagp__(calcdnle)(AIATensor_ *res, AIATensor_ *K, AIATensor_ *KPSchol, AIATensor_ *beta,
+                              AIATensor_ *X, AIATensor_ *lambda, T sigma, T alpha, bool iskeriso, AIATensor_ *x) {
+  AIATensor_ *gamma = aiatensor__(empty)();
+  AIATensor_ *gammaT = aiatensor__(empty)();
+  AIATensor_ *res_ = aiatensor__(empty)();
+
+  T *lambda_data, *X_data, *res__data;
+  T dalpha;
+
+  long lambda_stride, d, n, ridx, cidx, idx;
+
+  aiatensor__(resizeAs)(res_, x);
+  aiatensor__(fill)(res_, 0);
+  res__data = aiatensor__(data)(res_);
+
+  // calculate gamma
+  aiagp__(calcgamma)(gamma, KPSchol, LOWER_MAT, beta);
+  //printf("gamma = %s\n", aiatensor_(float, toString)(gamma));
+  // get transpose of gamma
+  aiatensor__(transpose)(gammaT, gamma, 0, 1);
+  //printf("gammaT = %s\n", aiatensor_(float, toString)(gammaT));
+
+  // calculate gradient of nle wrt sigma
+  res__data[0] = sigma * aiatensor__(trace)(gamma);
+  //res__data[0] = 0.f;
+
+  // calculate gradient of nle wrt alpha
+  dalpha = 0;
+  AIA_TENSOR_APPLY2(T, K, T, gammaT, dalpha += se_grad_alpha(*K_data, alpha) * *gammaT_data;);
+  res__data[res_->stride[0]] = 0.5 * dalpha;
+  //res__data[res_->stride[0]] = 0.f;
+
+  // calculate gradient of nle wrt length scale
+  lambda_stride = lambda->stride[0];
+  lambda_data = aiatensor__(data)(lambda);
+  X_data = aiatensor__(data)(X);
+  d = X->size[1];
+  n = X->size[0];
+  ridx = 0;
+  cidx = 0;
+
+  //printf("d = %ld\n", d);
+  //printf("n = %ld\n", n);
+
+  if(iskeriso) {
+    AIA_TENSOR_APPLY2(T, K, T, gammaT,
+                    long didx;
+                    T xdifsq;
+                    //printf("in iso");
+                    for(didx = 0; didx < d; didx++) {
+                      // squared distance over all dimensioans
+                      xdifsq += pow(X_data[ridx * X->stride[0] + didx * X->stride[1]] - X_data[cidx * X->stride[0] + didx * X->stride[1]], 2);
+                    }
+                    res__data[2 * res_->stride[0]] += se_grad_lambda(*K_data, xdifsq ,lambda_data[didx * lambda_stride]) * *gammaT_data;
+                    cidx += 1;
+                    if(cidx % n == 0) {
+                      ridx += 1;
+                      cidx = 0;
+                    });
+    res__data[2 * res_->stride[0]] *= lambda_data[0];
+  } else {
+    AIA_TENSOR_APPLY2(T, K, T, gammaT,
+                    long didx;
+                    T xdifsq;
+
+                    //printf("row %ld , column %ld \n", ridx, cidx);
+                    for(didx = 0; didx < d; didx++) {
+                      // squared distace over a single dimension
+                      xdifsq = pow(X_data[ridx * X->stride[0] + didx * X->stride[1]] - X_data[cidx * X->stride[0] + didx * X->stride[1]], 2);
+                      //printf("xdifsq %ld = %0.5f\n", didx + 2, xdifsq);
+                      //printf("grad %ld = %0.5f\n", didx + 2, se_grad_lambda(*K_data, xdifsq ,lambda_data[didx * lambda_stride]) * *gammaT_data);
+                      res__data[(didx + 2) * res_->stride[0]] += se_grad_lambda(*K_data, xdifsq ,lambda_data[didx * lambda_stride]) * *gammaT_data;
+                      //printf("res_data %ld = %0.5f\n", didx + 2, res__data[(didx + 2) * res_->stride[0]]);
+                    }
+                    cidx += 1;
+                    if(cidx % n == 0) {
+                      ridx += 1;
+                      cidx = 0;
+                    });
+    for (idx = 0; idx < d; idx++) {
+      res__data[(idx + 2) * res_->stride[0]] *= lambda_data[idx * lambda->stride[0]];
+      //res__data[(idx + 2) * res_->stride[0]] *= 0.5;
+    }
+  }
+
+  aiatensor__(resizeAs)(res, res_);
+  aiatensor__(freeCopyTo)(res_, res);
+
+  aiatensor__(free)(gamma);
+  aiatensor__(free)(gammaT);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +346,7 @@ AIATensor_ *aiagp__(calcbeta)(AIATensor_ *beta, AIATensor_ *Kchol, MatrixType mt
 
 void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda) {
   aia_argcheck(aiatensor__(isMatrix)(X), 2, "X should be 2-dimensional matrix");
-  aia_argcheck(aiatensor__(isVector)(X), 3, "X should be a diagonal matrix");
+  aia_argcheck(aiatensor__(isVector)(lambda), 3, "lambda should be a diagonal matrix");
 
   AIATensor_ *lam2 = aiatensor__(newCopy)(lambda);
 
@@ -167,6 +354,85 @@ void aiagp__(calcK1)(AIATensor_ *K1, AIATensor_ *X, AIATensor_ *lambda) {
   aiakernel_se__(matrix)(K1, X, NULL, 1, lam2, DIAG_MAT);
 
   aiatensor__(free)(lam2);
+}
+
+void aiagp__(opfuncse)(AIATensor_ *x, T *fx, AIATensor_ *df_dx, opfunc_ops ops, void *state) {
+  AIAGpState_ *gpstate = (AIAGpState_ *)state;
+  aia_argcheck(aiatensor__(isVector)(x), 1, "x should be a vector");
+  aia_argcheck(ops >= ONLY_F && ops <= F_N_GRAD, 4, "Invalid option for GP optimize function");
+  if (gpstate->iskeriso) {
+    aia_argcheck(x->size[0] == 3, 1, "x vector should of size 3 for isotropic kernel. [sigma, alpha, lambda]");
+  } else {
+    aia_argcheck(gpstate->X->size[1] == x->size[0] - 2, 1, "kernel length scale dimension and "
+      "input dimension should be equal in case of anisotropic kernel");
+  }
+
+  AIATensor_ *lambda = aiatensor__(empty)();
+  AIATensor_ *K = aiatensor__(empty)();
+  AIATensor_ *KPS = aiatensor__(empty)();
+  AIATensor_ *KPSchol = aiatensor__(empty)();
+  AIATensor_ *beta = aiatensor__(empty)();
+
+  T *x_data, *ele;
+  T sigma, alpha;
+
+  printf("x = %s\n", aiatensor_(float, toString)(x));
+  //printf("y = %s\n", aiatensor_(float, toString)(gpstate->y));
+  // get new lambda, sigma and alpha
+  x_data = aiatensor__(data)(x);
+  sigma = x_data[0];
+  //printf("sigma = %0.5f\n", sigma);
+  alpha = x_data[x->stride[0]];
+  //printf("alpha = %0.5f\n", alpha);
+  aiatensor__(narrow)(lambda, x, 0, 2, x->size[0] - 2);
+  //printf("lambda = %p\n", lambda);
+  lambda = aiatensor__(newCopy)(lambda);
+  //printf("lambda = %p\n", lambda);
+  //printf("lambda = %s\n", aiatensor_(float, toString)(lambda));
+  ele = NULL;
+  vforeach(ele, lambda) {
+    *ele = *ele * *ele;
+  }
+  endvforeach()
+  //printf("lambdasq = %s\n", aiatensor_(float, toString)(lambda));
+  // calculate covariance matrix
+  aiakernel_se__(matrix)(K, gpstate->X, NULL, alpha, lambda, DIAG_MAT);
+  //printf("K = %s\n", aiatensor_(float, toString)(K));
+  // convert to k + sigma ^ 2 * I
+  aiatensor__(aEyepX)(KPS, K, sigma * sigma);
+  //printf("KPS = %s\n", aiatensor_(float, toString)(KPS));
+  // calculate cholskey decomposition of K
+  aiatensor__(resizeAs)(KPSchol, KPS);
+  //printf("KPS = %s\n", aiatensor_(float, toString)(KPS));
+  aiatensor__(potrf)(KPSchol, KPS, LOWER_MAT);
+  //printf("KPSchol = %s\n", aiatensor_(float, toString)(KPSchol));
+  // calculate beta
+  aiagp__(calcbeta)(beta, KPSchol, LOWER_MAT, gpstate->y);
+  //printf("beta = %s\n", aiatensor_(float, toString)(beta));
+
+  switch (ops) {
+    case ONLY_F:
+      aiagp__(calcnle)(fx, gpstate->X->size[1], KPSchol, gpstate->y, beta);
+      break;
+    case ONLY_GRAD:
+      aiagp__(calcdnle)(df_dx, K, KPSchol, beta, gpstate->X, lambda, sigma, alpha, gpstate->iskeriso, x);
+      break;
+    case F_N_GRAD:
+      aiagp__(calcnle)(fx, gpstate->X->size[1], KPSchol, gpstate->y, beta);
+      aiagp__(calcdnle)(df_dx, K, KPSchol, beta, gpstate->X, lambda, sigma, alpha, gpstate->iskeriso, x);
+      break;
+    default:
+      aia_error("Invalid option for GP optimize function");
+      break;
+  }
+  printf("fx = %0.5f\n", *fx);
+  printf("df_dx = %s\n", aiatensor_(float, toString)(df_dx));
+
+  aiatensor__(free)(lambda);
+  aiatensor__(free)(K);
+  aiatensor__(free)(KPS);
+  aiatensor__(free)(KPSchol);
+  aiatensor__(free)(beta);
 }
 
 #endif

@@ -11,6 +11,10 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
+#define se_grad_alpha(kval, alpha) (kval / (alpha / 2))
+
+#define se_grad_lambda(kval, xdifsq ,lambda) ((kval * xdifsq) / (2 * lambda * lambda))
+
 /**
  * Description
  * -----------

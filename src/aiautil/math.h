@@ -11,4 +11,8 @@
 #define max3(a, b, c) max2(a, max2(b, c))
 #define min2(a, b) ((a < b) ? a : b)
 
+#ifndef PI
+# define PI 3.14159265358979323846
+#endif
+
 #endif

@@ -704,6 +704,22 @@ T aiatensor__(trace)(AIATensor_ *this) {
   return tr;
 }
 
+void aiatensor__(tracemm)(T *res, AIATensor_ *mat1, AIATensor_ *mat2) {
+  aia_argcheck(aiatensor__(isSquare)(mat1), 1, "matrix should be square");
+  aia_argcheck(aiatensor__(isSquare)(mat2), 1, "matrix should be square");
+  aia_argcheck(mat1->size[0] == mat2->size[0], 1, "matrices should be of same size");
+
+  AIATensor_ *mat2T = aiatensor__(empty)();
+  aiatensor__(resizeAs)(mat2T, mat2);
+  // transpose of mat2
+  aiatensor__(transpose)(mat2T, mat2, 0, 1);
+  // sum all values in elementwise multiplication of mat1 and mat2T
+  // which is trace of product of mat1 and mat2
+  AIA_TENSOR_APPLY2(T, mat1, T, mat2T, *res += *mat1_data * *mat2T_data;);
+
+  aiatensor__(free)(mat2T);
+}
+
 //
 void aiatensor__(fill)(AIATensor_ *res, T value) {
   AIA_TENSOR_APPLY(T, res,
@@ -775,7 +791,7 @@ T aiatensor__(detpd)(AIATensor_ *this) {
 #endif
 
 /** X + a * I */
-void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a) {
+void aiatensor__(aEyepX)(AIATensor_ *res, AIATensor_ *mat, T a) {
   if(mat == NULL) mat = res;
   aia_argcheck(aiatensor__(isMatrix)(mat), 2, "mat should be 2-dimensional");
   aia_argcheck(mat->size[0] == mat->size[1], 2, "mat should be a square matrix");
@@ -792,6 +808,24 @@ void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a) {
     res_data += (res->stride[0] + res->stride[1]);
   }
 }
+
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
+void aiatensor__(xxT)(AIATensor_ *res, AIATensor_ *x) {
+  aia_argcheck(aiatensor__(isVector)(x), 1, "x should be a vector");
+
+  aiatensor__(resize2d)(res, x->size[0], x->size[0]);
+  T *ele1 = NULL;
+  T *ele2 = NULL;
+  T *res_data = aiatensor__(data)(res);
+  AIATensor_ *xT = x;
+
+  vfor(ele1, x, ele2, xT) {
+    *res_data = *ele1 * *ele2;
+    res_data += res->stride[1];
+  }
+  endvfor(res_data = res_data - x->size[0] * res->stride[1] + res->stride[0];)
+}
+#endif
 
 /** x.T * A * x */
 T aiatensor__(xTAx)(AIATensor_ *x, AIATensor_ *amat) {

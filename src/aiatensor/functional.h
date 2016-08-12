@@ -572,13 +572,13 @@
   long vector2##_size = vector2->size[0]; \
 \
   ele1 = vector1->storage->data + vector1->storageOffset - ele1##_stride; \
-  ele2 = vector2->storage->data + vector2->storageOffset; \
 \
   while(!fbreak) { \
     ele1##_index++; \
     if(ele1##_index == vector1##_size) break; \
     ele1 += ele1##_stride; \
     ele2##_index = 0; \
+    ele2 = vector2->storage->data + vector2->storageOffset; \
     for(; ele2##_index < vector2##_size; ele2##_index++, ele2 += ele2##_stride) {
 
 #define endvfor(code) \

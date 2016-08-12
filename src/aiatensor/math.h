@@ -5,6 +5,7 @@
 #include <aiatensor/blas.h>
 #include <aiatensor/dimapply.h>
 #include <aiatensor/apply.h>
+#include <aiatensor/functional.h>
 
 #define AIA_OMP_OVERHEAD_THRESHOLD 100000
 
@@ -78,7 +79,6 @@ AIA_API int aiatensor__(eq)(AIATensor_ *a, AIATensor_ *b);
 
 #if defined(T_IS_FLOAT) || defined(T_IS_DOUBLE)
 AIA_API int aiatensor__(epsieq)(AIATensor_ *a, AIATensor_ *b, T epsi);
-AIA_API int aiatensor__(epsieqS)(T a, T b, T epsi);
 #endif
 
 /**
@@ -144,6 +144,22 @@ AIA_API T aiatensor__(dot)(AIATensor_ *vec1, AIATensor_ *vec2);
  */
 AIA_API T aiatensor__(trace)(AIATensor_ *mat);
 
+/**
+ * Description
+ * -----------
+ * Computes trace of a product of two matrix
+ *
+ * Input
+ * -----
+ * mat1 : Matrix of size n x n
+ * mat2 : Matrix of size n x n
+ *
+ * Output
+ * ------
+ * Returns trace of product of mat1 and mat2
+ */
+AIA_API void aiatensor__(tracemm)(T *res, AIATensor_ *mat1, AIATensor_ *mat2);
+
 AIA_API void aiatensor__(fill)(AIATensor_ *res, T value);
 AIA_API void aiatensor__(zero)(AIATensor_ *res);
 AIA_API void aiatensor__(maskedFill)(AIATensor_ *res, AIATensor(uchar) *mask, T value);
@@ -186,7 +202,25 @@ AIA_API T aiatensor__(detpd)(AIATensor_ *mat);
  * ------
  * res : Matrix of size n x n
  */
-AIA_API void aiatensor__(aIpX)(AIATensor_ *res, AIATensor_ *mat, T a);
+AIA_API void aiatensor__(aEyepX)(AIATensor_ *res, AIATensor_ *mat, T a);
+
+#if defined(T_IS_DOUBLE) || defined(T_IS_FLOAT)
+/**
+ * Description
+ * -----------
+ * Returns following product:
+ *   x * x.T
+ *
+ * Input
+ * -----
+ * x    : Vector of size n x 1
+ *
+ * Output
+ * ------
+ * res  : returns a n x n matrix
+ */
+AIA_API void aiatensor__(xxT)(AIATensor_ *res, AIATensor_ *x);
+#endif
 
 /**
  * Description

@@ -119,7 +119,6 @@ void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, MatrixType mtype) {
                              "potrf", info, info);
 
   aiatensor__(clearUpLoTriangle)(res_, mtype);
-  printf("res_ = \n%s\n", aiatensor__(toString)(res_));
   aiatensor__(freeCopyTo)(res_, res);
 }
 

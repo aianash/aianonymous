@@ -31,11 +31,16 @@ static long size6x6[2] = {6l, 6l};
 static long size6x4[2] = {6l, 4l};
 static long size4x4[2] = {4l, 4l};
 static long size6[1]   = {6l};
+static long size4x1[1] = {4l};
 
 AIATensor(float) *fK6x6Ltnsr;
 AIATensor(float) *fytnsr;
+AIATensor(float) *fK6x6tnsr;
+
+static float fepsi = 1e-5f;
 
 void gp_setup(void) {
+  fK6x6tnsr = aiatensor_(float, newFromData)(arr_(float, clone)(fK6x6, 36), 2, size6x6, NULL);
   fK6x6Ltnsr = aiatensor_(float, newFromData)(arr_(float, clone)(fK6x6L, 36), 2, size6x6, NULL);
   fytnsr = aiatensor_(float, newFromData)(arr_(float, clone)(fy6, 6), 1, size6, NULL);
 }
@@ -74,12 +79,190 @@ START_TEST(test_npredc_float) {
   AIATensor(float) *Kx  = aiatensor_(float, newFromData)(arr_(float, clone)(Kx6x4, 24), 2, size6x4, NULL);
   AIATensor(float) *Kxx = aiatensor_(float, newFromData)(arr_(float, clone)(Kxx4x4, 24), 2, size4x4, NULL);
   AIATensor(float) *beta = aiagp_(float, calcbeta)(NULL, fK6x6Ltnsr, LOWER_MAT, fytnsr);
-  printf("beta = \n%s\n", aiatensor_(float, toString)(beta));
+  //printf("beta = \n%s\n", aiatensor_(float, toString)(beta));
   AIATensor(float) *fmean = aiatensor_(float, empty)();
   AIATensor(float) *fcov  = aiatensor_(float, empty)();
+
   aiagp_(float, npredc)(fmean, fcov, fK6x6Ltnsr, LOWER_MAT, Kx, Kxx, beta);
   printf("fmean = \n%s\n", aiatensor_(float, toString)(fmean));
   printf("fcov = \n%s\n", aiatensor_(float, toString)(fcov));
+
+  aiatensor_(float, free)(Kx);
+  aiatensor_(float, free)(Kxx);
+  aiatensor_(float, free)(beta);
+  aiatensor_(float, free)(fmean);
+  aiatensor_(float, free)(fcov);
+}
+END_TEST
+
+START_TEST(test_opfuncse_float) {
+  // anisotropic kernel
+  float exp6x1[6] =
+    { 0.62480f, -0.14161f,  -0.00215f,  -0.00849f,  -0.03384f,  -0.00746f };
+  long size6x1[1] = {6l};
+  AIATensor(float) *fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp6x1, 6), 1, size6x1, NULL);
+  float fexpres = 4.00342f;
+
+  float *fres = malloc(sizeof(float));
+  AIATensor(float) *frestnsr = aiatensor_(float, empty)();
+
+  // anisotropic kernel
+  float datax3x4[12] =
+    { 0.86135f,  0.31974f,  0.80091f,  0.17351f,
+      0.99017f,  0.35123f,  0.38303f,  0.28982f,
+      0.11373f,  0.99950f,  0.17728f,  0.32502f };
+  long size3x4[2] = {3l, 4l};
+  AIATensor(float) *fdataxtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(datax3x4, 12), 2, size3x4, NULL);
+
+  float datay3x1[3] =
+    { 0.86135f,  0.31974f,  0.80091f};
+  long size3x1[1] = {3l};
+  AIATensor(float) *fdataytnsr = aiatensor_(float, newFromData)(arr_(float, clone)(datay3x1, 3), 1, size3x1, NULL);
+
+  float x6x1[6] =
+    { 0.6f, 0.4f, 0.99f,  0.19f,  0.76f,  0.45f};
+  AIATensor(float) *fxtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(x6x1, 6), 1, size6x1, NULL);
+
+  // float x3x1[3] =
+  //   { 0.6f, 0.4f, 0.99f};
+  // AIATensor(float) *fxtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(x3x1, 3), 1, size3x1, NULL);
+
+  opfunc_ops ops = F_N_GRAD;
+
+  // initialize gp state
+  AIAGpState(float) *state = malloc(sizeof(AIAGpState(float)));
+  state->X = fdataxtnsr;
+  state->y = fdataytnsr;
+  state->iskeriso = FALSE;
+
+  aiagp_(float, opfuncse)(fxtnsr, fres, frestnsr, ops, state);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "opfuncse test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
+  ck_assert_msg(epsieqf(*fres, fexpres, fepsi),
+    "opfuncse test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
+    fexpres, *fres);
+
+  free(fres);
+  free(state);
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+  aiatensor_(float, free)(fdataxtnsr);
+  aiatensor_(float, free)(fdataytnsr);
+  aiatensor_(float, free)(fxtnsr);
+}
+END_TEST
+
+START_TEST(test_cggpse_float) {
+  AIATensor(float) *lambda = aiatensor_(float, empty)();
+  AIATensor(float) *K = aiatensor_(float, empty)();
+  AIATensor(float) *Kx = aiatensor_(float, empty)();
+  AIATensor(float) *Kxx = aiatensor_(float, empty)();
+  AIATensor(float) *KPS = aiatensor_(float, empty)();
+  AIATensor(float) *KPSchol = aiatensor_(float, empty)();
+  AIATensor(float) *beta = aiatensor_(float, empty)();
+  AIATensor(float) *fmean = aiatensor_(float, empty)();
+  AIATensor(float) *fcov  = aiatensor_(float, empty)();
+
+  float sigma, alpha;
+  float *ele;
+
+  // anisotropic kernel
+  float exp6x1[6] =
+    { -22.03078f, -1.87542f,  -0.94326f,  -4.92342f,  -4.60567f,  -1.04295f };
+  long size6x1[1] = {6l};
+  AIATensor(float) *fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp6x1, 6), 1, size6x1, NULL);
+  float fexpres = 4.21248f;
+
+  float *fres = malloc(sizeof(float));
+  AIATensor(float) *frestnsr = aiatensor_(float, empty)();
+
+  // anisotropic kernel
+  float datax3x4[12] =
+    { 0.86135f,  0.31974f,  0.80091f,  0.17351f,
+      0.99017f,  0.35123f,  0.38303f,  0.28982f,
+      0.11373f,  0.99950f,  0.17728f,  0.32502f };
+  long size3x4[2] = {3l, 4l};
+  AIATensor(float) *fdataxtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(datax3x4, 12), 2, size3x4, NULL);
+
+  float datay3x1[3] =
+    { 0.86135f,  0.31974f,  0.80091f};
+  long size3x1[1] = {3l};
+  AIATensor(float) *fdataytnsr = aiatensor_(float, newFromData)(arr_(float, clone)(datay3x1, 3), 1, size3x1, NULL);
+
+  float datatest4x4[16] =
+    { 0.74135f,  0.67974f,  0.78091f,  0.37351f,
+      0.85017f,  0.45123f,  0.33303f,  0.54982f,
+      0.97373f,  0.90950f,  0.76728f,  0.12502f,
+      0.92373f,  0.39950f,  0.61728f,  0.76502f };
+  AIATensor(float) *fdatatesttnsr = aiatensor_(float, newFromData)(arr_(float, clone)(datatest4x4, 16), 2, size4x4, NULL);
+
+  sigma = 1.0f;
+  alpha = 1.0f;
+  float x4x1[4] = {1.0f,  1.f, 1.f, 1.f};
+  lambda = aiatensor_(float, newFromData)(arr_(float, clone)(x4x1, 4), 1, size4x1, NULL);
+  ele = NULL;
+  vforeach(ele, lambda) {
+    *ele = *ele * *ele;
+  }
+  endvforeach()
+
+  // calculate covariance matrix
+  aiakernel_se_(float, matrix)(K, fdataxtnsr, NULL, alpha, lambda, DIAG_MAT);
+  // convert to k + sigma ^ 2 * I
+  aiatensor_(float, aEyepX)(KPS, K, sigma * sigma);
+  // calculate cholskey decomposition of K
+  aiatensor_(float, resizeAs)(KPSchol, KPS);
+  //printf("KPS = %s\n", aiatensor_(float, toString)(KPS));
+  aiatensor_(float, potrf)(KPSchol, KPS, LOWER_MAT);
+  // calculate beta
+  aiagp_(float, calcbeta)(beta, KPSchol, LOWER_MAT, fdataytnsr);
+  // cross covariance with test inputs
+  aiakernel_se_(float, matrix)(Kx, fdataxtnsr, fdatatesttnsr, alpha, lambda, DIAG_MAT);
+  //printf("Kx = %s\n", aiatensor_(float, toString)(Kx));
+  // covariance of test inputs
+  aiakernel_se_(float, matrix)(Kxx, fdatatesttnsr, NULL, alpha, lambda, DIAG_MAT);
+  // calculate mean and covar of prediction
+  aiagp_(float, vpredc)(fmean, fcov, KPSchol, LOWER_MAT, Kx, Kxx, beta);
+  printf("fmean = %s\n", aiatensor_(float, toString)(fmean));
+  printf("fcov = %s\n", aiatensor_(float, toString)(fcov));
+
+  float dataypred4x1[4] =
+    { 0.48698f, 0.43594f, 0.43496f, 0.39738f };
+  AIATensor(float) *fdataypredtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(dataypred4x1, 4), 1, size4x1, NULL);
+
+  // initialize gp state
+  AIAGpState(float) *state = malloc(sizeof(AIAGpState(float)));
+  state->X = fdatatesttnsr;
+  state->y = fdataypredtnsr;
+  state->iskeriso = FALSE;
+
+  // initialize x
+  float x6x1[6] = { 1.0f, 1.0f, 2.0f,  2.0f,  2.0f,  2.0f};
+  AIATensor(float) *fxtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(x6x1, 6), 1, size6x1, NULL);
+
+  optim_(float, ncg)(fxtnsr, aiagp_(float, opfuncse), state, &default_cg_config);
+  printf("fxtnsr = %s\n", aiatensor_(float, toString)(fxtnsr));
+
+  free(fres);
+  free(state);
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+  aiatensor_(float, free)(fdataxtnsr);
+  aiatensor_(float, free)(fdataytnsr);
+  aiatensor_(float, free)(fdatatesttnsr);
+  aiatensor_(float, free)(fdataypredtnsr);
+  aiatensor_(float, free)(fxtnsr);
+  aiatensor_(float, free)(lambda);
+  aiatensor_(float, free)(K);
+  aiatensor_(float, free)(Kx);
+  aiatensor_(float, free)(Kxx);
+  aiatensor_(float, free)(KPS);
+  aiatensor_(float, free)(KPSchol);
+  aiatensor_(float, free)(beta);
+  aiatensor_(float, free)(fmean);
+  aiatensor_(float, free)(fcov);
 }
 END_TEST
 
@@ -94,6 +277,9 @@ Suite *make_gp_suite(void) {
 
   tcase_add_test(tc, test_spredc_float);
   tcase_add_test(tc, test_npredc_float);
+
+  tcase_add_test(tc, test_opfuncse_float);
+  tcase_add_test(tc, test_cggpse_float);
 
   suite_add_tcase(s, tc);
   return s;
