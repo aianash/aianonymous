@@ -1,33 +1,43 @@
 #include <aiaoptim/optim.h>
 
-#ifndef NON_ERASED_BLOCK
-#define NON_ERASED_BLOCK
+#ifdef ERASED_TYPE_PRESENT
 
-ls_config default_ls_config = {
-  .maxiter = 20,
-  .c1      = 0.05,
-  .c2      = 0.1,
-  .dec     = 0.5,
-  .inc     = 2.1,
-  .amax    = 1e+20,
-  .amin    = 1e-20,
+LSConfig_ default_(ls_config) = {
+  .maxIter = 20,
+  .c1      = asT(0.05),
+  .c2      = asT(0.1),
+  .dec     = asT(0.5),
+  .inc     = asT(2.1),
+  .amax    = asT(1e+20),
+  .amin    = asT(1e-20),
+  .xtol    = asT(1e-5),
   .wolfe   = LS_WOLFE_STRONG_CURVATURE
 };
-
-#endif
-
-#ifdef ERASED_TYPE_PRESENT
 
 //
 static int optim__(zoom)(T *ax, T *fxm, T *dgxm, T *ay, T *fym, T *dgym, T *ac, T *fcm, T *dgcm, int *brackt, T acmin, T acmax);
 
 // TODO : Major recoding required
-int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATensor_ *x, AIATensor_ *p, T *f, AIATensor_ *gf, T c1, T c2, T amax, T amin, T xtol, int maxIter) {
+int optim__(lsmorethuente)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
+                          optim__(opfunc) opfunc, void *opstate,
+                          AIATensor_ *p, AIATensor_ *x, T *f, AIATensor_ *gf,
+                          LSConfig_ *config) {
+  if(!config) config = &default_(ls_config);
+  if(!x) x = xa;
+  if(!f) f = fa;
+  if(!gf) gf = gfa;
+
   int fcount;
   int iter;
   int brackt; // = 1 means minimizer has been bracketed
   int zerr;
   int stage1;
+  T amax = config->amax;
+  T amin = config->amin;
+  T c1 = config->c1;
+  T c2 = config->c2;
+  T xtol = config->xtol;
+  long maxIter = config->maxIter;
   T width, pwidth;
   T ax, fx, dgx; // values at the best step
   T ay, fy, dgy; // values at the other endpoint of the interval of uncertainity
@@ -40,12 +50,8 @@ int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATenso
   T fxm, dgxm, fym, dgym, fcm, dgcm;
   T phi0, dphi0;
   T la, c1dphi0;
-  // checks
 
-  // if(a <= 0) {
-
-  // }
-  if(*a <= 0) return -1;
+  if(*a <= 0) return LSERR_INVALID_PARAM;
 
   iter = 0;
   fcount = 0;
@@ -55,7 +61,7 @@ int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATenso
 
   phi0 = *f;
   dphi0 = aiatensor__(dot)(p, gf);
-  if(dphi0 > 0) return -1;
+  if(dphi0 > 0) return LSERR_INVALID_DIR_GRAD;
 
   c1dphi0 = c1 * dphi0;
 
@@ -102,21 +108,21 @@ int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATenso
     la = phi0 + ac * c1dphi0;
 
     if(brackt && ((ac <= acmin || ac >= acmax) || zerr != 0)) {
-      return -1;
+      return LSERR_ROUNDING_ERR;
     }
     if(ac == amax && fc <= la && dgc <= c1dphi0) {
       *a = ac;
-      return -1;
+      return LSERR_MAX_STEP;
     }
     if(ac == amin && (fc > la || c1dphi0 <= dgc)) {
       *a = ac;
-      return -1;
+      return LSERR_MIN_STEP;
     }
     if(brackt && (acmax - acmin <= xtol * acmax)) {
-      return -1;
+      return LSERR_MAXMIN_STEP_WITHIN_TOL;
     }
     if(iter <= maxIter) {
-      return -1;
+      return LSERR_MAX_ITER;
     }
 
     // converged to step satisfying
@@ -158,6 +164,8 @@ int optim__(lsmorethuente)(T *a, optim__(opfunc) opfunc, void *opstate, AIATenso
       width = fabs(ay - ax);
     }
   }
+
+  return LSERR_UNKNOWN;
 }
 
 
@@ -262,13 +270,13 @@ int optim__(zoom)(T *ax, T *fx, T *dgx, T *ay, T *fy, T *dgy, T *at, T *ft, T *d
 
   if(*brackt) {
     if(*at <= min2(*ax, *ay) || max2(*ax, *ay) <= *at) {
-      return -1;
+      return LSMTERR_INVALID_TRIAL;
     }
     if(0. <= *dgx * (*at - *ax)) {
-      return -1;
+      return LSERR_INVALID_DIR_GRAD;
     }
     if(atmax < atmin) {
-      return -1;
+      return LSERR_INVALID_PARAM;
     }
   }
 
@@ -384,11 +392,11 @@ int optim__(zoom)(T *ax, T *fx, T *dgx, T *ay, T *fy, T *dgy, T *at, T *ft, T *d
   }
 
   *at = atn;
-  return 0;
+  return LS_SUCCESS;
 }
 
-int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(opfunc) opfunc, void *opstate, AIATensor_ *p, AIATensor_ *x, T *fx, AIATensor_ *gfx, ls_config *config) {
-  if(!config) config = &default_ls_config;
+int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(opfunc) opfunc, void *opstate, AIATensor_ *p, AIATensor_ *x, T *fx, AIATensor_ *gfx, LSConfig_ *config) {
+  if(!config) config = &default_(ls_config);
   if(!x) x = xa;
   if(!fx) fx = fa;
   if(!gfx) gfx = gfa;
@@ -408,7 +416,7 @@ int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(o
   if(x != xa)
     aiatensor__(copy)(xa, x);
 
-  while(count <= config->maxiter) {
+  while(count <= config->maxIter) {
     // x_i+1 = x_i + (a_i+1 - a_i) * p
     AIA_TENSOR_APPLY2(T, xa, T, p, *xa_data += - ap * *p_data + *a * *p_data; );
 

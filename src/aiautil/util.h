@@ -50,6 +50,15 @@ do {                  \
 #define AIA_CONCAT_4_EXPAND(x,y,z,w) x ## y ## z ## w
 #define AIA_CONCAT_4(x,y,z,w) AIA_CONCAT_4_EXPAND(x,y,z,w)
 
+// Use this macro to define and use type variable names
+// for default instances
+#define default(type, name) AIA_CONCAT_3(default_, name, type)
+#define default_(name) default(T_, name)
+
+// For type generic instantiation
+#define asT(val) (T)(val)
+#define asTp(ptr) (T *)(val)
+
 #include <aiautil/memory.h>
 #include <aiautil/check.h>
 #include <aiautil/array.h>
