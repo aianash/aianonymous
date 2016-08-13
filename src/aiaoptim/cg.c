@@ -81,7 +81,6 @@ void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, CGConfig
     SWAP(AIATensor_*, gfc, gfx);
     // compute alpha_k
     alpha = 1 / (1 + dgc);
-    // lsresp = optim__(lsbacktrack)(&alpha, x, &f, gfc, opfunc, opstate, pk, NULL, NULL, gfx, NULL);
     lsresp = config->ls(&alpha, x, &f, gfc, opfunc, opstate, pk, NULL, NULL, gfx, NULL);
     if(lsresp == -1) break;
     // compute new dgc gfc.T * gfc and dgxc gfc.T * gfx

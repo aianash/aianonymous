@@ -15,17 +15,17 @@ enum {
   LS_SUCCESS = 0,
   LS_CONVERGENCE = 0,
 
-  LSERR_UNKNOWN = -1024,
-  LSERR_MAX_ITER,
-  LSERR_MIN_STEP,
-  LSERR_MAX_STEP,
-  LSERR_INVALID_PARAM,
-  LSERR_INVALID_DIR_GRAD,
-  LSERR_MAXMIN_STEP_WITHIN_TOL,
-  LSERR_ROUNDING_ERR,
+  LSERR_UNKNOWN = -1024,    // probably logic error, consider as fatal error
+  LSERR_MAX_ITER,           // max iteration for line search reached
+  LSERR_MIN_STEP,           // min step length reached
+  LSERR_MAX_STEP,           // max step length reached
+  LSERR_INVALID_PARAM,      // invalid parameters
+  LSERR_INVALID_DIR_GRAD,   // directional gradient is positive
+  LSERR_MAXMIN_STEP_WITHIN_TOL, // diff between max and min of step length within tolerance
+  LSERR_ROUNDING_ERR,           // rounding error caused step length to overflow beyond max and min
 
   // More Thuente linesearch specific
-  LSMTERR_INVALID_TRIAL,
+  LSMTERR_INVALID_TRIAL,    // invalid trial value for ls more thuente
 };
 
 /** configs **/
@@ -106,7 +106,7 @@ extern LSConfig_ default_(ls_config);
  *
  * Returns
  * -------
- * Error or success
+ * Error or success, refer LS error codes above
  *
  * References
  * ----------
@@ -144,7 +144,7 @@ AIA_API int optim__(lsmorethuente)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
  *
  * Returns
  * -------
- * -1 in case of error, positive value otherwise
+ * Error or success, refer LS error codes above
  *
  * References
  * ----------
