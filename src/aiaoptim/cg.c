@@ -2,20 +2,17 @@
 #include <aiautil/util.h>
 #include <aiatensor/tensor.h>
 
-#ifndef NON_ERASED_BLOCK
-#define NON_ERASED_BLOCK
-
-cg_config default_cg_config = {
-  .gradtol = 1e-5f,
-  .maxiter = 100
-};
-
-#endif
-
 #ifdef ERASED_TYPE_PRESENT
 
-void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *opstate, cg_config *config) {
-  if(!config) config = &default_cg_config;
+CGConfig_ default_(cg_config) = {
+  .gradtol = asT(1e-5),
+  .maxIter = 100,
+  .ls_config = &default_(ls_config),
+  .ls = optim__(lsbacktrack)
+};
+
+void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *opstate, CGConfig_ *config) {
+  if(!config) config = &default_(cg_config);
 
   AIATensor_ *rk  = aiatensor__(emptyVector)(H->size[0]);
   AIATensor_ *pk  = aiatensor__(emptyVector)(x->size[0]);
@@ -33,7 +30,7 @@ void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *ops
   // r_k.T * r_k
   rkTrk = aiatensor__(dot)(rk, rk);
 
-  while((rkTrk > config->gradtol) && (k < config->maxiter)) {
+  while((rkTrk > config->gradtol) && (k < config->maxIter)) {
     // alpha_k = r_k.T * r_k / p_k.T * H * p_k
     aiatensor__(mv)(Hpk, H, pk);
     pkTHpk  = aiatensor__(dot)(Hpk, pk);
@@ -58,8 +55,8 @@ void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *ops
   aiatensor__(free)(Hpk);
 }
 
-void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_config *config) {
-  if(!config) config = &default_cg_config;
+void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, CGConfig_ *config) {
+  if(!config) config = &default_(cg_config);
 
   AIATensor_ *gfc = aiatensor__(emptyAs)(x);
   AIATensor_ *gfx = aiatensor__(emptyAs)(x);
@@ -78,13 +75,13 @@ void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, cg_confi
   // gfc.T * gfc
   dgc = aiatensor__(dot)(gfc, gfc);
 
-  while((dgc > config->gradtol) && (k < config->maxiter)) {
+  while((dgc > config->gradtol) && (k < config->maxIter)) {
     // copy old values
     dgx = dgc;
     SWAP(AIATensor_*, gfc, gfx);
     // compute alpha_k
     alpha = 1 / (1 + dgc);
-    lsresp = optim__(lsbacktrack)(&alpha, x, &f, gfc, opfunc, opstate, pk, NULL, NULL, gfx, NULL);
+    lsresp = config->ls(&alpha, x, &f, gfc, opfunc, opstate, pk, NULL, NULL, gfx, NULL);
     if(lsresp == -1) break;
     // compute new dgc gfc.T * gfc and dgxc gfc.T * gfx
     dgc = 0;

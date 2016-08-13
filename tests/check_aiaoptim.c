@@ -81,7 +81,7 @@ START_TEST(test_cg_float) {
   };
   float xinit[6] = {1, 1.1, 0.4, 0.6, 0.4};
   AIATensor(float) *frestnsr = aiatensor_(float, newFromData)(arr_(float, clone)(xinit, 6), 1, size6, NULL);
-  optim_(float, cg)(frestnsr, funca, fK6x6tnsr, &s, &default_cg_config);
+  optim_(float, cg)(frestnsr, funca, fK6x6tnsr, &s, &default(float, cg_config));
 
   aiatensor_(float, free)(frestnsr);
 }
@@ -100,7 +100,6 @@ START_TEST(test_ncg_float) {
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
     "ncg failed. actual result = %s and expected result = %s",
     aiatensor_(float, toString)(frestnsr), aiatensor_(float, toString)(fexptnsr));
-
   aiatensor_(float, free)(frestnsr);
   aiatensor_(float, free)(fexptnsr);
 }
