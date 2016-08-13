@@ -15,7 +15,7 @@
 typedef struct AIAGpState_ {
   AIATensor_ *X;
   AIATensor_ *y;
-  bool iskeriso;
+  bool isokernel;
 } AIAGpState_;
 
 /**
@@ -125,7 +125,7 @@ AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType m
 /**
  * Desciption
  * ----------
- * Calculate optimized likelihood and parameter derivatives
+ * Calculate evidence likelihood and derivative of likelihood wrt given parameters
  *
  * Input
  * -----
