@@ -168,6 +168,13 @@ void aiatensor__(copyDouble)(AIATensor_ *to, double *from) {
     })
 }
 
+void aiatensor__(narrowCopy)(AIATensor_ *to, AIATensor_ *from, int dim, long firstIdx, long size) {
+  AIATensor_ *temptnsr = aiatensor__(empty)();
+  aiatensor__(narrow)(temptnsr, from, dim, firstIdx, size);
+  aiatensor__(resizeAs)(to, temptnsr);
+  aiatensor__(freeCopyTo)(temptnsr, to);
+}
+
 //
 AIATensor_ *aiatensor__(clone)(AIATensor_ *this) {
   AIATensor_ *clone = aiatensor__(empty)();

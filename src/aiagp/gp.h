@@ -7,8 +7,16 @@
 #include <aiatensor/dimapply.h>
 #include <aiatensor/diagmath.h>
 #include <aiakernel/kernel.h>
+#include <aiaoptim/optim.h>
+#include <aiautil/math.h>
 
 #ifdef ERASED_TYPE_PRESENT
+
+typedef struct GPState_ {
+  AIATensor_ *X;
+  AIATensor_ *y;
+  bool isokernel;
+} GPState_;
 
 /**
  * Description
@@ -21,7 +29,6 @@
  * Kchol : Cholesky factorization of (K + sigma^2 * I) as obtained using potrf
  *         where sigma is noise variance
  * mtype : UPPER_MAT or LOWER_MAT
- *
  * y     : vector of size n with training data
  *
  * Output
@@ -115,10 +122,32 @@ AIA_API void aiagp__(spredc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mt
  */
 AIA_API void aiagp__(spreduc)(T *fmean, T *fcov, AIATensor_ *Kchol, MatrixType mtype, AIATensor_ *lambda, T alpha, AIATensor_ *X, AIATensor_ *beta, AIATensor_ *K1, AIATensor_ *Xxm, AIATensor_ *Xxcov);
 
+/**
+ * Desciption
+ * ----------
+ * Calculate evidence likelihood and derivative of likelihood wrt given parameters
+ *
+ * Input
+ * -----
+ * x      : vector of parameters [sigma, alpha, lambda1, lambda2, ...]
+ * ops    : flag which tells what needs to be calculated.
+ *          value, grad or both
+ * state  : state of gp optimization
+ *
+ * Output
+ * ------
+ * fx     : value of function to be optimized
+ * df_dx   : gradient of function to be optimized
+ */
+AIA_API void aiagp__(opfuncse)(AIATensor_ *x, T *fx, AIATensor_ *df_dx, opfunc_ops ops, void *state);
+
 #endif
 
 #ifndef aiagp_
+#define GPState(type) AIA_STRUCT_ERASE_(type, gp)
 #define aiagp_(type, name) AIA_FN_ERASE_(gp, type, name)
+
+#define GPState_ GPState(T_)
 #define aiagp__(name) aiagp_(T_, name)
 #endif
 

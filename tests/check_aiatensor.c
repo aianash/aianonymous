@@ -269,6 +269,24 @@ START_TEST(test_tensor_copy) {
 }
 END_TEST
 
+// Narrow
+START_TEST(test_tensor_narrowCopy) {
+  AIATensor(float) *tmp = aiatensor_(float, empty)();
+  aiatensor_(float, narrowCopy)(tmp, f4x4tnsr, 0, 1, 3);
+  float exp_3x4_d[12] =
+    { 0.849078f,  0.665310f,  0.931576f,  0.711065f,
+      0.664866f,  0.303851f,  0.210187f,  0.779473f,
+      0.417380f,  0.904275f,  0.164664f,  0.091194f };
+  AIATensor(float) *exp_3x4 = aiatensor_(float, newFromData)(arr_(float, clone)(exp_3x4_d, 12), 2, size3x4, NULL);
+
+  ck_assert_msg(aiatensor_(float, eq)(exp_3x4, tmp),
+    "Failed to narrowCopy");
+
+  aiatensor_(float, free)(exp_3x4);
+  aiatensor_(float, free)(tmp);
+}
+END_TEST
+
 // Cloning
 START_TEST(test_tensor_cloning) {
   AIATensor(float) *tmp = aiatensor_(float, empty)();
@@ -344,6 +362,7 @@ Suite *make_tensor_suite(void) {
   tcase_add_test(tc, test_tensor_set);
   tcase_add_test(tc, test_tensor_transpose);
   tcase_add_test(tc, test_tensor_copy);
+  tcase_add_test(tc, test_tensor_narrowCopy);
   tcase_add_test(tc, test_tensor_cloning);
   tcase_add_test(tc, test_tensor_narrow);
   tcase_add_test(tc, test_tensor_select);

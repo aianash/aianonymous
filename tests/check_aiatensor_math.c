@@ -586,22 +586,27 @@ START_TEST(test_addr_float) {
 END_TEST
 
 START_TEST(test_trace_float) {
-  frestnsr = aiatensor_(float, empty)();
-  float exp = 1.399999f;
+  float expres = 1.399999f;
   float res = aiatensor_(float, trace)(ftnsr3c);
-  ck_assert_msg(epsieqf(exp, res, fepsi), "trace test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(expres, expres, fepsi), "trace test failed. expected output = %f and actual output = %f", expres, res);
 }
 END_TEST
 
 START_TEST(test_detpd_float) {
-  frestnsr = aiatensor_(float, empty)();
-  float exp = 0.020788f;
+  float expres = 0.020788f;
   float res = aiatensor_(float, detpd)(fpdtnsrc);
-  ck_assert_msg(epsieqf(exp, res, fepsi), "detpd test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(expres, res, fepsi), "detpd test failed. expected output = %f and actual output = %f", expres, res);
 }
 END_TEST
 
-START_TEST(test_aIpX_float) {
+START_TEST(test_detpdchol_float) {
+  float expres = 0.020788f;
+  float res = aiatensor_(float, detpdchol)(fpdLtnsrc);
+  ck_assert_msg(epsieqf(expres, res, fepsi), "detpdchol test failed. expected output = %f and actual output = %f", expres, res);
+}
+END_TEST
+
+START_TEST(test_aEyepX_float) {
   frestnsr = aiatensor_(float, empty)();
   float exp4x4[16] =
     { 0.74783f,  0.06268f,  0.03410f,  0.65443f,
@@ -610,11 +615,11 @@ START_TEST(test_aIpX_float) {
       0.95874f,  0.55492f,  0.87603f,  1.19484f };
   fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
 
-  aiatensor_(float, aIpX)(frestnsr, ftnsr1c, 0.3f);
+  aiatensor_(float, aEyepX)(frestnsr, ftnsr1c, 0.3f);
   ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "result should be a matrix");
   ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
   ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
-    "aIpX test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    "aEyepX test failed.\nexpected output =\n%s\nactual output =\n%s\n",
     aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
 
   aiatensor_(float, free)(fexptnsr);
@@ -1161,6 +1166,39 @@ START_TEST(test_XTApdIXpaY_float) {
 }
 END_TEST
 
+START_TEST(test_tracemm_float) {
+  float *fres = malloc(sizeof(float));
+  float fexpres = 5.24075f;
+
+  aiatensor_(float, tracemm)(fres, ftnsr1c, ftnsr2c);
+  ck_assert_msg(epsieqf(*fres, fexpres, fepsi),
+    "tracemm test failed.\nexpected output =\n%0.5f\nactual output =\n%0.5f\n",
+    fexpres, *fres);
+
+  free(fres);
+}
+END_TEST
+
+START_TEST(test_xxT_float) {
+  frestnsr = aiatensor_(float, empty)();
+  float exp4x4[16] =
+    { 0.04779f, 0.21293f, 0.17929f, 0.20590f,
+      0.21293f, 0.94871f, 0.79881f, 0.91739f,
+      0.17929f, 0.79881f, 0.67260f, 0.77245f,
+      0.20590f, 0.91739f, 0.77245f, 0.88711f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  aiatensor_(float, xxT)(frestnsr, fvec2);
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr), "result has wrong dimensions");
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "xxT test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
 
 Suite *make_tensormath_suite(void) {
   Suite *s;
@@ -1192,7 +1230,8 @@ Suite *make_tensormath_suite(void) {
   tcase_add_test(tc, test_addr_float);
   tcase_add_test(tc, test_trace_float);
   tcase_add_test(tc, test_detpd_float);
-  tcase_add_test(tc, test_aIpX_float);
+  tcase_add_test(tc, test_detpdchol_float);
+  tcase_add_test(tc, test_aEyepX_float);
   tcase_add_test(tc, test_dot_float);
   tcase_add_test(tc, test_mv_float);
   tcase_add_test(tc, test_sum_float);
@@ -1219,6 +1258,8 @@ Suite *make_tensormath_suite(void) {
   tcase_add_test(tc, test_xTApdIx_float);
   tcase_add_test(tc, test_xTAsymmIy_float);
   tcase_add_test(tc, test_XTApdIXpaY_float);
+  tcase_add_test(tc, test_tracemm_float);
+  tcase_add_test(tc, test_xxT_float);
 
   suite_add_tcase(s, tc);
   return s;

@@ -3,10 +3,7 @@
 #include <aiarandom/generator.h>
 #include <aiautil/util.h>
 #include <aiatensor/tensor.h>
-
-#ifndef PI
-# define PI 3.14159265358979323846
-#endif
+#include <aiautil/math.h>
 
 #ifdef ERASED_TYPE_PRESENT
 

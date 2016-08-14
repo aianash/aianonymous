@@ -65,6 +65,22 @@ AIA_API void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *amat
 /**
  * Description
  * -----------
+ * Com[utes Matrix inverse based on Cholesky factorization
+ *
+ * Input
+ * -----
+ * mat   : Cholskey Positive definite matrix of size n x n
+ * mtype : UPPER_MAT or LOWER_MAT
+ *
+ * Output
+ * ------
+ * res   : Inverse of matrix
+ */
+AIA_API void aiatensor__(potri)(AIATensor_ *res, AIATensor_ *mat, MatrixType mtype);
+
+/**
+ * Description
+ * -----------
  * Computes the SVD of a matrix of size n x m
  *   A = U * sigma * V.T
  *
