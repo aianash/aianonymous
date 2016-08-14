@@ -117,6 +117,7 @@ AIA_API void aiatensor__(copyInt)(AIATensor_ *to, int *from);
 AIA_API void aiatensor__(copyLong)(AIATensor_ *to, long *from);
 AIA_API void aiatensor__(copyFloat)(AIATensor_ *to, float *from);
 AIA_API void aiatensor__(copyDouble)(AIATensor_ *to, double *from);
+AIA_API void aiatensor__(narrowCopy)(AIATensor_ *to, AIATensor_ *from, int dim, long firstIdx, long size);
 
 /** Expanding/Replicating/Squeezing Tensors **/
 //-------------------------------------------//

@@ -586,18 +586,23 @@ START_TEST(test_addr_float) {
 END_TEST
 
 START_TEST(test_trace_float) {
-  frestnsr = aiatensor_(float, empty)();
-  float exp = 1.399999f;
+  float expres = 1.399999f;
   float res = aiatensor_(float, trace)(ftnsr3c);
-  ck_assert_msg(epsieqf(exp, res, fepsi), "trace test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(expres, expres, fepsi), "trace test failed. expected output = %f and actual output = %f", expres, res);
 }
 END_TEST
 
 START_TEST(test_detpd_float) {
-  frestnsr = aiatensor_(float, empty)();
-  float exp = 0.020788f;
+  float expres = 0.020788f;
   float res = aiatensor_(float, detpd)(fpdtnsrc);
-  ck_assert_msg(epsieqf(exp, res, fepsi), "detpd test failed. expected output = %f and actual output = %f", exp, res);
+  ck_assert_msg(epsieqf(expres, res, fepsi), "detpd test failed. expected output = %f and actual output = %f", expres, res);
+}
+END_TEST
+
+START_TEST(test_detpdchol_float) {
+  float expres = 0.020788f;
+  float res = aiatensor_(float, detpdchol)(fpdLtnsrc);
+  ck_assert_msg(epsieqf(expres, res, fepsi), "detpdchol test failed. expected output = %f and actual output = %f", expres, res);
 }
 END_TEST
 
@@ -1225,6 +1230,7 @@ Suite *make_tensormath_suite(void) {
   tcase_add_test(tc, test_addr_float);
   tcase_add_test(tc, test_trace_float);
   tcase_add_test(tc, test_detpd_float);
+  tcase_add_test(tc, test_detpdchol_float);
   tcase_add_test(tc, test_aEyepX_float);
   tcase_add_test(tc, test_dot_float);
   tcase_add_test(tc, test_mv_float);

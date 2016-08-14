@@ -100,6 +100,26 @@ static void aiatensor__(clearUpLoTriangle)(AIATensor_ *mat, MatrixType mtype) {
   }
 }
 
+static void aiatensor__(fillUpLoTriangle)(AIATensor_ *mat, MatrixType mtype) {
+  aia_argcheck(mat->nDimension == 2, 1, "Mat should be a 2 dimensional");
+  aia_argcheck(mat->size[0] == mat->size[1], 1, "A should be a square");
+
+  int n = mat->size[0];
+
+  T *p = aiatensor__(data)(mat);
+  long i, j;
+
+  if(isset(mtype, UPPER_MAT)) {
+    for(i = 0; i < n; i++)
+      for(j = i + 1; j < n; j++)
+        p[n*i + j] = p[n*j + i];
+  } else if(isset(mtype, LOWER_MAT)) {
+    for(i = 0; i < n; i++)
+      for(j = 0; j < i; j++)
+        p[n*i + j] = p[n*j + i];
+  }
+}
+
 //
 void aiatensor__(potrf)(AIATensor_ *res, AIATensor_ *mat, MatrixType mtype) {
   if(!mat) mat = res;
@@ -190,6 +210,27 @@ void aiatensor__(trtrs)(AIATensor_ *res, AIATensor_ *b, AIATensor_ *amat, Matrix
 
   aiatensor__(free)(resa_);
   aiatensor__(freeCopyTo)(resb_, res);
+}
+
+void aiatensor__(potri)(AIATensor_ *res, AIATensor_ *mat, MatrixType mtype) {
+  if(!mat) mat = res;
+  aia_argcheck(res->nDimension == 2, 1, "mat or res should be a matrix");
+  aia_argcheck(res->size[0] == res->size[1], 1, "mat or res should be a square matrix");
+  aia_argcheck(isset(mtype, (UPPER_MAT | LOWER_MAT)), 3, "incorrect matrix type");
+
+  int n, lda, info;
+  AIATensor_ *res_ = aiatensor__(cloneColumnMajor)(res, mat);
+
+  n = res_->size[0];
+  lda = n;
+
+  aialapack__(potri)(touplo(mtype), n, aiatensor__(data)(res_), lda, &info);
+  aia_lapackCheckWithCleanup("Lapack Error %s : A(%d, %d) is 0, Failed to find A inverse",
+                             aia_cleanup(aiatensor__(free)(res_);),
+                             "potri", info, info);
+
+  aiatensor__(fillUpLoTriangle)(res_, mtype);
+  aiatensor__(freeCopyTo)(res_, res);
 }
 
 //

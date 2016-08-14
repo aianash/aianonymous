@@ -123,7 +123,7 @@ START_TEST(test_opfuncse_float) {
   AIATensor(float) *fxtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(x6x1, 6), 1, size6x1, NULL);
 
   // initialize gp state
-  AIAGpState(float) *state = malloc(sizeof(AIAGpState(float)));
+  GPState(float) *state = malloc(sizeof(GPState(float)));
   state->X = fdataxtnsr;
   state->y = fdataytnsr;
   state->isokernel = FALSE;
@@ -226,7 +226,7 @@ START_TEST(test_cggpse_float) {
   AIATensor(float) *fdataypredtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(dataypred4x1, 8), 1, size8x1, NULL);
 
   // initialize gp state
-  AIAGpState(float) *state = malloc(sizeof(AIAGpState(float)));
+  GPState(float) *state = malloc(sizeof(GPState(float)));
   state->X = fdatatesttnsr;
   state->y = fdataypredtnsr;
   state->isokernel = FALSE;

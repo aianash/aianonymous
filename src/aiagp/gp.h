@@ -12,11 +12,11 @@
 
 #ifdef ERASED_TYPE_PRESENT
 
-typedef struct AIAGpState_ {
+typedef struct GPState_ {
   AIATensor_ *X;
   AIATensor_ *y;
   bool isokernel;
-} AIAGpState_;
+} GPState_;
 
 /**
  * Description
@@ -144,10 +144,10 @@ AIA_API void aiagp__(opfuncse)(AIATensor_ *x, T *fx, AIATensor_ *df_dx, opfunc_o
 #endif
 
 #ifndef aiagp_
-#define AIAGpState(type) AIA_STRUCT_ERASE_(type, gp)
+#define GPState(type) AIA_STRUCT_ERASE_(type, gp)
 #define aiagp_(type, name) AIA_FN_ERASE_(gp, type, name)
 
-#define AIAGpState_ AIAGpState(T_)
+#define GPState_ GPState(T_)
 #define aiagp__(name) aiagp_(T_, name)
 #endif
 

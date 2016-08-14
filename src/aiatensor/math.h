@@ -184,6 +184,21 @@ AIA_API void aiatensor__(ones)(AIATensor_ *res, int nDimension, long *size, long
  * Returns determinant of matrix
  */
 AIA_API T aiatensor__(detpd)(AIATensor_ *mat);
+
+/**
+ * Description
+ * -----------
+ * Computes determinant of a positive definite matrix
+ *
+ * Input
+ * -----
+ * matchol : Cholesky decomposition of Positive definite matrix of size n x n
+ *
+ * Output
+ * ------
+ * Returns determinant of matrix
+ */
+AIA_API T aiatensor__(detpdchol)(AIATensor_ *matchol);
 #endif
 
 /**

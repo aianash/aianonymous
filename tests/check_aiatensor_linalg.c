@@ -82,6 +82,30 @@ START_TEST(test_potrf_float) {
 }
 END_TEST
 
+START_TEST(test_potri_float) {
+  float exp4x4[16] =
+    { 6.86757f, -1.47041f, -4.89271f,   2.16407f,
+     -1.47041f,  2.02339f,  1.03406f,  -1.71527f,
+     -4.89271f,  1.03406f,  14.94526f, -10.26860f,
+      2.16407f, -1.71527f, -10.26860f,  8.61794f };
+  fexptnsr = aiatensor_(float, newFromData)(arr_(float, clone)(exp4x4, 16), 2, size4x4, NULL);
+
+  frestnsr = aiatensor_(float, empty)();
+  aiatensor_(float, resizeAs)(frestnsr, fpdLtnsrc);
+
+  aiatensor_(float, potri)(frestnsr, fpdLtnsrc, LOWER_MAT);
+  ck_assert_msg(aiatensor_(float, isMatrix)(frestnsr), "wrong size for output");
+  ck_assert_msg(aiatensor_(float, isSameSizeAs)(frestnsr, fexptnsr),
+      "wrong size for output %dx%d", frestnsr->size[0], frestnsr->size[1]);
+  ck_assert_msg(aiatensor_(float, epsieq)(frestnsr, fexptnsr, fepsi),
+    "potrs test failed.\nexpected output =\n%s\nactual output =\n%s\n",
+    aiatensor_(float, toString)(fexptnsr), aiatensor_(float, toString)(frestnsr));
+
+  aiatensor_(float, free)(fexptnsr);
+  aiatensor_(float, free)(frestnsr);
+}
+END_TEST
+
 START_TEST(test_potrs_float) {
   float exp4x2[8] =
     { -3.3458f,  1.5483f,
@@ -233,6 +257,7 @@ Suite *make_tensorlinalg_suite(void) {
 
   tcase_add_test(tc, test_potrf_float);
   tcase_add_test(tc, test_potrs_float);
+  tcase_add_test(tc, test_potri_float);
   tcase_add_test(tc, test_trtrs_float);
   tcase_add_test(tc, test_svd_float);
   tcase_add_test(tc, test_syev_float);

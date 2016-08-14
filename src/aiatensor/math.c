@@ -788,6 +788,22 @@ T aiatensor__(detpd)(AIATensor_ *this) {
   aiatensor__(free)(chol);
   return det;
 }
+
+/** det(detpdchol) */
+T aiatensor__(detpdchol)(AIATensor_ *matchol) {
+  aia_argcheck(aiatensor__(isSquare)(matchol), 1, "matchol should be square matrix");
+
+  T *data = aiatensor__(data)(matchol);
+  long stride = matchol->stride[0] + matchol->stride[1];
+  T det = 1;
+  long idx;
+
+  for(idx = 0; idx < matchol->size[0]; idx++) {
+    det *= data[idx * stride];
+  }
+  det = pow(det, 2);
+  return det;
+}
 #endif
 
 /** X + a * I */
