@@ -1,4 +1,5 @@
 #include <aiaoptim/optim.h>
+#include <aiatensor/functional.h>
 
 #ifdef ERASED_TYPE_PRESENT
 
@@ -14,6 +15,34 @@ LSConfig_ default_(ls_config) = {
   .wolfe   = LS_WOLFE_STRONG_CURVATURE
 };
 
+char *lserr2str(int errno) {
+  switch(errno) {
+    case LSERR_UNKNOWN:
+      return "Unknown error";
+
+    case LSERR_MAX_ITER:
+      return "Max iteration for line search reached";
+
+    case LSERR_MIN_STEP:
+      return "Min step length reached";
+
+    case LSERR_MAX_STEP:
+      return "Max step length reached";
+
+    case LSERR_INVALID_PARAM:
+      return "Invalid parameters to linesearch";
+
+    case LSERR_INVALID_DIR_GRAD:
+      return "Difference between max and min of step length within tolerance";
+
+    case LSERR_ROUNDING_ERR:
+      return "Rounding error caused step length to overflow beyond max and min";
+
+    case LSMTERR_INVALID_TRIAL:
+      return "Invalid trial value for ls more thuente";
+  }
+}
+
 //
 static int optim__(zoom)(T *ax, T *fxm, T *dgxm, T *ay, T *fym, T *dgym, T *ac, T *fcm, T *dgcm, int *brackt, T acmin, T acmax);
 
@@ -28,30 +57,42 @@ int optim__(lsmorethuente)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
   if(!gf) gf = gfa;
 
   int fcount;
-  int iter;
+  long iter;
   int brackt; // = 1 means minimizer has been bracketed
   int zerr;
   int stage1;
+
+  long maxIter = config->maxIter;
   T amax = config->amax;
   T amin = config->amin;
   T c1 = config->c1;
   T c2 = config->c2;
   T xtol = config->xtol;
-  long maxIter = config->maxIter;
-  T width, pwidth;
-  T ax, fx, dgx; // values at the best step
-  T ay, fy, dgy; // values at the other endpoint of the interval of uncertainity
 
-  T ac, fc, dgc; // values at current step
-  AIATensor_ *xc; // x at current step
-  AIATensor_ *gfc; // gradient of function at current step
+  T dga; // directional gradient at current step a
+  T width, pwidth;
+  T al, fl, dgl; // values at the best step
+  T au, fu, dgu; // values at the other endpoint of the interval of uncertainity
+  T ap = 0; // previous step
+
+  // T ac, fc, dgc; // values at current step
+  // AIATensor_ *xc; // x at current step
+  // AIATensor_ *gfc; // gradient of function at current step
   T acmin, acmax;
 
-  T fxm, dgxm, fym, dgym, fcm, dgcm;
+  // modified values
+  T flm, dglm, fum, dgum, fm, dgm;
+
   T phi0, dphi0;
   T la, c1dphi0;
 
+  T *_1, *_2;
+
   if(*a <= 0) return LSERR_INVALID_PARAM;
+
+  // copy x to xa, further calc only depends on
+  // xa (current x at step a)
+  if(x != xa) aiatensor__(copy)(xa, x);
 
   iter = 0;
   fcount = 0;
@@ -65,103 +106,102 @@ int optim__(lsmorethuente)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
 
   c1dphi0 = c1 * dphi0;
 
-  xc = aiatensor__(emptyAs)(x);
-  gfc = aiatensor__(emptyAs)(x);
-  ac = *a;
-  fc = phi0;
+  al = au = asT(0.);
+  fl = fu = phi0;
+  dgl = dgu = dphi0;
 
-  ax = ay = 0.;
-  fx = fy = phi0;
-  dgx = dgy = dphi0;
-
+  printf("\n=======BEGIN LINESEARCH=========\n");
   while(1) {
-
+    printf("iter = (%ld)\na = %f\n", iter, *a);
+    // set minimum and maximum steps to correspond
+    // to present interval of uncertainity
     if(brackt) {
-      acmin = min2(ax, ay);
-      acmax = min2(ax, ay);
+      acmin = min2(al, au);
+      acmax = max2(al, au);
     } else {
-      acmin = ax;
-      acmax = ac + 4.0 * (ac - ax);
+      acmin = al;
+      acmax = *a + 4.0 * (*a - al);
     }
 
     // clip current step to the provided max min of step
-    if(ac < amin) ac = amin;
-    if(ac > amax) ac = amax;
+    if(*a < amin) *a = amin;
+    if(*a > amax) *a = amax;
 
     // for unusual termination set current step
     // to the lowest obtained so far
-    if((brackt && ((ac <= acmin || ac >= acmax) || iter + 1 >= maxIter || zerr != 0)) ||
+    if((brackt && ((*a <= acmin || *a >= acmax) || iter + 1 >= maxIter || zerr != 0)) ||
        (brackt && (acmax - acmin <= xtol * acmax))) {
-      *a = ax;
+      *a = al;
     }
 
     // compute current x
-    // xc = x + ac * p
-    aiatensor__(cadd)(xc, x, ac, p);
+    // xa = xa + (a - ap) * p
+    vzip2(_1, xa, _2, p) {
+      *_1 += -ap * *_2 + *a * *_2;
+    }
+    endvzip2
 
     // Evaluate function and gradients at current x
-    opfunc(xc, &fc, gfc, F_N_GRAD, opstate);
-    dgc = aiatensor__(dot)(p, gfc);
+    opfunc(xa, fa, gfa, F_N_GRAD, opstate);
+    dga = aiatensor__(dot)(p, gfa);
     fcount++;
+    iter++;
 
     // new l(alpha) for current step
-    la = phi0 + ac * c1dphi0;
+    la = phi0 + *a * c1dphi0;
 
-    if(brackt && ((ac <= acmin || ac >= acmax) || zerr != 0)) {
+    if(brackt && ((*a <= acmin || *a >= acmax) || zerr != 0)) {
       return LSERR_ROUNDING_ERR;
     }
-    if(ac == amax && fc <= la && dgc <= c1dphi0) {
-      *a = ac;
+    if(*a == amax && *fa <= la && dga <= c1dphi0) {
       return LSERR_MAX_STEP;
     }
-    if(ac == amin && (fc > la || c1dphi0 <= dgc)) {
-      *a = ac;
+    if(*a == amin && (*fa > la || c1dphi0 <= dga)) {
       return LSERR_MIN_STEP;
     }
     if(brackt && (acmax - acmin <= xtol * acmax)) {
       return LSERR_MAXMIN_STEP_WITHIN_TOL;
     }
-    if(iter <= maxIter) {
+    if(iter >= maxIter) {
       return LSERR_MAX_ITER;
     }
 
     // converged to step satisfying
     // sufficient decrease condition and curvature condition
-    if(fc <= la && fabs(dgc) <= c2 * (-dphi0)) {
-      *a = ac;
-      *f = fc;
-      aiatensor__(freeCopyTo)(gfc, gf);
-      return fcount;
+    if(*fa <= la && fabs(dga) <= c2 * (-dphi0)) {
+      return LS_SUCCESS;
     }
 
-    if(stage1 && *f <= c1dphi0 && min2(c1, c2) * dphi0 <= dgc)
+    if(stage1 && *fa <= c1dphi0 && min2(c1, c2) * dphi0 <= dga)
       stage1 = 0;
 
-    if(stage1 && fc >= la && fc <= fx) {
-      fcm = fc - ac * c1dphi0;
-      fxm = fx - ax * c1dphi0;
-      fym = fy - ay * c1dphi0;
-      dgcm = dgc - c1dphi0;
-      dgxm = dgx - c1dphi0;
-      dgym = dgy - c1dphi0;
+    ap = *a;
+    if(stage1 && *fa >= la && *fa <= fl) {
+      fm = *fa - *a * c1dphi0;
+      flm = fl - al * c1dphi0;
+      fum = fu - au * c1dphi0;
+      dgm = dga - c1dphi0;
+      dglm = dgl - c1dphi0;
+      dgum = dgu - c1dphi0;
 
-      zerr = optim__(zoom)(&ax, &fxm, &dgxm, &ay, &fym, &dgym, &ac, &fcm, &dgcm, &brackt, acmin, acmax);
+      zerr = optim__(zoom)(&al, &flm, &dglm, &au, &fum, &dgum, a, &fm, &dgm, &brackt, acmin, acmax);
 
-      fx = fxm + ax * c1dphi0;
-      fy = fym + ax * c1dphi0;
-      dgx = dgxm + c1dphi0;
-      dgy = dgym + c1dphi0;
+      // reset
+      fl= flm + al * c1dphi0;
+      fu = fum + au * c1dphi0;
+      dgl = dglm + c1dphi0;
+      dgu = dgum + c1dphi0;
 
     } else {
-      zerr = optim__(zoom)(&ax, &fx, &dgx, &ay, &fy, &dgy, &ac, &fc, &dgc, &brackt, acmin, acmax);
+      zerr = optim__(zoom)(&al, &fl, &dgl, &au, &fu, &dgu, a, f, &dga, &brackt, acmin, acmax);
     }
 
     if(brackt) {
-      if(0.66 * pwidth <= fabs(ay - ax)) {
-        ac = ax + 0.5 * (ay - ax);
+      if(0.66 * pwidth <= fabs(au - al)) {
+        *a = al + 0.5 * (au - al);
       }
       pwidth = width;
-      width = fabs(ay - ax);
+      width = fabs(au - al);
     }
   }
 

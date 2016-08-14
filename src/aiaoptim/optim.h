@@ -28,6 +28,8 @@ enum {
   LSMTERR_INVALID_TRIAL,    // invalid trial value for ls more thuente
 };
 
+AIA_API char *lserr2str(int errno);
+
 /** configs **/
 
 typedef struct sgd_config_ {
