@@ -7,8 +7,9 @@
 CGConfig_ default_(cg_config) = {
   .gradtol = asT(1e-5),
   .maxIter = 100,
+  .continueLSErr = FALSE,
   .ls_config = &default_(ls_config),
-  .ls = optim__(lsbacktrack)
+  .ls = optim__(lsmorethuente)
 };
 
 void optim__(cg)(AIATensor_ *x, optim__(opfunc) opfunc, AIATensor_ *H, void *opstate, CGConfig_ *config) {
@@ -82,20 +83,38 @@ void optim__(ncg)(AIATensor_ *x, optim__(opfunc) opfunc, void *opstate, CGConfig
     // compute alpha_k
     alpha = 1 / (1 + dgc);
     lsresp = config->ls(&alpha, x, &f, gfc, opfunc, opstate, pk, NULL, NULL, gfx, NULL);
-    if(lsresp == -1) break;
-    // compute new dgc gfc.T * gfc and dgxc gfc.T * gfx
-    dgc = 0;
-    dgxc = 0;
-    AIA_TENSOR_APPLY2(T, gfc, T, gfx,
-                      dgc += *gfc_data * *gfc_data;
-                      dgxc += *gfc_data * *gfx_data;
-                      );
-    // compute beta_k+1 = fprime_k+1.T * (fprime_k+1 - fprime_k) / fprime_k * fprime_k
-    beta = (dgc - dgxc) / dgx;
-    // compute p_k+1 = - fprime_k+1 + beta_k+1 * p_k
+
+    switch(lsresp) {
+      case LS_SUCCESS:
+        dgc = 0;
+        dgxc = 0;
+        // compute new dgc gfc.T * gfc and dgxc gfc.T * gfx
+        AIA_TENSOR_APPLY2(T, gfc, T, gfx,
+                          dgc += *gfc_data * *gfc_data;
+                          dgxc += *gfc_data * *gfx_data;
+                          );
+        // compute beta_k+1 = fprime_k+1.T * (fprime_k+1 - fprime_k) / fprime_k * fprime_k
+        beta = (dgc - dgxc) / dgx;
+        // compute p_k+1 = - fprime_k+1 + beta_k+1 * p_k
+        break;
+      case LSERR_UNKNOWN:
+      case LSERR_MAX_ITER:
+      case LSERR_MIN_STEP:
+      case LSERR_MAX_STEP:
+      case LSERR_INVALID_PARAM:
+      case LSERR_INVALID_DIR_GRAD:
+      case LSERR_ROUNDING_ERR:
+      case LSMTERR_INVALID_TRIAL:
+        if(!config->continueLSErr) goto CG_EXIT;
+        beta = 0;
+        break;
+    }
+
     AIA_TENSOR_APPLY2(T, pk, T, gfc, *pk_data = - *gfc_data + beta * *pk_data;);
     k++;
   }
+
+  CG_EXIT:
   aiatensor__(free)(gfc);
   aiatensor__(free)(gfx);
   aiatensor__(free)(pk);

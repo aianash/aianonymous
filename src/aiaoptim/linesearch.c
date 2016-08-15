@@ -74,10 +74,6 @@ int optim__(lsmorethuente)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
   T al, fl, dgl; // values at the best step
   T au, fu, dgu; // values at the other endpoint of the interval of uncertainity
   T ap = 0; // previous step
-
-  // T ac, fc, dgc; // values at current step
-  // AIATensor_ *xc; // x at current step
-  // AIATensor_ *gfc; // gradient of function at current step
   T acmin, acmax;
 
   // modified values
@@ -110,9 +106,7 @@ int optim__(lsmorethuente)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
   fl = fu = phi0;
   dgl = dgu = dphi0;
 
-  printf("\n=======BEGIN LINESEARCH=========\n");
   while(1) {
-    printf("iter = (%ld)\na = %f\n", iter, *a);
     // set minimum and maximum steps to correspond
     // to present interval of uncertainity
     if(brackt) {
@@ -187,7 +181,7 @@ int optim__(lsmorethuente)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
       zerr = optim__(zoom)(&al, &flm, &dglm, &au, &fum, &dgum, a, &fm, &dgm, &brackt, acmin, acmax);
 
       // reset
-      fl= flm + al * c1dphi0;
+      fl = flm + al * c1dphi0;
       fu = fum + au * c1dphi0;
       dgl = dglm + c1dphi0;
       dgu = dgum + c1dphi0;
@@ -451,7 +445,7 @@ int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(o
 
   // check initial gradient in direction of p
   dgx = aiatensor__(dot)(gfx, p);
-  if(dgx > 0) return -1;
+  if(dgx > 0) return LSERR_INVALID_DIR_GRAD;
 
   if(x != xa)
     aiatensor__(copy)(xa, x);
@@ -469,7 +463,7 @@ int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(o
     } else {
       // if Armijo condition to be used
       if(config->wolfe == LS_WOLFE_ARMIJO) {
-        return count;
+        return LS_SUCCESS;
       }
       // check for wolfe condition
       dga = aiatensor__(dot)(gfa, p);
@@ -478,27 +472,29 @@ int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa, optim__(o
       } else {
         // if wolfe condition to be used
         if(config->wolfe == LS_WOLFE_WEAK_CURVATURE) {
-          return count;
+          return LS_SUCCESS;
         }
         // check for strong wolfe condition
         if(dga > - config->c2 * dgx) {
           width = config->dec;
         } else {
-          return count;
+          return LS_SUCCESS;
         }
       }
     }
 
     if(*a < config->amin) {
-      return -1;
+      return LSERR_MIN_STEP;
     }
     if(*a > config->amax) {
-      return -1;
+      return LSERR_MAX_STEP;
     }
 
     ap = *a;
     (*a) *= width;
   }
+
+  return LSERR_MAX_ITER;
 }
 
 

@@ -236,8 +236,7 @@ START_TEST(test_cggpse_float) {
   long size6x1[1] = {6l};
   AIATensor(float) *fxtnsr = aiatensor_(float, newFromData)(arr_(float, clone)(x6x1, 6), 1, size6x1, NULL);
 
-  optim_(float, ncg)(fxtnsr, aiagp_(float, opfuncse), state, &default_cg_config);
-  //printf("fxtnsr = %s\n", aiatensor_(float, toString)(fxtnsr));
+  optim_(float, ncg)(fxtnsr, aiagp_(float, opfuncse), state, &default(float, cg_config));
 
   free(state);
   aiatensor_(float, free)(fdataxtnsr);
