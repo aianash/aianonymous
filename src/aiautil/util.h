@@ -56,8 +56,8 @@ do {                  \
 #define default_(name) default(T_, name)
 
 // For type generic instantiation
-#define asT(val) (T)(val)
-#define asTp(ptr) (T *)(val)
+#define asT(val) ((T)(val))
+#define asTp(ptr) ((T *)(val))
 
 #include <aiautil/memory.h>
 #include <aiautil/check.h>

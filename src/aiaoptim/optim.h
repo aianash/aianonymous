@@ -28,6 +28,8 @@ enum {
   LSMTERR_INVALID_TRIAL,    // invalid trial value for ls more thuente
 };
 
+AIA_API char *lserr2str(int errno);
+
 /** configs **/
 
 typedef struct sgd_config_ {
@@ -161,6 +163,7 @@ AIA_API int optim__(lsbacktrack)(T *a, AIATensor_ *xa, T *fa, AIATensor_ *gfa,
 typedef struct CGConfig_ {
   T gradtol;
   long maxIter;
+  int continueLSErr; // whether to continue on LS error with steepest descent
   LSConfig_ *ls_config;
   optim__(ls) ls;
 } CGConfig_;

@@ -468,7 +468,7 @@ static char *aiatensor__(vec2str)(AIATensor_ *vec) {
 
   for(i = 0; i < vec->size[0]; i++) {
     if(i == vec->size[0] - 1)
-      fmt = "%f\n";
+      fmt = "%f";
     else
       fmt = "%f,\t";
     sprintf(tmp, fmt, mat_data[i * vec->stride[0]]);
