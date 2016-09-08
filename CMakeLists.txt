@@ -56,9 +56,10 @@ add_subdirectory (src/aiaoptim)
 add_subdirectory (src/aiarandom)
 add_subdirectory (src/aiagp)
 add_subdirectory (src/aiakernel)
+add_subdirectory (src/aianash)
 add_subdirectory (tests)
 
-set (DEPS ${DEPS} aiaoptim aiagp aiakernel aiarandom aiatensor aiautil)
+set (DEPS ${DEPS} aiaoptim aiagp aiakernel aiarandom aiatensor aiautil aianash)
 
 add_executable (aianonymous aianonymous.c)
 target_link_libraries (aianonymous ${DEPS})
